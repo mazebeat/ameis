@@ -1,0 +1,100 @@
+@section('text')
+<script>
+	$(".check_todos").click(function (event) {
+
+		if ($(this).is(":checked")) {
+			$(".ck:checkbox:not(:checked)").attr("checked", "checked");
+
+			$('.ck').each(function () {
+				var correo = $(this).val();
+				var idcorreo = $(this).attr('idcorreo');
+
+				listaCorreosCheck.push(correo);
+				listaIdCorreosCheck.push(idcorreo);
+				listaCorreosCheck = jQuery.unique(listaCorreosCheck);
+				listaIdCorreosCheck = jQuery.unique(listaIdCorreosCheck);
+
+// console.log(listaCorreosCheck);
+// console.log(listaIdCorreosCheck);
+});
+
+		} else {
+			$(".ck:checkbox:checked").removeAttr("checked");
+			listaCorreosCheck = [];
+			listaIdCorreosCheck = [];
+		}
+	});
+
+
+	$(".ck").click(function (event) {
+
+		if ($(this).is(":checked")) {
+			var correo = $(this).val();
+			var idcorreo = $(this).attr('idcorreo');
+
+			listaCorreosCheck.push(correo);
+			listaIdCorreosCheck.push(idcorreo);
+			listaCorreosCheck = jQuery.unique(listaCorreosCheck);
+			listaIdCorreosCheck = jQuery.unique(listaIdCorreosCheck);
+
+// console.log(listaCorreosCheck);
+// console.log(listaIdCorreosCheck);
+
+
+} else {
+	listaCorreosCheck = jQuery.grep(listaCorreosCheck, function (value) {
+		return value != correo;
+	});
+
+	listaIdCorreosCheck = jQuery.grep(listaIdCorreosCheck, function (value) {
+		return value != idcorreo;
+	});
+}
+});
+
+	$('.selectBox').on('change', function (event) {
+		var idcorreo = $(this).attr('idcorreo');
+		var origencorreo = $(this).attr('origencorreo');
+		var valor = $(this).val();
+		var esteModal = $(this).parents('.modal').attr('id');
+
+		$(this).val(0);
+
+		if (valor == 1) {
+			$('#myModalUser').modal('hide');
+			$('#' + esteModal).modal('hide');
+			$('#myModalResponder').find('.idcorreo').val(idcorreo);
+			$('#myModalResponder').find('.origencorreo').val(origencorreo);
+			$('#myModalResponder').modal('show');
+		}
+
+		if (valor == 2) {
+			$('#myModalResponder').modal('hide');
+			$('#' + esteModal).modal('hide');
+			$('#myModalUser').find('.idcorreo').val(idcorreo);
+			$('#myModalUser').modal('show');
+		}
+
+		event.preventDefault();
+	});
+
+	$('#responderTodos').click(function () {
+		if (listaIdCorreosCheck != '' && listaCorreosCheck != '') {
+			$('#myModalResponder').find('.idcorreo').val(listaIdCorreosCheck);
+			$('#myModalResponder').find('.origencorreo').val(listaCorreosCheck);
+			$('#myModalResponder').modal('show');
+			$('#myModalUser').modal('hide');
+		}
+	});
+
+	$('#reasignarTodos').click(function () {
+		if (listaIdCorreosCheck != '' && listaCorreosCheck != '') {
+			console.log(listaIdCorreosCheck);
+			$('#myModalUser').find('.idcorreo').val(listaIdCorreosCheck);
+			$('#myModalUser').modal('show');
+			$('#myModalResponder').modal('hide');
+		}
+	});
+
+</script>    @endsection
+

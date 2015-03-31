@@ -1,0 +1,63 @@
+{
+	"name": "mazebaet/ameis",
+	"description": "The Ameis Project.",
+	"keywords": ["project", "amies", "mazebeat", "2015"],
+	"license": "MIT",
+	repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "mazebeat/ameis",
+                "version": "1.0",
+                "dist": {
+                    "url": "https://github.com/taitems/jQuery.Gantt/archive/master.zip",
+                    "type": "zip"
+                },
+                "source": {
+                    "url": "https://github.com/taitems/jQuery.Gantt.git",
+                    "type": "git",
+                    "reference": "dev-master"
+                }
+            }
+        }
+    ],
+	"require": {
+		"laravel/framework": "4.2.*",
+        "barryvdh/laravel-debugbar": "~1.7",
+        "fitztrev/laravel-html-minify": "1.*",
+        "barryvdh/laravel-vendor-cleanup": "1.*",
+		"barryvdh/laravel-ide-helper": "~1.11",
+		"barryvdh/laravel-async-queue": "0.3.*@dev"
+	},
+    "require-dev": {
+        "way/generators": "~2.0",
+        "doctrine/dbal": "2.5.*@dev"
+    },
+	"autoload": {			
+		"classmap": [
+			"app/commands",
+			"app/controllers",
+			"app/models",
+			"app/database/migrations",
+			"app/database/seeds",
+			"app/tests/TestCase.php"
+		]
+	},
+	"scripts": {
+		"post-install-cmd": [
+			"php artisan clear-compiled",
+			"php artisan optimize"
+		],
+		"post-update-cmd": [
+			"php artisan clear-compiled",
+			"php artisan optimize"
+		],
+		"post-create-project-cmd": [
+			"php artisan key:generate"
+		]
+	},
+	"config": {
+		"preferred-install": "dist"
+	},
+	"minimum-stability": "dev"
+}

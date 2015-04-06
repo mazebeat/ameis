@@ -168,3 +168,74 @@ OT
 </div>
 
 @endsection
+
+@section('style')
+	<!-- BEGIN PLUGIN CSS -->
+	{{ HTML::style('assets/plugins/pace/pace-theme-flash.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-select2/select2.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-datepicker/css/datepicker.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-timepicker/css/bootstrap-timepicker.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.css') }}
+	{{ HTML::style('assets/plugins/boostrap-checkbox/css/bootstrap-checkbox.css') }}
+	{{ HTML::style('assets/plugins/ios-switch/ios7-switch.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-tag/bootstrap-tagsinput.css') }}
+	{{ HTML::style('assets/plugins/dropzone/css/dropzone.css') }}
+	{{ HTML::style('assets/plugins/boostrap-clockpicker/bootstrap-clockpicker.min.css') }}
+	{{ HTML::style('assets/plugins/boostrap-slider/css/slider.css') }}
+	<!-- END PLUGIN CSS -->
+@endsection
+
+@section('script')
+	<!-- BEGIN PAGE LEVEL PLUGINS -->
+	{{ HTML::script('assets/plugins/pace/pace.min.js') }}
+	{{ HTML::script('assets/plugins/jquery-block-ui/jqueryblockui.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js') }}
+	{{ HTML::script('assets/plugins/jquery-inputmask/jquery.inputmask.min.js') }}
+	{{ HTML::script('assets/plugins/jquery-autonumeric/autoNumeric.js') }}
+	{{ HTML::script('assets/plugins/ios-switch/ios7-switch.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-select2/select2.min.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-tag/bootstrap-tagsinput.min.js') }}
+	{{ HTML::script('assets/plugins/boostrap-clockpicker/bootstrap-clockpicker.min.js') }}
+	{{ HTML::script('assets/plugins/dropzone/dropzone.min.js') }}
+	{{ HTML::script('assets/plugins/boostrap-slider/js/bootstrap-slider.js') }}
+	<!-- END PAGE LEVEL PLUGINS -->
+	{{-- {{ HTML::script('assets/js/form_elements.js') }} --}}
+	<script>
+		//		$('#descripcion').wysihtml5();
+		// Tipo Servicio Select2
+		$("#form3TipoServicio").select2({
+			placeholder: " ",
+			allowClear: true
+		});
+		// Unidad de Medida Select2
+		$("#form3Unidad").select2({
+			placeholder: " ",
+			allowClear: true
+		});
+		// Vigencia Slider
+		$('#formVigencia').slider();
+		// Detalle Modal
+		$('#myModal').on('show.bs.modal', function (e) {
+			$('body').removeClass('open-menu-right');
+			$('body').removeClass('open-menu-left');
+		});
+		// Checkbox tables
+		$('table .checkbox input').click( function() {
+			if($(this).is(':checked')){
+				$(this).parent().parent().parent().toggleClass('row_selected');
+			}
+			else{
+				$(this).parent().parent().parent().toggleClass('row_selected');
+			}
+		});
+		// Auto format for numbers
+		$('.auto').autoNumeric('init');
+	</script>
+@endsection
+
+

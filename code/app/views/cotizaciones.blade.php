@@ -119,7 +119,7 @@ Cotizaciones
 </div>
 {{-- END CLIENTE --}}
 
-{{-- BEGIN PROJET --}}
+{{-- BEGIN PROJECT --}}
 <div class="grid simple vertical blue">
 	<div class="grid-title no-border">
 		<h4>Información <span class="semi-bold">Proyecto</span></h4>
@@ -138,21 +138,21 @@ Cotizaciones
 			<div class="col-md-12">
 				<div class="row form-row">
 					<div class="col-md-7">
-						<label for="">Nombre Proyecto</label>
+						<label for="formProyecto">Nombre Proyecto</label>
 
-						<input type="text" class="form-control" placeholder="" name="proyecto">
+						<input type="text" class="form-control" placeholder="" name="formProyecto">
 					</div>
 					<div class="col-md-3 col-xs-12">
-						<label for="">Vigencia</label>
+						<label for="formVigencia">Vigencia</label>
 
 						<div class="slider primary">
-							<input type="text" id="form3Vigencia" class="form-control" data-slider-max="30" data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="after">
+							<input type="text" id="formVigencia" name="formVigencia" class="form-control" data-slider-max="30" data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="after">
 						</div>
 					</div>
 					<div class="col-md-2">
-						<label for="">Fecha Vencimiento</label>
+						<label for="formVencimiento">Fecha Vencimiento</label>
 
-						<input type="text" class="form-control" placeholder="Fecha Vencimiento" name="vencimiento" value="{{ Carbon::now()->toDateString() }}" readonly>
+						<input type="text" class="form-control" placeholder="Fecha Vencimiento" name="formVencimiento" value="{{ Carbon::now()->toDateString() }}" readonly>
 					</div>
 				</div>
 
@@ -160,14 +160,14 @@ Cotizaciones
 
 				<div class="row form-row">
 					<div class="col-md-2">
-						<label for="">Tipo Servicio</label>
+						<label for="formTipoServicio">Tipo Servicio</label>
 
-						<select id="form3TipoServicio" class="select2 form-control" style="width:100%">
+						<select id="formTipoServicio" class="select2 form-control" style="width:100%">
 							<option value=""></option>
 						</select>
 					</div>
 					<div class="col-md-3">
-						<label for="">Servicio</label>
+						<label for="formServicio">Servicio</label>
 
 						<div class="input-group">
 							<input name="form3Servicio" id="form3Servicio" type="text" class="form-control" placeholder="">
@@ -178,39 +178,39 @@ Cotizaciones
 						</div>
 					</div>
 					<div class="col-md-2">
-						<label for="">Precio</label>
+						<label for="formPrecio">Precio</label>
 
-						$ <input type="text" class="form-control auto" data-a-sep="," data-a-dec="." placeholder="" name="precio" value="0" readonly>
+						<input type="text" class="form-control auto" data-a-sep="," data-a-dec="." placeholder="" name="formPrecio" value="0" readonly>
 					</div>
 					<div class="col-md-2">
 						<div class="form-group">
-							<label for="">U.N</label>
+							<label for="formUnidad">U.N</label>
 
-							<select id="form3Unidad" class="select2 form-control" style="width:100%">
+							<select id="formUnidad" name="formUnidad" class="select2 form-control" style="width:100%">
 								<option value=""></option>
 							</select>
 						</div>
 					</div>
 					<div class="col-md-1">
 						<div class="form-group">
-							<label for="">Cantidad</label>
+							<label for="formCantidad">Cantidad</label>
 
-							<input type="text" class="form-control" placeholder="" name="cantidad" value="0">
+							<input type="text" class="form-control" placeholder="" name="formCantidad" value="$ 0">
 						</div>
 					</div>
 					<div class="col-md-2">
 						<div class="form-group">
-							<label for="">Total</label>
+							<label for="formTotal">Total</label>
 
-							$ <input type="text" class="form-control auto" data-a-sep="," data-a-dec="." placeholder="" name="total" value="0" readonly>
+							<input type="text" class="form-control auto" data-a-sep="," data-a-dec="." placeholder="" name="formTotal" value="$ 0" readonly>
 						</div>
 					</div>
 				</div>
 				<div class="row form-row">
 					<div class="col-md-12">
-						<label for="">Descripción</label>
+						<label for="formDescripcion">Descripción</label>
 
-						<textarea id="descripcion" placeholder="..." class="form-control" rows="3"></textarea>
+						<textarea id="formDescripcion" name="formDescripcion" placeholder="..." class="form-control" rows="3"></textarea>
 					</div>
 				</div>
 				<div class="form-actions">
@@ -228,7 +228,7 @@ Cotizaciones
 {{-- END PROJECT --}}
 
 {{-- BEGIN DETAIL --}}
-<div class="grid simple vertical red">
+<div class="grid simple horizontal red">
 	<div class="grid-title no-border">
 		<h4>Detalle <span class="semi-bold">Proyecto</span></h4>
 
@@ -240,9 +240,11 @@ Cotizaciones
 		</div>
 	</div>
 	<div class="grid-body no-border">
+
 		{{-- BEGIN GRID BODY --}}
-		
 		<div class="table-responsive">
+
+			{{-- BEGIN TABLE --}}
 			<table class="table table-bordered no-more-tables">
 				<thead>
 					<tr>
@@ -262,6 +264,8 @@ Cotizaciones
 					</tr>
 				</thead>
 				<tbody>
+
+					{{-- BEGIN RESULT LOOP --}}
 					<tr>
 						<td>
 							<div class="checkbox check-default">
@@ -276,10 +280,13 @@ Cotizaciones
 						<td class="text-right">1</td>
 						<td class="text-right">$ 50,000.00</td>
 						<td class="text-center">
-							<a class="btn btn-info btn-sm btn-small" data-toggle="modal" data-target="#myModal"><i class="fa fa-outdent"></i></a>
-							<!-- Modal -->
-							<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							<a class="btn btn-info btn-sm btn-small" data-toggle="modal" data-target="#tableDetalle{{ 1 }}"><i class="fa fa-outdent"></i></a>
+							
+							{{-- BEGIN MODAL --}}
+							<div class="modal fade" id="tableDetalle{{ 1 }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 								<div class="modal-dialog">
+
+									{{-- BEGIN MODAL-CONTENT --}}
 									<div class="modal-content">
 										<div class="modal-header">
 											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -296,15 +303,23 @@ Cotizaciones
 											<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 										</div>
 									</div>
-									<!-- /.modal-content -->
+									
+									{{-- END MODAL-CONTENT --}}
+
 								</div>
-								<!-- /.modal-dialog -->
+								{{-- END MODAL-DIALOG --}}
+
 							</div>
-							<!-- /.modal -->
+							{{-- END MODAL --}}
+
 						</td>
 					</tr>
+					{{-- END RESULT LOOP --}}
+
 				</tbody>
 			</table>
+			{{-- END TABLE --}}
+
 		</div>
 		{{-- END GRID BODY --}}
 
@@ -314,7 +329,9 @@ Cotizaciones
 
 {{-- BEGIN ACTION BUTTONS --}}
 <div class="form-actions">
-	<div class="pull-left"></div>
+	<div class="pull-left">
+		<button class="btn btn-warning  btn-cons" type="submit"><i class="fa fa-upload"></i> Cargar Archivo</button>
+	</div>
 	<div class="pull-right">
 		<button class="btn btn-danger btn-cons" type="submit"><i class="fa fa-check"></i> Guardar</button>
 		<button class="btn btn-white btn-cons" type="button">Cancelar</button>
@@ -377,7 +394,7 @@ $("#form3Unidad").select2({
 	allowClear: true
 });
 // Vigencia Slider
-$('#form3Vigencia').slider();
+$('#formVigencia').slider();
 // Detalle Modal
 $('#myModal').on('show.bs.modal', function (e) {
 	$('body').removeClass('open-menu-right');           

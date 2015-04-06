@@ -4,284 +4,324 @@
 	Proyectos
 @endsection
 
-@section('page_title')
-	Proyectos
-@endsection
-
 @section('breadcrumb')
 	@parent
-	<li class="active">PROYECTOS</li>
+	<li><a href="#" class="active">Proyectos</a></li>
+@endsection
+
+@section('page-title')
+	<i class="fa fa-dot-circle-o"></i>
+	<h3><span class="semi-bold">Proyectos</span></h3>
 @endsection
 
 @section('content')
-	<div class="row">
-				<div class="panel-heading">
-					Proyectos
-				<span class="tools pull-right">
+	<div class="grid simple vertical green">
+		<div class="grid-title no-border">
+			<h4>Información <span class="semi-bold">Cliente</span></h4>
 
-				</span>
-				</div>
-				<div class="panel-body">
-					<span class="label label-success"><label for="cot">Datos Cliente</label></span>
-					{{ Form::open(array('url' => 'busqueda', 'class' => 'form-inline')) }}
-					<div class="form-group" style="width:180px;">
-						<label for="nct">N° CT</label>
-						{{ Form::text('')  }}
-						<iFORMnput type="text" class="form-control" placeholder="Nº CT" name="nct" autofocus>
-					</div>
-					<div class="form-group" style="width:180px;">
-						<label for="pro">N° PROY</label> <input type="text" class="form-control" placeholder="Nº PROY" name="nproy" autofocus>
-					</div>
-					<div class="form-group" style="width:180px;">
-						<label for="rut">RUT</label> <input type="text" class="form-control" placeholder="RUT" name="rut" autofocus>
-					</div>
-					<div class="form-group" style="width:180px;">
-						<label for="cliente">CLIENTE</label> <input type="text" class="form-control" placeholder="CLIENTE" name="cliente" autofocus>
-					</div>
-					<div class="form-group" style="width:180px;">
-						<label for="fecha">FECHA</label> <input type="text" class="form-control" placeholder="FECHA" name="fecha" autofocus>
-					</div>
-					<div class="form-group" style="width:180px;">
-						<label for="vigencia">VIGENCIA</label> <input type="text" class="form-control" placeholder="VIGENCIA" name="vigencia" autofocus>
-					</div>
-				</div>
-				{{ Form::close() }}
+			<div class="tools">
+				<a class="collapse" href="javascript:;"></a> <a class="config" data-toggle="modal" href="#grid-config"></a> <a class="reload" href="javascript:;"></a>
+				<a class="remove" href="javascript:;"></a>
 			</div>
 		</div>
-	</div>
+		<div class="grid-body no-border">
+			<div class="row">
+				<div class="col-md-12">
 
-	<div class="row">
-		<div class="col-md-12">
-			<div class="panel panel-danger" style="margin-bottom: 6px;">
-				<div class="panel-body">
-					{{ Form::open(array('url' => 'busqueda', 'class' => 'form-inline')) }}
-					<div class="form-group" style="width:250px;">
-						<label for="direccion">DIRECCION</label> <input type="text" class="form-control" placeholder="DIRECCION" name="direccion">
-					</div>
-					<div class="form-group" style="margin-top: 21px;">
-						<div class="btn-group">
-							<button id="btnBuscar" type="submit" class="btn btn-primary">.....</button>
-						</div>
-					</div>
-					<div class="form-group" style="width:300px;">
-						<label for="comuna">COMUNA</label>
-						{{ Form::select('estado', array('' => '', 'Arica' => 'Puerto Williams', 'Sin Asignar' => 'Sin Asignar'), Session::get('estado', ''), array('class' => 'form-control', 'style' => 'width:300px;')) }}
-					</div>
-				</div>
-				{{ Form::close() }}
-			</div>
-		</div>
-	</div>
+					<div class="row form-row">
+						<div class="col-md-2">
+							<label for="nct">N° Cotización</label>
 
-	<div class="row">
-		<div class="col-md-12">
-			<div class="panel panel-danger" style="margin-bottom: 6px;">
-				<div class="panel-body">
-					{{ Form::open(array('url' => 'busqueda', 'class' => 'form-inline')) }}
-					<div class="form-group" style="width:900px;">
-						<label for="nombreproyecto">Nombre Proyecto</label> <input type="text" class="form-control" placeholder="Nombre Proyecto" name="nproyecto" style="width:900px;">
-					</div>
-				</div>
-				{{ Form::close() }}
-			</div>
-		</div>
-	</div>
-	<div class="row" style="margin-bottom:10px">
-		<div class="col-md-12">
-			<div class="panel panel-danger" style="margin-bottom: 6px;">
-				<div class="panel-body">
-					{{ Form::open(array('url' => 'busqueda', 'class' => 'form-inline')) }}
-					<div class="form-group" style="width:200px;">
-						<label for="descripcion">Descripcion Especificaciones</label> <input type="text" class="form-control" placeholder="Descripcion" name="descripcion" autofocus>
-					</div>
-					<div class="form-group" style="width:200px;">
-						<label for="um">U.N.</label> <input type="text" class="form-control" placeholder="U.N" name="un" autofocus>
-					</div>
-					<div class="form-group" style="width:200px;">
-						<label for="cantidad">Cant</label> <input type="text" class="form-control" placeholder="Cant" name="cantidad" autofocus>
-					</div>
-					<div class="form-group" style="width:200px;">
-						<label for="total">Total</label> <input type="text" class="form-control" placeholder="Total" name="total" autofocus>
-					</div>
-				</div>
-				{{ Form::close() }}
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<div class="panel panel-danger" style="margin-bottom: 6px;">
-				<div class="panel-body">
-					{{ Form::open(array('url' => 'busqueda', 'class' => 'form-inline')) }}
-					<div class="form-group" style="margin-top: 5px;">
-						<div class="btn-group">
-							<button id="btnCargaarchivo" type="submit" class="btn btn-primary">Carga Archivo</button>
-						</div>
-					</div>
-					<div class="form-group" style="width:500px;">
-						<input type="text" class="form-control" placeholder="Carga Archivo" name="carga" style="width:500px;">
-					</div>
-					<div class="form-group" style="margin-top: 5px;">
-						<div class="btn-group">
-							<button id="btnAgregar" type="submit" class="btn btn-primary">Agregar</button>
-						</div>
-					</div>
-					<div class="form-group" style="margin-top: 5px;">
-						<div class="btn-group">
-							<button id="btnLimpiar" type="submit" class="btn btn-primary">Limpiar</button>
-						</div>
-					</div>
-					<div class="form-group" style="margin-top: 5px;">
-						<div class="btn-group">
-							<button id="btnEliminar" type="submit" class="btn btn-primary">Eliminar</button>
-						</div>
-					</div>
-				</div>
-				{{ Form::close() }}
-			</div>
-		</div>
-	</div>
-
-	<div class="clearfix"></div>
-
-	@if (isset($mensaje))
-		<div class="alert alert-warning alert-dismissible" role="alert">
-			<button type="button" class="close" data-dismiss="alert">
-				<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-			</button>
-			<p>{{ $mensaje }}</p>
-		</div>
-	@endif
-
-	@if (isset($resultados))
-		<div class="row">
-			<div class="col-md-12">
-				<div class="panel panel-danger">
-					<div class="panel-body" style="vertical-align: middle;">
-						<div id="resultados" class="table-responsive" style="vertical-align: middle;">
-							<table class="table table-responsive">
-								<thead>
-								<tr style="" class="custom2">
-									<th style="width:5%;vertical-align: middle">
-									<span class="label label-default" style="padding-top: 8px">
-									<input type="checkbox" class="check_todos" name="Todos" value="" idcorreo="">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="" name="nct" autofocus>
+								<span class="input-group-addon primary">
+									<span class="arrow"></span>
+									<i class="fa fa-ellipsis-h"></i>
 								</span>
-									</th>
-									<th style="width:10%;">Nº Linea</th>
-									<th style="width:40%;">ESPECIFICACIONES</th>
-									<th style="width:14%;">UNID.</th>
-									<th style="width:11%;">CANT.</th>
-									<th style="width:10%;">UNITARIO</th>
-									<th style="width:20%;">TOTAL</th>
-								</tr>
-								</thead>
-								<tbody>
-								@foreach ($resultados as $resultado)
-									<tr class="custom1">
-										<td class="custom3">
-											{{ HTML::custom_checkbox($resultado->estado, $resultado->origencorreo, $resultado->idcorreo)  }}
-										</td>
-										<td style="width:10%;vertical-align: middle">2</td>
-										<td style="width:40%;vertical-align: middle">Provisiones Tabiques</td>
-										<td style="width:14%;vertical-align: middle">M2</td>
-										<td style="width:11%;vertical-align: middle">7</td>
-										<td style="width:10%;vertical-align: middle">62.000</td>
-										<td style="width:20%;vertical-align: middle">434.000</td>
-
-									</tr>
-								@endforeach
-								</tbody>
-							</table>
-						</div>
-						<table class="table table-responsive">
-							<thead>
-							<tr style="" class="custom2">
-								<th style="width:20%;"></th>
-								<th style="width:20%;"></th>
-								<th style="width:11%;">VALOR</th>
-								<th style="width:10%;">TOTAL NETO</th>
-								<th style="width:10%;">I.V.A</th>
-							</tr>
-							</thead>
-							<tbody>
-							@foreach ($resultados as $resultado)
-								<tr class="custom1">
-									<td style="width:20%;vertical-align: middle"></td>
-									<td style="width:20%;vertical-align: middle"></td>
-									<td style="width:11%;vertical-align: middle">434.000</td>
-									<td style="width:10%;vertical-align: middle">358.677</td>
-									<td style="width:10%;vertical-align: middle">75.323</td>
-									</td>
-								</tr>
-							@endforeach
-							</tbody>
-						</table>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-12">
-						<div class="panel panel-danger" style="margin-bottom: 6px;">
-							<div class="panel-body">
-								{{ Form::open(array('url' => 'busqueda', 'class' => 'form-inline')) }}
-								<div class="form-group" style="width:180px;">
-									<div class="btn-group">
-										<button id="btnGenerar" type="submit" class="btn btn-primary" style="width:165px;"> Generar</button>
-									</div>
-								</div>
-								<div class="form-group" style="width:180px;">
-									<div class="btn-group">
-										<button id="btnEliminar" type="submit" class="btn btn-primary" style="width:165px;"> Eliminar</button>
-									</div>
-								</div>
-								<div class="form-group" style="width:545px;">
-									<div class="btn-group">
-										<button id="btnAgregar" type="submit" class="btn btn-primary" style="width:165px;"> Imprimir</button>
-									</div>
-								</div>
-								<div class="form-group" style="margin-top: 5px;">
-									<div class="btn-group">
-										<button id="btnCerrar" type="submit" class="btn btn-primary" style="width:165px;">Salir</button>
-									</div>
-								</div>
 							</div>
-							{{ Form::close() }}
 						</div>
+						<div class="col-md-2">
+							<label for="pro">N° Proyecto</label>
+
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="" name="nproy" autofocus>
+								<span class="input-group-addon primary">
+									<span class="arrow"></span>
+									<i class="fa fa-ellipsis-h"></i>
+								</span>
+							</div>
+						</div>
+
+						<div class="col-md-2">
+							<label for="rut">RUT</label>
+
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="" name="rut" autofocus>
+								<span class="input-group-addon primary">
+									<span class="arrow"></span>
+									<i class="fa fa-ellipsis-h"></i>
+								</span>
+							</div>
+
+						</div>
+
+						<div class="col-md-2">
+							<label for="cliente">Cliente</label>
+
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="" name="cliente" autofocus>
+								<span class="input-group-addon primary">
+									<span class="arrow"></span>
+									<i class="fa fa-ellipsis-h"></i>
+								</span>
+							</div>
+						</div>
+
+
+						<div class="col-md-2">
+							<label for="fecha">Fecha</label>
+
+							<input type="text" class="form-control" placeholder="" name="fecha" autofocus value="{{ Carbon::now()  }}">
+						</div>
+
+
+						<div class="col-md-2">
+							<label for="vigencia">Vigencia</label>
+
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="" name="vigencia" autofocus>
+								<span class="input-group-addon primary">
+									<span class="arrow"></span>
+									<i class="fa fa-ellipsis-h"></i>
+								</span>
+							</div>
+						</div>
+
 					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-md-12">
-						<div class="panel panel-danger" style="margin-bottom: 6px;">
-							<div class="panel-body">
-								{{ Form::open(array('url' => 'busqueda', 'class' => 'form-inline')) }}
-								<div class="form-group" style="width:200px;">
+					<div class="row form-row">
+						<div class="col-md-8">
+							<label for="direccion">DIRECCION</label>
 
-								</div>
-								<div class="form-group" style="width:200px;">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="" name="direccion">
+								<span class="input-group-addon primary">
+									<span class="arrow"></span>
+									<i class="fa fa-ellipsis-h"></i>
+								</span>
+							</div>
+						</div>
 
-								</div>
-								<div class="form-group" style="width:200px;">
+						<div class="col-md-4">
+							<label for="comuna">COMUNA</label>
 
-								</div>
-								<div class="form-group" style="width:300px;">
-
-								</div>
-								<div class="form-group" style="width:200px;">
-									<div class="btn-group">
-										<button id="btnVolver" type="submit" class="btn btn-primary">Volver Menu Principal</button>
-									</div>
-								</div>
-								{{ Form::close() }}
+							<div class="input-group">
+								<input name="formComuna" id="form3City" type="text" class="form-control" placeholder="">
+								<span class="input-group-addon primary">
+									<span class="arrow"></span>
+									<i class="fa fa-ellipsis-h"></i>
+								</span>
 							</div>
 						</div>
 					</div>
 
 				</div>
 			</div>
+
 		</div>
+	</div>
+
+	<div class="grid simple vertical blue">
+		<div class="grid-title no-border">
+			<h4>Información <span class="semi-bold">Proyecto</span></h4>
+
+			<div class="tools">
+				<a class="collapse" href="javascript:;"></a> <a class="config" data-toggle="modal" href="#grid-config"></a> <a class="reload" href="javascript:;"></a>
+				<a class="remove" href="javascript:;"></a>
+			</div>
 		</div>
-		{{ $resultados->links() }}
-	@endif
+		<div class="grid-body no-border">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="row form-row">
+						<div class="col-md-12">
+							<label for="descripcion">Nombre Proyecto</label>
+
+							<input type="text" class="form-control" placeholder="" name="descripcion" autofocus>
+						</div>
+					</div>
+
+					<div class="row form-row">
+						<div class="col-md-6">
+							<label for="descripcion">Descripcion Especificaciones</label> <input type="text" class="form-control" placeholder="" name="descripcion" autofocus>
+						</div>
+						<div class="col-md-2">
+							<label for="um">Unidad de Medidad</label>
+
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="" name="un" autofocus>
+								<span class="input-group-addon primary">
+									<span class="arrow"></span>
+									<i class="fa fa-ellipsis-h"></i>
+								</span>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<label for="cantidad">Cantidad</label> <input type="text" class="form-control" placeholder="" name="cantidad" autofocus>
+						</div>
+						<div class="col-md-2">
+							<label for="total">Total</label> <input type="text" class="form-control" placeholder="" name="total" autofocus>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{{-- BEGIN DETAIL --}}
+	<div class="grid simple horizontal red">
+		<div class="grid-title no-border">
+			<h4>Detalle <span class="semi-bold">Proyecto</span></h4>
+
+			<div class="tools">
+				<a class="collapse" href="javascript:;"></a> <a class="config" data-toggle="modal" href="#grid-config"></a> <a class="reload" href="javascript:;"></a>
+				<a class="remove" href="javascript:;"></a>
+			</div>
+		</div>
+		<div class="grid-body no-border">
+
+			{{-- BEGIN GRID BODY --}}
+			<div class="table-responsive">
+
+				{{-- BEGIN TABLE --}}
+				<table class="table table-bordered no-more-tables">
+					<thead>
+					<tr>
+						<th style="width:1%">
+							<div class="checkbox check-default">
+								<input id="checkboxMain" type="checkbox" value="1" class="checkall"> <label for="checkboxMain"></label>
+							</div>
+						</th>
+						<th class="text-center" style="width:5%; vertical-align:middle;">N° Linea</th>
+						<th class="text-center" style="width:30%; vertical-align:middle;">Especificaciones</th>
+						<th class="text-center" style="width:2%; vertical-align:middle;">Unidad</th>
+						<th class="text-center" style="width:2%;  vertical-align:middle;">Cantidad</th>
+						<th class="text-center" style="width:6%;  vertical-align:middle;">Unitario</th>
+						<th class="text-center" style="width:6%;  vertical-align:middle;">Total</th>
+					</tr>
+					</thead>
+					<tbody>
+
+					{{-- BEGIN RESULT LOOP --}}
+					<tr>
+						<td>
+							<div class="checkbox check-default">
+								<input id="checkbox1" type="checkbox" value="1"> <label for="checkbox1"></label>
+							</div>
+						</td>
+						<td class="text-center">2</td>
+						<td class="text-left">Provisiones Tabiques</td>
+						<td class="text-center">m2</td>
+						<td class="text-center">1</td>
+						<td class="text-right">$ 50,000.00</td>
+						<td class="text-right">$ 50,000.00</td>
+					</tr>
+					{{-- END RESULT LOOP --}}
+
+					</tbody>
+				</table>
+				{{-- END TABLE --}}
+
+			</div>
+			{{-- END GRID BODY --}}
+
+		</div>
+	</div>
+	{{-- END DETAIL --}}
+
+
+	{{-- BEGIN ACTION BUTTONS --}}
+	<div class="form-actions">
+		<div class="pull-left">
+			<button class="btn btn-warning  btn-cons" type="submit"><i class="fa fa-upload"></i> Cargar Archivo</button>
+		</div>
+		<div class="pull-right">
+			<button class="btn btn-danger btn-cons" type="submit"><i class="fa fa-check"></i> Guardar</button>
+			<button class="btn btn-white btn-cons" type="button">Cancelar</button>
+		</div>
+	</div>
+	{{-- END ACTION BUTTONS --}}
+@endsection
+
+
+
+@section('style')
+	<!-- BEGIN PLUGIN CSS -->
+	{{ HTML::style('assets/plugins/pace/pace-theme-flash.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-select2/select2.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-datepicker/css/datepicker.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-timepicker/css/bootstrap-timepicker.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.css') }}
+	{{ HTML::style('assets/plugins/boostrap-checkbox/css/bootstrap-checkbox.css') }}
+	{{ HTML::style('assets/plugins/ios-switch/ios7-switch.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css') }}
+	{{ HTML::style('assets/plugins/bootstrap-tag/bootstrap-tagsinput.css') }}
+	{{ HTML::style('assets/plugins/dropzone/css/dropzone.css') }}
+	{{ HTML::style('assets/plugins/boostrap-clockpicker/bootstrap-clockpicker.min.css') }}
+	{{ HTML::style('assets/plugins/boostrap-slider/css/slider.css') }}
+	<!-- END PLUGIN CSS -->
+@endsection
+
+@section('script')
+	<!-- BEGIN PAGE LEVEL PLUGINS -->
+	{{ HTML::script('assets/plugins/pace/pace.min.js') }}
+	{{ HTML::script('assets/plugins/jquery-block-ui/jqueryblockui.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js') }}
+	{{ HTML::script('assets/plugins/jquery-inputmask/jquery.inputmask.min.js') }}
+	{{ HTML::script('assets/plugins/jquery-autonumeric/autoNumeric.js') }}
+	{{ HTML::script('assets/plugins/ios-switch/ios7-switch.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-select2/select2.min.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js') }}
+	{{ HTML::script('assets/plugins/bootstrap-tag/bootstrap-tagsinput.min.js') }}
+	{{ HTML::script('assets/plugins/boostrap-clockpicker/bootstrap-clockpicker.min.js') }}
+	{{ HTML::script('assets/plugins/dropzone/dropzone.min.js') }}
+	{{ HTML::script('assets/plugins/boostrap-slider/js/bootstrap-slider.js') }}
+	<!-- END PAGE LEVEL PLUGINS -->
+	{{-- {{ HTML::script('assets/js/form_elements.js') }} --}}
+	<script>
+		//		$('#descripcion').wysihtml5();
+		// Tipo Servicio Select2
+		$("#formComuna").select2({
+			placeholder: " ",
+			allowClear: true
+		});
+		// Unidad de Medida Select2
+		$("#form3Unidad").select2({
+			placeholder: " ",
+			allowClear: true
+		});
+		// Vigencia Slider
+		$('#formVigencia').slider();
+		// Detalle Modal
+		$('#myModal').on('show.bs.modal', function (e) {
+			$('body').removeClass('open-menu-right');
+			$('body').removeClass('open-menu-left');
+		});
+		// Checkbox tables
+		$('table .checkbox input').click(function () {
+			if ($(this).is(':checked')) {
+				$(this).parent().parent().parent().toggleClass('row_selected');
+			}
+			else {
+				$(this).parent().parent().parent().toggleClass('row_selected');
+			}
+		});
+		// Auto format for numbers
+		$('.auto').autoNumeric('init');
+	</script>
 @endsection
 
 

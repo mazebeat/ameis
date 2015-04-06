@@ -11,12 +11,15 @@
 |
 */
 
-ClassLoader::addDirectories(array(
-	                            app_path() . '/commands',
-	                            app_path() . '/controllers',
-	                            app_path() . '/models',
-	                            app_path() . '/database/seeds',
-                            ));
+ClassLoader::addDirectories(
+	array(
+		app_path() . '/commands',
+		app_path() . '/controllers',
+		app_path() . '/models',
+		app_path() . '/utils',
+		app_path() . '/database/seeds',
+		)
+	);
 
 /*
 |--------------------------------------------------------------------------
@@ -75,3 +78,18 @@ App::down(function () {
 */
 
 require app_path() . '/filters.php';
+require app_path() . '/utils/Macros.php';
+require app_path() . '/utils/Events.php';
+
+Auth::extend('dummy', function ($app) {
+	$provider = new \App\Util\DummyAuthProvider();
+
+	return new \Illuminate\Auth\Guard($provider, $app['session.store']);
+});
+
+App::shutdown(function () {
+	// Flush buffered logs
+	if (App::bound('log.buffer')) {
+		App::make('log.buffer')->close();
+	}
+});

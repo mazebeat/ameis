@@ -8,19 +8,19 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'model_template_path' => 'E:\Projects\Php\Ameis\app/templates/model.txt',
-
-    'scaffold_model_template_path' => 'E:\Projects\Php\Ameis\app/templates/scaffolding/model.txt',
-
-    'controller_template_path' => 'E:\Projects\Php\Ameis\app/templates/controller.txt',
-
+    'model_template_path'               => 'E:\Projects\Php\Ameis\app/templates/model.txt',
+    
+    'scaffold_model_template_path'      => 'E:\Projects\Php\Ameis\app/templates/scaffolding/model.txt',
+    
+    'controller_template_path'          => 'E:\Projects\Php\Ameis\app/templates/controller.txt',
+    
     'scaffold_controller_template_path' => 'E:\Projects\Php\Ameis\app/templates/scaffolding/controller.txt',
-
-    'migration_template_path' => 'E:\Projects\Php\Ameis\app/templates/migration.txt',
-
-    'seed_template_path' => 'E:\Projects\Php\Ameis\app/templates/seed.txt',
-
-    'view_template_path' => 'E:\Projects\Php\Ameis\app/templates/view.txt',
+    
+    'migration_template_path'           => 'E:\Projects\Php\Ameis\app/templates/migration.txt',
+    
+    'seed_template_path'                => 'E:\Projects\Php\Ameis\app/templates/seed.txt',
+    
+    'view_template_path'                => 'E:\Projects\Php\Ameis\app/templates/view.txt',
 
 
     /*
@@ -29,14 +29,14 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'model_target_path'   => app_path('models'),
+    'model_target_path'      => app_path('models'),
+    
+    'controller_target_path' => app_path('controllers'),
+    
+    'migration_target_path'  => app_path('database/migrations'),
+    
+    'seed_target_path'       => app_path('database/seeds'),
+    
+    'view_target_path'       => app_path('views')
 
-    'controller_target_path'   => app_path('controllers'),
-
-    'migration_target_path'   => app_path('database/migrations'),
-
-    'seed_target_path'   => app_path('database/seeds'),
-
-    'view_target_path'   => app_path('views')
-
-];
+    ];

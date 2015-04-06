@@ -1,7 +1,7 @@
 <?php
 /**
  * An helper file for Laravel 4, to provide autocomplete information to your IDE
- * Generated for Laravel 4.2.17 on 2015-03-31.
+ * Generated for Laravel 4.2.17 on 2015-04-02.
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
@@ -7588,7 +7588,7 @@ namespace {
          * Resolve a queue connection instance.
          *
          * @param string $name
-         * @return \Illuminate\Queue\SyncQueue 
+         * @return \Barryvdh\Queue\AsyncQueue 
          * @static 
          */
         public static function connection($name = null){
@@ -7666,12 +7666,53 @@ namespace {
          *
          * @param string $job
          * @param mixed $data
-         * @param string $queue
-         * @return mixed 
+         * @param string|null $queue
+         * @return int 
          * @static 
          */
         public static function push($job, $data = '', $queue = null){
-            return \Illuminate\Queue\SyncQueue::push($job, $data, $queue);
+            return \Barryvdh\Queue\AsyncQueue::push($job, $data, $queue);
+        }
+        
+        /**
+         * Store the job in the database.
+         * 
+         * Returns the id of the job.
+         *
+         * @param string $job
+         * @param mixed $data
+         * @param int $delay
+         * @return int 
+         * @static 
+         */
+        public static function storeJob($job, $data, $delay = 0){
+            return \Barryvdh\Queue\AsyncQueue::storeJob($job, $data, $delay);
+        }
+        
+        /**
+         * Make a Process for the Artisan command for the job id.
+         *
+         * @param int $jobId
+         * @param int $delay
+         * @return void 
+         * @static 
+         */
+        public static function startProcess($jobId, $delay = 0){
+            \Barryvdh\Queue\AsyncQueue::startProcess($jobId, $delay);
+        }
+        
+        /**
+         * Push a new job onto the queue after a delay.
+         *
+         * @param \DateTime|int $delay
+         * @param string $job
+         * @param mixed $data
+         * @param string|null $queue
+         * @return int 
+         * @static 
+         */
+        public static function later($delay, $job, $data = '', $queue = null){
+            return \Barryvdh\Queue\AsyncQueue::later($delay, $job, $data, $queue);
         }
         
         /**
@@ -7684,21 +7725,8 @@ namespace {
          * @static 
          */
         public static function pushRaw($payload, $queue = null, $options = array()){
-            return \Illuminate\Queue\SyncQueue::pushRaw($payload, $queue, $options);
-        }
-        
-        /**
-         * Push a new job onto the queue after a delay.
-         *
-         * @param \DateTime|int $delay
-         * @param string $job
-         * @param mixed $data
-         * @param string $queue
-         * @return mixed 
-         * @static 
-         */
-        public static function later($delay, $job, $data = '', $queue = null){
-            return \Illuminate\Queue\SyncQueue::later($delay, $job, $data, $queue);
+            //Method inherited from \Illuminate\Queue\SyncQueue            
+            return \Barryvdh\Queue\AsyncQueue::pushRaw($payload, $queue, $options);
         }
         
         /**
@@ -7709,7 +7737,8 @@ namespace {
          * @static 
          */
         public static function pop($queue = null){
-            return \Illuminate\Queue\SyncQueue::pop($queue);
+            //Method inherited from \Illuminate\Queue\SyncQueue            
+            return \Barryvdh\Queue\AsyncQueue::pop($queue);
         }
         
         /**
@@ -7720,7 +7749,7 @@ namespace {
          */
         public static function marshal(){
             //Method inherited from \Illuminate\Queue\Queue            
-            return \Illuminate\Queue\SyncQueue::marshal();
+            return \Barryvdh\Queue\AsyncQueue::marshal();
         }
         
         /**
@@ -7734,7 +7763,7 @@ namespace {
          */
         public static function bulk($jobs, $data = '', $queue = null){
             //Method inherited from \Illuminate\Queue\Queue            
-            return \Illuminate\Queue\SyncQueue::bulk($jobs, $data, $queue);
+            return \Barryvdh\Queue\AsyncQueue::bulk($jobs, $data, $queue);
         }
         
         /**
@@ -7745,7 +7774,7 @@ namespace {
          */
         public static function getTime(){
             //Method inherited from \Illuminate\Queue\Queue            
-            return \Illuminate\Queue\SyncQueue::getTime();
+            return \Barryvdh\Queue\AsyncQueue::getTime();
         }
         
         /**
@@ -7757,7 +7786,7 @@ namespace {
          */
         public static function setContainer($container){
             //Method inherited from \Illuminate\Queue\Queue            
-            \Illuminate\Queue\SyncQueue::setContainer($container);
+            \Barryvdh\Queue\AsyncQueue::setContainer($container);
         }
         
         /**
@@ -7769,7 +7798,7 @@ namespace {
          */
         public static function setEncrypter($crypt){
             //Method inherited from \Illuminate\Queue\Queue            
-            \Illuminate\Queue\SyncQueue::setEncrypter($crypt);
+            \Barryvdh\Queue\AsyncQueue::setEncrypter($crypt);
         }
         
     }

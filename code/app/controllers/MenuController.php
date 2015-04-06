@@ -7,8 +7,7 @@ class MenuController extends BaseController
 	 */
 	public function __construct()
 	{
-		$this->beforeFilter(function()
-		{
+		$this->beforeFilter(function () {
 			//
 		});
 	}
@@ -69,4 +68,28 @@ class MenuController extends BaseController
 	{
 		return View::make('cotizaciones');
 	}
+
+	public function getUsers()
+	{
+		return View::make('users.create');
+	}
+
+	public function getProductos()
+	{
+		return View::make('productos');
+
+	}
+
+	public function getProductounidad()
+	{
+		return View::make('productoUnidad');
+
+	}
+
+	public function getMedidas()
+	{
+		return View::make('medidas');
+
+	}
+
 }

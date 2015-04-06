@@ -1,14 +1,14 @@
 <?php
 
 return array(
-	'default' => 'mysql',
+	'default' => 'sqlsrv',
 	'connections' => array(
 		'sqlsrv' => array(
 			'driver'   => 'sqlsrv',
 			'host'     => 'localhost',
 			'database' => 'ameis',
-			'username' => 'test',
-			'password' => 'test',
+			'username' => 'sa',
+			'password' => 'mz.120712',
 			'prefix'   => '',
 			),
 

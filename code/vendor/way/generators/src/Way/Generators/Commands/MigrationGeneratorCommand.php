@@ -1,12 +1,11 @@
 <?php namespace Way\Generators\Commands;
 
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use Way\Generators\Parsers\MigrationNameParser;
-use Way\Generators\Parsers\MigrationFieldsParser;
+use Symfony\Component\Console\Input\InputOption;
 use Way\Generators\Generator;
+use Way\Generators\Parsers\MigrationFieldsParser;
+use Way\Generators\Parsers\MigrationNameParser;
 use Way\Generators\SchemaCreator;
-use Config;
 
 class MigrationGeneratorCommand extends GeneratorCommand {
 
@@ -76,6 +75,18 @@ class MigrationGeneratorCommand extends GeneratorCommand {
     }
 
     /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return array(
+            array('migrationName', InputArgument::REQUIRED, 'The migration name')
+        );
+    }
+
+    /**
      * The path where the file will be created
      *
      * @return mixed
@@ -89,13 +100,18 @@ class MigrationGeneratorCommand extends GeneratorCommand {
     }
 
     /**
-     * Get the date prefix for the migration.
+     * Get the console command options.
      *
-     * @return string
+     * @return array
      */
-    protected function getDatePrefix()
+    protected function getOptions()
     {
-        return date('Y_m_d_His');
+        return array(
+            ['fields', null, InputOption::VALUE_OPTIONAL, 'Fields for the migration'],
+            ['path', null, InputOption::VALUE_OPTIONAL, 'Where should the file be created?'],
+            ['templatePath', null, InputOption::VALUE_OPTIONAL, 'The location of the template for this generator'],
+            ['testing', null, InputOption::VALUE_OPTIONAL, 'For internal use only.']
+        );
     }
 
     /**
@@ -131,30 +147,13 @@ class MigrationGeneratorCommand extends GeneratorCommand {
     }
 
     /**
-     * Get the console command arguments.
+     * Get the date prefix for the migration.
      *
-     * @return array
+     * @return string
      */
-    protected function getArguments()
+    protected function getDatePrefix()
     {
-        return array(
-            array('migrationName', InputArgument::REQUIRED, 'The migration name')
-        );
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return array(
-            ['fields', null, InputOption::VALUE_OPTIONAL, 'Fields for the migration'],
-            ['path', null, InputOption::VALUE_OPTIONAL, 'Where should the file be created?'],
-            ['templatePath', null, InputOption::VALUE_OPTIONAL, 'The location of the template for this generator'],
-            ['testing', null, InputOption::VALUE_OPTIONAL, 'For internal use only.']
-        );
+        return date('Y_m_d_His');
     }
 
 }

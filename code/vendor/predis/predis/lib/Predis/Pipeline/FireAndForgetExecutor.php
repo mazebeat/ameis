@@ -11,9 +11,9 @@
 
 namespace Predis\Pipeline;
 
-use SplQueue;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ReplicationConnectionInterface;
+use SplQueue;
 
 /**
  * Implements a pipeline executor strategy that writes a list of commands to
@@ -23,20 +23,6 @@ use Predis\Connection\ReplicationConnectionInterface;
  */
 class FireAndForgetExecutor implements PipelineExecutorInterface
 {
-    /**
-     * Allows the pipeline executor to perform operations on the
-     * connection before starting to execute the commands stored
-     * in the pipeline.
-     *
-     * @param ConnectionInterface $connection Connection instance.
-     */
-    protected function checkConnection(ConnectionInterface $connection)
-    {
-        if ($connection instanceof ReplicationConnectionInterface) {
-            $connection->switchTo('master');
-        }
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -51,5 +37,19 @@ class FireAndForgetExecutor implements PipelineExecutorInterface
         $connection->disconnect();
 
         return array();
+    }
+
+    /**
+     * Allows the pipeline executor to perform operations on the
+     * connection before starting to execute the commands stored
+     * in the pipeline.
+     *
+     * @param ConnectionInterface $connection Connection instance.
+     */
+    protected function checkConnection(ConnectionInterface $connection)
+    {
+        if ($connection instanceof ReplicationConnectionInterface) {
+            $connection->switchTo('master');
+        }
     }
 }

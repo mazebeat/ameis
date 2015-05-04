@@ -53,45 +53,13 @@ class Swift_Transport_MailTransport implements Swift_Transport
     }
 
     /**
-     * Not used.
+     * Register a plugin.
+     *
+     * @param Swift_Events_EventListener $plugin
      */
-    public function start()
+    public function registerPlugin(Swift_Events_EventListener $plugin)
     {
-    }
-
-    /**
-     * Not used.
-     */
-    public function stop()
-    {
-    }
-
-    /**
-     * Set the additional parameters used on the mail() function.
-     *
-     * This string is formatted for sprintf() where %s is the sender address.
-     *
-     * @param string $params
-     *
-     * @return Swift_Transport_MailTransport
-     */
-    public function setExtraParams($params)
-    {
-        $this->_extraParams = $params;
-
-        return $this;
-    }
-
-    /**
-     * Get the additional parameters used on the mail() function.
-     *
-     * This string is formatted for sprintf() where %s is the sender address.
-     *
-     * @return string
-     */
-    public function getExtraParams()
-    {
-        return $this->_extraParams;
+        $this->_eventDispatcher->bindEventListener($plugin);
     }
 
     /**
@@ -193,13 +161,17 @@ class Swift_Transport_MailTransport implements Swift_Transport
     }
 
     /**
-     * Register a plugin.
-     *
-     * @param Swift_Events_EventListener $plugin
+     * Not used.
      */
-    public function registerPlugin(Swift_Events_EventListener $plugin)
+    public function start()
     {
-        $this->_eventDispatcher->bindEventListener($plugin);
+    }
+
+    /**
+     * Not used.
+     */
+    public function stop()
+    {
     }
 
     /** Throw a TransportException, first sending it to any listeners */
@@ -233,5 +205,33 @@ class Swift_Transport_MailTransport implements Swift_Transport
         }
 
         return $path;
+    }
+
+    /**
+     * Get the additional parameters used on the mail() function.
+     *
+     * This string is formatted for sprintf() where %s is the sender address.
+     *
+     * @return string
+     */
+    public function getExtraParams()
+    {
+        return $this->_extraParams;
+    }
+
+    /**
+     * Set the additional parameters used on the mail() function.
+     *
+     * This string is formatted for sprintf() where %s is the sender address.
+     *
+     * @param string $params
+     *
+     * @return Swift_Transport_MailTransport
+     */
+    public function setExtraParams($params)
+    {
+        $this->_extraParams = $params;
+
+        return $this;
     }
 }

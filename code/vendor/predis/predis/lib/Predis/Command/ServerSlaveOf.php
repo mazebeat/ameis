@@ -20,14 +20,6 @@ class ServerSlaveOf extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return 'SLAVEOF';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
@@ -35,5 +27,13 @@ class ServerSlaveOf extends AbstractCommand
         }
 
         return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SLAVEOF';
     }
 }

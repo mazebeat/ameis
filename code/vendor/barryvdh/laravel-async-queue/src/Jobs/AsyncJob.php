@@ -35,6 +35,27 @@ class AsyncJob extends SyncJob
     }
 
     /**
+     * Get the number of times the job has been attempted.
+     *
+     * @return int
+     */
+    public function attempts()
+    {
+        return (int) $this->job->retries;
+    }
+
+    /**
+     * Delete the job from the queue.
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        parent::delete();
+        $this->job->delete();
+    }
+
+    /**
      * Fire the job.
      *
      * @return void
@@ -57,6 +78,16 @@ class AsyncJob extends SyncJob
             $this->job->status = Job::STATUS_FINISHED;
             $this->job->save();
         }
+    }
+
+    /**
+     * Get the job identifier.
+     *
+     * @return string
+     */
+    public function getJobId()
+    {
+        return $this->job->id;
     }
 
     /**
@@ -91,27 +122,6 @@ class AsyncJob extends SyncJob
     }
 
     /**
-     * Get the number of times the job has been attempted.
-     *
-     * @return int
-     */
-    public function attempts()
-    {
-        return (int) $this->job->retries;
-    }
-
-    /**
-     * Delete the job from the queue.
-     *
-     * @return void
-     */
-    public function delete()
-    {
-        parent::delete();
-        $this->job->delete();
-    }
-
-    /**
      * Parse the payload to an array.
      *
      * @param string $payload
@@ -121,15 +131,5 @@ class AsyncJob extends SyncJob
     protected function parsePayload($payload)
     {
         return json_decode($payload, true);
-    }
-
-    /**
-     * Get the job identifier.
-     *
-     * @return string
-     */
-    public function getJobId()
-    {
-        return $this->job->id;
     }
 }

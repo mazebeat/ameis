@@ -11,12 +11,12 @@
 
 namespace Predis\Pipeline;
 
-use SplQueue;
 use Predis\BasicClientInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
-use Predis\ExecutableContextInterface;
 use Predis\Command\CommandInterface;
+use Predis\ExecutableContextInterface;
+use SplQueue;
 
 /**
  * Abstraction of a pipeline context where write and read operations
@@ -101,40 +101,6 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
     }
 
     /**
-     * Flushes the buffer that holds the queued commands.
-     *
-     * @param  bool            $send Specifies if the commands in the buffer should be sent to Redis.
-     * @return PipelineContext
-     */
-    public function flushPipeline($send = true)
-    {
-        if ($send && !$this->pipeline->isEmpty()) {
-            $connection = $this->client->getConnection();
-            $replies = $this->executor->execute($connection, $this->pipeline);
-            $this->replies = array_merge($this->replies, $replies);
-        } else {
-            $this->pipeline = new SplQueue();
-        }
-
-        return $this;
-    }
-
-    /**
-     * Marks the running status of the pipeline.
-     *
-     * @param bool $bool True if the pipeline is running.
-     *                   False if the pipeline is not running.
-     */
-    private function setRunning($bool)
-    {
-        if ($bool === true && $this->running === true) {
-            throw new ClientException("This pipeline is already opened");
-        }
-
-        $this->running = $bool;
-    }
-
-    /**
      * Handles the actual execution of the whole pipeline.
      *
      * @param  mixed $callable Optional callback for execution.
@@ -165,6 +131,40 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
         }
 
         return $this->replies;
+    }
+
+    /**
+     * Marks the running status of the pipeline.
+     *
+     * @param bool $bool True if the pipeline is running.
+     *                   False if the pipeline is not running.
+     */
+    private function setRunning($bool)
+    {
+        if ($bool === true && $this->running === true) {
+            throw new ClientException("This pipeline is already opened");
+        }
+
+        $this->running = $bool;
+    }
+
+    /**
+     * Flushes the buffer that holds the queued commands.
+     *
+     * @param  bool            $send Specifies if the commands in the buffer should be sent to Redis.
+     * @return PipelineContext
+     */
+    public function flushPipeline($send = true)
+    {
+        if ($send && !$this->pipeline->isEmpty()) {
+            $connection = $this->client->getConnection();
+            $replies = $this->executor->execute($connection, $this->pipeline);
+            $this->replies = array_merge($this->replies, $replies);
+        } else {
+            $this->pipeline = new SplQueue();
+        }
+
+        return $this;
     }
 
     /**

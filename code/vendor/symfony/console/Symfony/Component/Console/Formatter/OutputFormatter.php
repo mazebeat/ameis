@@ -25,18 +25,6 @@ class OutputFormatter implements OutputFormatterInterface
     private $styleStack;
 
     /**
-     * Escapes "<" special char in given text.
-     *
-     * @param string $text Text to escape
-     *
-     * @return string Escaped text
-     */
-    public static function escape($text)
-    {
-        return preg_replace('/([^\\\\]?)</is', '$1\\<', $text);
-    }
-
-    /**
      * Initializes console output formatter.
      *
      * @param bool                            $decorated Whether this formatter should actually decorate strings
@@ -61,74 +49,15 @@ class OutputFormatter implements OutputFormatterInterface
     }
 
     /**
-     * Sets the decorated flag.
+     * Escapes "<" special char in given text.
      *
-     * @param bool $decorated Whether to decorate the messages or not
+     * @param string $text Text to escape
      *
-     * @api
+     * @return string Escaped text
      */
-    public function setDecorated($decorated)
+    public static function escape($text)
     {
-        $this->decorated = (bool) $decorated;
-    }
-
-    /**
-     * Gets the decorated flag.
-     *
-     * @return bool true if the output will decorate messages, false otherwise
-     *
-     * @api
-     */
-    public function isDecorated()
-    {
-        return $this->decorated;
-    }
-
-    /**
-     * Sets a new style.
-     *
-     * @param string                        $name  The style name
-     * @param OutputFormatterStyleInterface $style The style instance
-     *
-     * @api
-     */
-    public function setStyle($name, OutputFormatterStyleInterface $style)
-    {
-        $this->styles[strtolower($name)] = $style;
-    }
-
-    /**
-     * Checks if output formatter has style with specified name.
-     *
-     * @param string $name
-     *
-     * @return bool
-     *
-     * @api
-     */
-    public function hasStyle($name)
-    {
-        return isset($this->styles[strtolower($name)]);
-    }
-
-    /**
-     * Gets style options from style with specified name.
-     *
-     * @param string $name
-     *
-     * @return OutputFormatterStyleInterface
-     *
-     * @throws \InvalidArgumentException When style isn't defined
-     *
-     * @api
-     */
-    public function getStyle($name)
-    {
-        if (!$this->hasStyle($name)) {
-            throw new \InvalidArgumentException(sprintf('Undefined style: %s', $name));
-        }
-
-        return $this->styles[strtolower($name)];
+        return preg_replace('/([^\\\\]?)</is', '$1\\<', $text);
     }
 
     /**
@@ -182,11 +111,86 @@ class OutputFormatter implements OutputFormatterInterface
     }
 
     /**
-     * @return OutputFormatterStyleStack
+     * Gets style options from style with specified name.
+     *
+     * @param string $name
+     *
+     * @return OutputFormatterStyleInterface
+     *
+     * @throws \InvalidArgumentException When style isn't defined
+     *
+     * @api
      */
-    public function getStyleStack()
+    public function getStyle($name)
     {
-        return $this->styleStack;
+        if (!$this->hasStyle($name)) {
+            throw new \InvalidArgumentException(sprintf('Undefined style: %s', $name));
+        }
+
+        return $this->styles[strtolower($name)];
+    }
+
+    /**
+     * Checks if output formatter has style with specified name.
+     *
+     * @param string $name
+     *
+     * @return bool
+     *
+     * @api
+     */
+    public function hasStyle($name)
+    {
+        return isset($this->styles[strtolower($name)]);
+    }
+
+    /**
+     * Gets the decorated flag.
+     *
+     * @return bool true if the output will decorate messages, false otherwise
+     *
+     * @api
+     */
+    public function isDecorated()
+    {
+        return $this->decorated;
+    }
+
+    /**
+     * Sets the decorated flag.
+     *
+     * @param bool $decorated Whether to decorate the messages or not
+     *
+     * @api
+     */
+    public function setDecorated($decorated)
+    {
+        $this->decorated = (bool) $decorated;
+    }
+
+    /**
+     * Sets a new style.
+     *
+     * @param string                        $name  The style name
+     * @param OutputFormatterStyleInterface $style The style instance
+     *
+     * @api
+     */
+    public function setStyle($name, OutputFormatterStyleInterface $style)
+    {
+        $this->styles[strtolower($name)] = $style;
+    }
+
+    /**
+     * Applies current style from stack to text, if must be applied.
+     *
+     * @param string $text Input text
+     *
+     * @return string Styled text
+     */
+    private function applyCurrentStyle($text)
+    {
+        return $this->isDecorated() && strlen($text) > 0 ? $this->styleStack->getCurrent()->apply($text) : $text;
     }
 
     /**
@@ -227,14 +231,10 @@ class OutputFormatter implements OutputFormatterInterface
     }
 
     /**
-     * Applies current style from stack to text, if must be applied.
-     *
-     * @param string $text Input text
-     *
-     * @return string Styled text
+     * @return OutputFormatterStyleStack
      */
-    private function applyCurrentStyle($text)
+    public function getStyleStack()
     {
-        return $this->isDecorated() && strlen($text) > 0 ? $this->styleStack->getCurrent()->apply($text) : $text;
+        return $this->styleStack;
     }
 }

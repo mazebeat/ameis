@@ -42,6 +42,39 @@ class Swift_Mime_Headers_DateHeader extends Swift_Mime_Headers_AbstractHeader
     }
 
     /**
+     * Get the string value of the body in this Header.
+     *
+     * This is not necessarily RFC 2822 compliant since folding white space will
+     * not be added at this stage (see {@link toString()} for that).
+     *
+     * @see toString()
+     *
+     * @return string
+     */
+	public function getFieldBody()
+	{
+		if (!$this->getCachedValue()) {
+			if (isset($this->_timestamp)) {
+				$this->setCachedValue(date('r', $this->_timestamp));
+			}
+		}
+
+		return $this->getCachedValue();
+	}
+
+	/**
+	 * Get the model for the field body.
+	 *
+	 * This method returns a UNIX timestamp.
+	 *
+	 * @return mixed
+	 */
+	public function getFieldBodyModel()
+	{
+		return $this->getTimestamp();
+	}
+
+	/**
      * Get the type of Header that this instance represents.
      *
      * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
@@ -67,18 +100,6 @@ class Swift_Mime_Headers_DateHeader extends Swift_Mime_Headers_AbstractHeader
     }
 
     /**
-     * Get the model for the field body.
-     *
-     * This method returns a UNIX timestamp.
-     *
-     * @return mixed
-     */
-    public function getFieldBodyModel()
-    {
-        return $this->getTimestamp();
-    }
-
-    /**
      * Get the UNIX timestamp of the Date in this Header.
      *
      * @return int
@@ -100,26 +121,5 @@ class Swift_Mime_Headers_DateHeader extends Swift_Mime_Headers_AbstractHeader
         }
         $this->clearCachedValueIf($this->_timestamp != $timestamp);
         $this->_timestamp = $timestamp;
-    }
-
-    /**
-     * Get the string value of the body in this Header.
-     *
-     * This is not necessarily RFC 2822 compliant since folding white space will
-     * not be added at this stage (see {@link toString()} for that).
-     *
-     * @see toString()
-     *
-     * @return string
-     */
-    public function getFieldBody()
-    {
-        if (!$this->getCachedValue()) {
-            if (isset($this->_timestamp)) {
-                $this->setCachedValue(date('r', $this->_timestamp));
-            }
-        }
-
-        return $this->getCachedValue();
     }
 }

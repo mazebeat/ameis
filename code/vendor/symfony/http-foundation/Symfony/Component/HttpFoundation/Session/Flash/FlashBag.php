@@ -49,27 +49,6 @@ class FlashBag implements FlashBagInterface, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function initialize(array &$flashes)
-    {
-        $this->flashes = &$flashes;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function add($type, $message)
     {
         $this->flashes[$type][] = $message;
@@ -78,17 +57,20 @@ class FlashBag implements FlashBagInterface, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function peek($type, array $default = array())
+    public function all()
     {
-        return $this->has($type) ? $this->flashes[$type] : $default;
+        $return = $this->peekAll();
+        $this->flashes = array();
+
+        return $return;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function peekAll()
+    public function clear()
     {
-        return $this->flashes;
+        return $this->all();
     }
 
     /**
@@ -110,12 +92,62 @@ class FlashBag implements FlashBagInterface, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function all()
+    public function getName()
     {
-        $return = $this->peekAll();
-        $this->flashes = array();
+        return $this->name;
+    }
 
-        return $return;
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStorageKey()
+    {
+        return $this->storageKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function has($type)
+    {
+        return array_key_exists($type, $this->flashes) && $this->flashes[$type];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function initialize(array &$flashes)
+    {
+        $this->flashes = &$flashes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function keys()
+    {
+        return array_keys($this->flashes);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function peek($type, array $default = array())
+    {
+        return $this->has($type) ? $this->flashes[$type] : $default;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function peekAll()
+    {
+        return $this->flashes;
     }
 
     /**
@@ -132,38 +164,6 @@ class FlashBag implements FlashBagInterface, \IteratorAggregate
     public function setAll(array $messages)
     {
         $this->flashes = $messages;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function has($type)
-    {
-        return array_key_exists($type, $this->flashes) && $this->flashes[$type];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function keys()
-    {
-        return array_keys($this->flashes);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStorageKey()
-    {
-        return $this->storageKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clear()
-    {
-        return $this->all();
     }
 
     /**

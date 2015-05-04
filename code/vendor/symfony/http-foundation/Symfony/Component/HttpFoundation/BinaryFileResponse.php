@@ -11,8 +11,8 @@
 
 namespace Symfony\Component\HttpFoundation;
 
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * BinaryFileResponse represents an HTTP response delivering a file.
@@ -70,97 +70,13 @@ class BinaryFileResponse extends Response
     }
 
     /**
-     * Sets the file to stream.
+     * {@inheritdoc}
      *
-     * @param \SplFileInfo|string $file               The file to stream
-     * @param string              $contentDisposition
-     * @param bool                $autoEtag
-     * @param bool                $autoLastModified
-     *
-     * @return BinaryFileResponse
-     *
-     * @throws FileException
+     * @return false
      */
-    public function setFile($file, $contentDisposition = null, $autoEtag = false, $autoLastModified = true)
+    public function getContent()
     {
-        if (!$file instanceof File) {
-            if ($file instanceof \SplFileInfo) {
-                $file = new File($file->getPathname());
-            } else {
-                $file = new File((string) $file);
-            }
-        }
-
-        if (!$file->isReadable()) {
-            throw new FileException('File must be readable.');
-        }
-
-        $this->file = $file;
-
-        if ($autoEtag) {
-            $this->setAutoEtag();
-        }
-
-        if ($autoLastModified) {
-            $this->setAutoLastModified();
-        }
-
-        if ($contentDisposition) {
-            $this->setContentDisposition($contentDisposition);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Gets the file.
-     *
-     * @return File The file to stream
-     */
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    /**
-     * Automatically sets the Last-Modified header according the file modification date.
-     */
-    public function setAutoLastModified()
-    {
-        $this->setLastModified(\DateTime::createFromFormat('U', $this->file->getMTime()));
-
-        return $this;
-    }
-
-    /**
-     * Automatically sets the ETag header according to the checksum of the file.
-     */
-    public function setAutoEtag()
-    {
-        $this->setEtag(sha1_file($this->file->getPathname()));
-
-        return $this;
-    }
-
-    /**
-     * Sets the Content-Disposition header with the given filename.
-     *
-     * @param string $disposition      ResponseHeaderBag::DISPOSITION_INLINE or ResponseHeaderBag::DISPOSITION_ATTACHMENT
-     * @param string $filename         Optionally use this filename instead of the real name of the file
-     * @param string $filenameFallback A fallback filename, containing only ASCII characters. Defaults to an automatically encoded filename
-     *
-     * @return BinaryFileResponse
-     */
-    public function setContentDisposition($disposition, $filename = '', $filenameFallback = '')
-    {
-        if ($filename === '') {
-            $filename = $this->file->getFilename();
-        }
-
-        $dispositionHeader = $this->headers->makeDisposition($disposition, $filename, $filenameFallback);
-        $this->headers->set('Content-Disposition', $dispositionHeader);
-
-        return $this;
+        return false;
     }
 
     /**
@@ -282,20 +198,104 @@ class BinaryFileResponse extends Response
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @return false
-     */
-    public function getContent()
-    {
-        return false;
-    }
-
-    /**
      * Trust X-Sendfile-Type header.
      */
     public static function trustXSendfileTypeHeader()
     {
         self::$trustXSendfileTypeHeader = true;
+    }
+
+    /**
+     * Gets the file.
+     *
+     * @return File The file to stream
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * Sets the file to stream.
+     *
+     * @param \SplFileInfo|string $file               The file to stream
+     * @param string              $contentDisposition
+     * @param bool                $autoEtag
+     * @param bool                $autoLastModified
+     *
+     * @return BinaryFileResponse
+     *
+     * @throws FileException
+     */
+    public function setFile($file, $contentDisposition = null, $autoEtag = false, $autoLastModified = true)
+    {
+        if (!$file instanceof File) {
+            if ($file instanceof \SplFileInfo) {
+                $file = new File($file->getPathname());
+            } else {
+                $file = new File((string) $file);
+            }
+        }
+
+        if (!$file->isReadable()) {
+            throw new FileException('File must be readable.');
+        }
+
+        $this->file = $file;
+
+        if ($autoEtag) {
+            $this->setAutoEtag();
+        }
+
+        if ($autoLastModified) {
+            $this->setAutoLastModified();
+        }
+
+        if ($contentDisposition) {
+            $this->setContentDisposition($contentDisposition);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Automatically sets the Last-Modified header according the file modification date.
+     */
+    public function setAutoLastModified()
+    {
+        $this->setLastModified(\DateTime::createFromFormat('U', $this->file->getMTime()));
+
+        return $this;
+    }
+
+    /**
+     * Automatically sets the ETag header according to the checksum of the file.
+     */
+    public function setAutoEtag()
+    {
+        $this->setEtag(sha1_file($this->file->getPathname()));
+
+        return $this;
+    }
+
+    /**
+     * Sets the Content-Disposition header with the given filename.
+     *
+     * @param string $disposition      ResponseHeaderBag::DISPOSITION_INLINE or ResponseHeaderBag::DISPOSITION_ATTACHMENT
+     * @param string $filename         Optionally use this filename instead of the real name of the file
+     * @param string $filenameFallback A fallback filename, containing only ASCII characters. Defaults to an automatically encoded filename
+     *
+     * @return BinaryFileResponse
+     */
+    public function setContentDisposition($disposition, $filename = '', $filenameFallback = '')
+    {
+        if ($filename === '') {
+            $filename = $this->file->getFilename();
+        }
+
+        $dispositionHeader = $this->headers->makeDisposition($disposition, $filename, $filenameFallback);
+        $this->headers->set('Content-Disposition', $dispositionHeader);
+
+        return $this;
     }
 }

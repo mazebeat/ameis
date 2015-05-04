@@ -53,41 +53,43 @@ class ArrayCollection implements Collection, Selectable
     /**
      * {@inheritDoc}
      */
-    public function toArray()
+    public function add($value)
     {
-        return $this->elements;
+        $this->elements[] = $value;
+
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function first()
+    public function clear()
     {
-        return reset($this->elements);
+        $this->elements = array();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function last()
+    public function contains($element)
     {
-        return end($this->elements);
+        return in_array($element, $this->elements, true);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function key()
+    public function containsKey($key)
     {
-        return key($this->elements);
+        return isset($this->elements[$key]) || array_key_exists($key, $this->elements);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function next()
+    public function count()
     {
-        return next($this->elements);
+        return count($this->elements);
     }
 
     /**
@@ -101,32 +103,127 @@ class ArrayCollection implements Collection, Selectable
     /**
      * {@inheritDoc}
      */
-    public function remove($key)
+    public function exists(Closure $p)
     {
-        if ( ! isset($this->elements[$key]) && ! array_key_exists($key, $this->elements)) {
-            return null;
+        foreach ($this->elements as $key => $element) {
+            if ($p($key, $element)) {
+                return true;
+            }
         }
 
-        $removed = $this->elements[$key];
-        unset($this->elements[$key]);
-
-        return $removed;
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function removeElement($element)
+    public function filter(Closure $p)
     {
-        $key = array_search($element, $this->elements, true);
+        return new static(array_filter($this->elements, $p));
+    }
 
-        if ($key === false) {
-            return false;
+    /**
+     * {@inheritDoc}
+     */
+    public function first()
+    {
+        return reset($this->elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function forAll(Closure $p)
+    {
+        foreach ($this->elements as $key => $element) {
+            if ( ! $p($key, $element)) {
+                return false;
+            }
         }
 
-        unset($this->elements[$key]);
-
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function get($key)
+    {
+        return isset($this->elements[$key]) ? $this->elements[$key] : null;
+    }
+
+    /**
+     * Required by interface IteratorAggregate.
+     *
+     * {@inheritDoc}
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getKeys()
+    {
+        return array_keys($this->elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getValues()
+    {
+        return array_values($this->elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function indexOf($element)
+    {
+        return array_search($element, $this->elements, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isEmpty()
+    {
+        return empty($this->elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function key()
+    {
+        return key($this->elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function last()
+    {
+        return end($this->elements);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function map(Closure $func)
+    {
+        return new static(array_map($func, $this->elements));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function next()
+    {
+        return next($this->elements);
     }
 
     /**
@@ -176,142 +273,6 @@ class ArrayCollection implements Collection, Selectable
     /**
      * {@inheritDoc}
      */
-    public function containsKey($key)
-    {
-        return isset($this->elements[$key]) || array_key_exists($key, $this->elements);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function contains($element)
-    {
-        return in_array($element, $this->elements, true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function exists(Closure $p)
-    {
-        foreach ($this->elements as $key => $element) {
-            if ($p($key, $element)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function indexOf($element)
-    {
-        return array_search($element, $this->elements, true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function get($key)
-    {
-        return isset($this->elements[$key]) ? $this->elements[$key] : null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getKeys()
-    {
-        return array_keys($this->elements);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getValues()
-    {
-        return array_values($this->elements);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function count()
-    {
-        return count($this->elements);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function set($key, $value)
-    {
-        $this->elements[$key] = $value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function add($value)
-    {
-        $this->elements[] = $value;
-
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isEmpty()
-    {
-        return empty($this->elements);
-    }
-
-    /**
-     * Required by interface IteratorAggregate.
-     *
-     * {@inheritDoc}
-     */
-    public function getIterator()
-    {
-        return new ArrayIterator($this->elements);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function map(Closure $func)
-    {
-        return new static(array_map($func, $this->elements));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function filter(Closure $p)
-    {
-        return new static(array_filter($this->elements, $p));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function forAll(Closure $p)
-    {
-        foreach ($this->elements as $key => $element) {
-            if ( ! $p($key, $element)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function partition(Closure $p)
     {
         $matches = $noMatches = array();
@@ -328,21 +289,42 @@ class ArrayCollection implements Collection, Selectable
     }
 
     /**
-     * Returns a string representation of this object.
-     *
-     * @return string
+     * {@inheritDoc}
      */
-    public function __toString()
+    public function remove($key)
     {
-        return __CLASS__ . '@' . spl_object_hash($this);
+        if ( ! isset($this->elements[$key]) && ! array_key_exists($key, $this->elements)) {
+            return null;
+        }
+
+        $removed = $this->elements[$key];
+        unset($this->elements[$key]);
+
+        return $removed;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function clear()
+    public function removeElement($element)
     {
-        $this->elements = array();
+        $key = array_search($element, $this->elements, true);
+
+        if ($key === false) {
+            return false;
+        }
+
+        unset($this->elements[$key]);
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function set($key, $value)
+    {
+        $this->elements[$key] = $value;
     }
 
     /**
@@ -351,6 +333,24 @@ class ArrayCollection implements Collection, Selectable
     public function slice($offset, $length = null)
     {
         return array_slice($this->elements, $offset, $length, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function toArray()
+    {
+        return $this->elements;
+    }
+
+    /**
+     * Returns a string representation of this object.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return __CLASS__ . '@' . spl_object_hash($this);
     }
 
     /**
@@ -372,7 +372,7 @@ class ArrayCollection implements Collection, Selectable
                 $next = ClosureExpressionVisitor::sortByField($field, $ordering == Criteria::DESC ? -1 : 1);
             }
 
-            usort($filtered, $next);
+            uasort($filtered, $next);
         }
 
         $offset = $criteria->getFirstResult();

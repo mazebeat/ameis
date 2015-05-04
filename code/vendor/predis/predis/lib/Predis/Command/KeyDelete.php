@@ -20,9 +20,9 @@ class KeyDelete extends AbstractCommand implements PrefixableCommandInterface
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'DEL';
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**
@@ -36,8 +36,8 @@ class KeyDelete extends AbstractCommand implements PrefixableCommandInterface
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function getId()
     {
-        PrefixHelpers::all($this, $prefix);
+        return 'DEL';
     }
 }

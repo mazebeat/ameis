@@ -20,14 +20,6 @@ class HashScan extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return 'HSCAN';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 3 && is_array($arguments[2])) {
@@ -36,6 +28,34 @@ class HashScan extends PrefixableCommand
         }
 
         return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HSCAN';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (is_array($data)) {
+            $data[0] = (int) $data[0];
+            $fields = $data[1];
+            $result = array();
+
+            for ($i = 0; $i < count($fields); $i++) {
+                $result[$fields[$i]] = $fields[++$i];
+            }
+
+            $data[1] = $result;
+        }
+
+        return $data;
     }
 
     /**
@@ -60,25 +80,5 @@ class HashScan extends PrefixableCommand
         }
 
         return $normalized;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        if (is_array($data)) {
-            $data[0] = (int) $data[0];
-            $fields = $data[1];
-            $result = array();
-
-            for ($i = 0; $i < count($fields); $i++) {
-                $result[$fields[$i]] = $fields[++$i];
-            }
-
-            $data[1] = $result;
-        }
-
-        return $data;
     }
 }

@@ -140,32 +140,6 @@ class Swift_Plugins_DecoratorPlugin implements Swift_Events_SendListener, Swift_
     }
 
     /**
-     * Find a map of replacements for the address.
-     *
-     * If this plugin was provided with a delegate instance of
-     * {@link Swift_Plugins_Decorator_Replacements} then the call will be
-     * delegated to it.  Otherwise, it will attempt to find the replacements
-     * from the array provided in the constructor.
-     *
-     * If no replacements can be found, an empty value (NULL) is returned.
-     *
-     * @param string $address
-     *
-     * @return array
-     */
-    public function getReplacementsFor($address)
-    {
-        if ($this->_replacements instanceof Swift_Plugins_Decorator_Replacements) {
-            return $this->_replacements->getReplacementsFor($address);
-        } else {
-            return isset($this->_replacements[$address])
-                ? $this->_replacements[$address]
-                : null
-                ;
-        }
-    }
-
-    /**
      * Invoked immediately after the Message is sent.
      *
      * @param Swift_Events_SendEvent $evt
@@ -202,6 +176,32 @@ class Swift_Plugins_DecoratorPlugin implements Swift_Events_SendListener, Swift_
                 $this->_originalChildBodies = array();
             }
             $this->_lastMessage = null;
+        }
+    }
+
+    /**
+     * Find a map of replacements for the address.
+     *
+     * If this plugin was provided with a delegate instance of
+     * {@link Swift_Plugins_Decorator_Replacements} then the call will be
+     * delegated to it.  Otherwise, it will attempt to find the replacements
+     * from the array provided in the constructor.
+     *
+     * If no replacements can be found, an empty value (NULL) is returned.
+     *
+     * @param string $address
+     *
+     * @return array
+     */
+    public function getReplacementsFor($address)
+    {
+        if ($this->_replacements instanceof Swift_Plugins_Decorator_Replacements) {
+            return $this->_replacements->getReplacementsFor($address);
+        } else {
+            return isset($this->_replacements[$address])
+                ? $this->_replacements[$address]
+                : null
+                ;
         }
     }
 }

@@ -41,21 +41,6 @@ class NamespacedAttributeBag extends AttributeBag
     /**
      * {@inheritdoc}
      */
-    public function has($name)
-    {
-        $attributes = $this->resolveAttributePath($name);
-        $name = $this->resolveKey($name);
-
-        if (null === $attributes) {
-            return false;
-        }
-
-        return array_key_exists($name, $attributes);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function get($name, $default = null)
     {
         $attributes = $this->resolveAttributePath($name);
@@ -71,11 +56,16 @@ class NamespacedAttributeBag extends AttributeBag
     /**
      * {@inheritdoc}
      */
-    public function set($name, $value)
+    public function has($name)
     {
-        $attributes = & $this->resolveAttributePath($name, true);
+        $attributes = $this->resolveAttributePath($name);
         $name = $this->resolveKey($name);
-        $attributes[$name] = $value;
+
+        if (null === $attributes) {
+            return false;
+        }
+
+        return array_key_exists($name, $attributes);
     }
 
     /**
@@ -92,6 +82,16 @@ class NamespacedAttributeBag extends AttributeBag
         }
 
         return $retval;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function set($name, $value)
+    {
+        $attributes = & $this->resolveAttributePath($name, true);
+        $name = $this->resolveKey($name);
+        $attributes[$name] = $value;
     }
 
     /**

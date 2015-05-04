@@ -13,10 +13,10 @@ namespace Symfony\Component\Console\Command;
 
 use Symfony\Component\Console\Helper\DescriptorHelper;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * ListCommand displays the list of all available commands for the application.
@@ -58,14 +58,6 @@ EOF
     /**
      * {@inheritdoc}
      */
-    public function getNativeDefinition()
-    {
-        return $this->createDefinition();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('xml')) {
@@ -78,6 +70,14 @@ EOF
             'raw_text' => $input->getOption('raw'),
             'namespace' => $input->getArgument('namespace'),
         ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNativeDefinition()
+    {
+        return $this->createDefinition();
     }
 
     /**

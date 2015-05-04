@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\Security\Core;
 
-use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
-use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 
 /**
  * SecurityContext is the main entry point of the Security component.
@@ -47,6 +47,22 @@ class SecurityContext implements SecurityContextInterface
 
     /**
      * {@inheritdoc}
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setToken(TokenInterface $token = null)
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * @throws AuthenticationCredentialsNotFoundException when the security context has no authentication token.
      */
@@ -65,21 +81,5 @@ class SecurityContext implements SecurityContextInterface
         }
 
         return $this->accessDecisionManager->decide($this->token, $attributes, $object);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getToken()
-    {
-        return $this->token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setToken(TokenInterface $token = null)
-    {
-        $this->token = $token;
     }
 }

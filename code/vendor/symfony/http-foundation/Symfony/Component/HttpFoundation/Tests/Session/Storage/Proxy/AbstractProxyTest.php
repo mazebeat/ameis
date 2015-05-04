@@ -21,19 +21,7 @@ class ConcreteProxy extends AbstractProxy
 
 class ConcreteSessionHandlerInterfaceProxy extends AbstractProxy implements \SessionHandlerInterface
 {
-    public function open($savePath, $sessionName)
-    {
-    }
-
     public function close()
-    {
-    }
-
-    public function read($id)
-    {
-    }
-
-    public function write($id, $data)
     {
     }
 
@@ -42,6 +30,18 @@ class ConcreteSessionHandlerInterfaceProxy extends AbstractProxy implements \Ses
     }
 
     public function gc($maxlifetime)
+    {
+    }
+
+    public function open($savePath, $sessionName)
+    {
+    }
+
+    public function read($id)
+    {
+    }
+
+    public function write($id, $data)
     {
     }
 }
@@ -57,16 +57,6 @@ class AbstractProxyTest extends \PHPUnit_Framework_TestCase
      * @var AbstractProxy
      */
     protected $proxy;
-
-    protected function setUp()
-    {
-        $this->proxy = new ConcreteProxy();
-    }
-
-    protected function tearDown()
-    {
-        $this->proxy = null;
-    }
 
     public function testGetSaveHandlerName()
     {
@@ -213,5 +203,15 @@ class AbstractProxyTest extends \PHPUnit_Framework_TestCase
 
         session_start();
         $this->proxy->setId('foo');
+    }
+
+    protected function setUp()
+    {
+        $this->proxy = new ConcreteProxy();
+    }
+
+    protected function tearDown()
+    {
+        $this->proxy = null;
     }
 }

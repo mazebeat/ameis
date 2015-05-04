@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\Finder\Adapter;
 
-use Symfony\Component\Finder\Shell\Shell;
-use Symfony\Component\Finder\Shell\Command;
-use Symfony\Component\Finder\Iterator\SortableIterator;
 use Symfony\Component\Finder\Expression\Expression;
+use Symfony\Component\Finder\Iterator\SortableIterator;
+use Symfony\Component\Finder\Shell\Command;
+use Symfony\Component\Finder\Shell\Shell;
 
 /**
  * Shell engine implementation using GNU find command.
@@ -26,9 +26,28 @@ class GnuFindAdapter extends AbstractFindAdapter
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    protected function buildContentFiltering(Command $command, array $contains, $not = false)
     {
-        return 'gnu_find';
+        foreach ($contains as $contain) {
+            $expr = Expression::create($contain);
+
+            // todo: avoid forking process for each $pattern by using multiple -e options
+            $command
+                ->add('| xargs -I{} -r grep -I')
+                ->add($expr->isCaseSensitive() ? null : '-i')
+                ->add($not ? '-L' : '-l')
+                ->add('-Ee')->arg($expr->renderPattern())
+                ->add('{}')
+            ;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function buildFindCommand(Command $command, $dir)
+    {
+        return parent::buildFindCommand($command, $dir)->add('-regextype posix-extended');
     }
 
     /**
@@ -78,27 +97,8 @@ class GnuFindAdapter extends AbstractFindAdapter
     /**
      * {@inheritdoc}
      */
-    protected function buildFindCommand(Command $command, $dir)
+    public function getName()
     {
-        return parent::buildFindCommand($command, $dir)->add('-regextype posix-extended');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function buildContentFiltering(Command $command, array $contains, $not = false)
-    {
-        foreach ($contains as $contain) {
-            $expr = Expression::create($contain);
-
-            // todo: avoid forking process for each $pattern by using multiple -e options
-            $command
-                ->add('| xargs -I{} -r grep -I')
-                ->add($expr->isCaseSensitive() ? null : '-i')
-                ->add($not ? '-L' : '-l')
-                ->add('-Ee')->arg($expr->renderPattern())
-                ->add('{}')
-            ;
-        }
+        return 'gnu_find';
     }
 }

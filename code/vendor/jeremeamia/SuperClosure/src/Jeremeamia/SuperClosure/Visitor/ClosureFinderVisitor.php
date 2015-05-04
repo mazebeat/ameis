@@ -35,14 +35,14 @@ class ClosureFinderVisitor extends \PHPParser_NodeVisitorAbstract
         $this->location = new ClosureLocation;
     }
 
-    public function beforeTraverse(array $nodes)
-    {
-        $this->location = ClosureLocation::fromReflection($this->reflection);
-    }
-
     public function afterTraverse(array $nodes)
     {
         $this->location->finalize();
+    }
+
+    public function beforeTraverse(array $nodes)
+    {
+        $this->location = ClosureLocation::fromReflection($this->reflection);
     }
 
     public function enterNode(\PHPParser_Node $node)

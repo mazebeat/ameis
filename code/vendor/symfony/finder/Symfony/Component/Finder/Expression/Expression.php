@@ -26,16 +26,6 @@ class Expression implements ValueInterface
 
     /**
      * @param string $expr
-     *
-     * @return Expression
-     */
-    public static function create($expr)
-    {
-        return new self($expr);
-    }
-
-    /**
-     * @param string $expr
      */
     public function __construct($expr)
     {
@@ -47,11 +37,57 @@ class Expression implements ValueInterface
     }
 
     /**
+     * @param string $expr
+     *
+     * @return Expression
+     */
+    public static function create($expr)
+    {
+        return new self($expr);
+    }
+
+    /**
      * @return string
      */
     public function __toString()
     {
         return $this->render();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function append($expr)
+    {
+        $this->value->append($expr);
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->value->getType();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCaseSensitive()
+    {
+        return $this->value->isCaseSensitive();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prepend($expr)
+    {
+        $this->value->prepend($expr);
+
+        return $this;
     }
 
     /**
@@ -68,42 +104,6 @@ class Expression implements ValueInterface
     public function renderPattern()
     {
         return $this->value->renderPattern();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isCaseSensitive()
-    {
-        return $this->value->isCaseSensitive();
-    }
-
-    /**
-     * @return int
-     */
-    public function getType()
-    {
-        return $this->value->getType();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prepend($expr)
-    {
-        $this->value->prepend($expr);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function append($expr)
-    {
-        $this->value->append($expr);
-
-        return $this;
     }
 
     /**

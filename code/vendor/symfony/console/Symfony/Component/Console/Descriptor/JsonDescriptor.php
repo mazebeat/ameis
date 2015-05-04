@@ -27,38 +27,6 @@ class JsonDescriptor extends Descriptor
     /**
      * {@inheritdoc}
      */
-    protected function describeInputArgument(InputArgument $argument, array $options = array())
-    {
-        $this->writeData($this->getInputArgumentData($argument), $options);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function describeInputOption(InputOption $option, array $options = array())
-    {
-        $this->writeData($this->getInputOptionData($option), $options);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function describeInputDefinition(InputDefinition $definition, array $options = array())
-    {
-        $this->writeData($this->getInputDefinitionData($definition), $options);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function describeCommand(Command $command, array $options = array())
-    {
-        $this->writeData($this->getCommandData($command), $options);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function describeApplication(Application $application, array $options = array())
     {
         $describedNamespace = isset($options['namespace']) ? $options['namespace'] : null;
@@ -74,6 +42,38 @@ class JsonDescriptor extends Descriptor
             : array('commands' => $commands, 'namespaces' => array_values($description->getNamespaces()));
 
         $this->writeData($data, $options);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function describeCommand(Command $command, array $options = array())
+    {
+        $this->writeData($this->getCommandData($command), $options);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function describeInputArgument(InputArgument $argument, array $options = array())
+    {
+        $this->writeData($this->getInputArgumentData($argument), $options);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function describeInputDefinition(InputDefinition $definition, array $options = array())
+    {
+        $this->writeData($this->getInputDefinitionData($definition), $options);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function describeInputOption(InputOption $option, array $options = array())
+    {
+        $this->writeData($this->getInputOptionData($option), $options);
     }
 
     /**

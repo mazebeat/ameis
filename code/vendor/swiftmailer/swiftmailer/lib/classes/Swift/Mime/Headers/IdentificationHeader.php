@@ -37,57 +37,6 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
     }
 
     /**
-     * Get the type of Header that this instance represents.
-     *
-     * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
-     * @see TYPE_DATE, TYPE_ID, TYPE_PATH
-     *
-     * @return int
-     */
-    public function getFieldType()
-    {
-        return self::TYPE_ID;
-    }
-
-    /**
-     * Set the model for the field body.
-     *
-     * This method takes a string ID, or an array of IDs.
-     *
-     * @param mixed $model
-     *
-     * @throws Swift_RfcComplianceException
-     */
-    public function setFieldBodyModel($model)
-    {
-        $this->setId($model);
-    }
-
-    /**
-     * Get the model for the field body.
-     *
-     * This method returns an array of IDs
-     *
-     * @return array
-     */
-    public function getFieldBodyModel()
-    {
-        return $this->getIds();
-    }
-
-    /**
-     * Set the ID used in the value of this header.
-     *
-     * @param string|array $id
-     *
-     * @throws Swift_RfcComplianceException
-     */
-    public function setId($id)
-    {
-        $this->setIds(is_array($id) ? $id : array($id));
-    }
-
-    /**
      * Get the ID used in the value of this Header.
      *
      * If multiple IDs are set only the first is returned.
@@ -99,36 +48,6 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
         if (count($this->_ids) > 0) {
             return $this->_ids[0];
         }
-    }
-
-    /**
-     * Set a collection of IDs to use in the value of this Header.
-     *
-     * @param string[] $ids
-     *
-     * @throws Swift_RfcComplianceException
-     */
-    public function setIds(array $ids)
-    {
-        $actualIds = array();
-
-        foreach ($ids as $id) {
-            $this->_assertValidId($id);
-            $actualIds[] = $id;
-        }
-
-        $this->clearCachedValueIf($this->_ids != $actualIds);
-        $this->_ids = $actualIds;
-    }
-
-    /**
-     * Get the list of IDs used in this Header.
-     *
-     * @return string[]
-     */
-    public function getIds()
-    {
-        return $this->_ids;
     }
 
     /**
@@ -156,6 +75,87 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
         }
 
         return $this->getCachedValue();
+    }
+
+    /**
+     * Get the model for the field body.
+     *
+     * This method returns an array of IDs
+     *
+     * @return array
+     */
+    public function getFieldBodyModel()
+    {
+        return $this->getIds();
+    }
+
+    /**
+     * Get the type of Header that this instance represents.
+     *
+     * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
+     * @see TYPE_DATE, TYPE_ID, TYPE_PATH
+     *
+     * @return int
+     */
+    public function getFieldType()
+    {
+        return self::TYPE_ID;
+    }
+
+    /**
+     * Set the model for the field body.
+     *
+     * This method takes a string ID, or an array of IDs.
+     *
+     * @param mixed $model
+     *
+     * @throws Swift_RfcComplianceException
+     */
+    public function setFieldBodyModel($model)
+    {
+        $this->setId($model);
+    }
+
+    /**
+     * Set the ID used in the value of this header.
+     *
+     * @param string|array $id
+     *
+     * @throws Swift_RfcComplianceException
+     */
+    public function setId($id)
+    {
+        $this->setIds(is_array($id) ? $id : array($id));
+    }
+
+    /**
+     * Get the list of IDs used in this Header.
+     *
+     * @return string[]
+     */
+    public function getIds()
+    {
+        return $this->_ids;
+    }
+
+    /**
+     * Set a collection of IDs to use in the value of this Header.
+     *
+     * @param string[] $ids
+     *
+     * @throws Swift_RfcComplianceException
+     */
+    public function setIds(array $ids)
+    {
+        $actualIds = array();
+
+        foreach ($ids as $id) {
+            $this->_assertValidId($id);
+            $actualIds[] = $id;
+        }
+
+        $this->clearCachedValueIf($this->_ids != $actualIds);
+        $this->_ids = $actualIds;
     }
 
     /**

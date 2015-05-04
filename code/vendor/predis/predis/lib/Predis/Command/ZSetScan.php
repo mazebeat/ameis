@@ -20,14 +20,6 @@ class ZSetScan extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return 'ZSCAN';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 3 && is_array($arguments[2])) {
@@ -36,6 +28,35 @@ class ZSetScan extends PrefixableCommand
         }
 
         return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZSCAN';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (is_array($data)) {
+            $data[0] = (int) $data[0];
+
+            $members = $data[1];
+            $result = array();
+
+            for ($i = 0; $i < count($members); $i++) {
+                $result[] = array($members[$i], (float) $members[++$i]);
+            }
+
+            $data[1] = $result;
+        }
+
+        return $data;
     }
 
     /**
@@ -60,26 +81,5 @@ class ZSetScan extends PrefixableCommand
         }
 
         return $normalized;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        if (is_array($data)) {
-            $data[0] = (int) $data[0];
-
-            $members = $data[1];
-            $result = array();
-
-            for ($i = 0; $i < count($members); $i++) {
-                $result[] = array($members[$i], (float) $members[++$i]);
-            }
-
-            $data[1] = $result;
-        }
-
-        return $data;
     }
 }

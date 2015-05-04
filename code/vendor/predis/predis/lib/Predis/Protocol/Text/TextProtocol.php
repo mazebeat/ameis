@@ -11,14 +11,14 @@
 
 namespace Predis\Protocol\Text;
 
-use Predis\CommunicationException;
-use Predis\ResponseError;
-use Predis\ResponseQueued;
 use Predis\Command\CommandInterface;
+use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Iterator\MultiBulkResponseSimple;
 use Predis\Protocol\ProtocolException;
 use Predis\Protocol\ProtocolInterface;
+use Predis\ResponseError;
+use Predis\ResponseQueued;
 
 /**
  * Implements a protocol processor for the standard wire protocol defined by Redis.
@@ -52,14 +52,6 @@ class TextProtocol implements ProtocolInterface
     {
         $this->mbiterable = false;
         $this->serializer = new TextCommandSerializer();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function write(ComposableConnectionInterface $connection, CommandInterface $command)
-    {
-        $connection->writeBytes($this->serializer->serialize($command));
     }
 
     /**
@@ -133,5 +125,13 @@ class TextProtocol implements ProtocolInterface
                 $this->mbiterable = (bool) $value;
                 break;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function write(ComposableConnectionInterface $connection, CommandInterface $command)
+    {
+        $connection->writeBytes($this->serializer->serialize($command));
     }
 }

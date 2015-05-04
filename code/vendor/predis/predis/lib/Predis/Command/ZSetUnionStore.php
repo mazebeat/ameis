@@ -20,14 +20,6 @@ class ZSetUnionStore extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return 'ZUNIONSTORE';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function filterArguments(Array $arguments)
     {
         $options = array();
@@ -45,6 +37,31 @@ class ZSetUnionStore extends PrefixableCommand
         }
 
         return array_merge($arguments, $options);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZUNIONSTORE';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prefixKeys($prefix)
+    {
+        if ($arguments = $this->getArguments()) {
+            $arguments[0] = "$prefix{$arguments[0]}";
+            $length = ((int) $arguments[1]) + 2;
+
+            for ($i = 2; $i < $length; $i++) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
+
+            $this->setRawArguments($arguments);
+        }
     }
 
     /**
@@ -72,22 +89,5 @@ class ZSetUnionStore extends PrefixableCommand
         }
 
         return $finalizedOpts;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prefixKeys($prefix)
-    {
-        if ($arguments = $this->getArguments()) {
-            $arguments[0] = "$prefix{$arguments[0]}";
-            $length = ((int) $arguments[1]) + 2;
-
-            for ($i = 2; $i < $length; $i++) {
-                $arguments[$i] = "$prefix{$arguments[$i]}";
-            }
-
-            $this->setRawArguments($arguments);
-        }
     }
 }

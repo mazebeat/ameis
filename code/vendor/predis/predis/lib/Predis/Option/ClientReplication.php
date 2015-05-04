@@ -22,21 +22,6 @@ use Predis\Connection\ReplicationConnectionInterface;
 class ClientReplication extends AbstractOption
 {
     /**
-     * Checks if the specified value is a valid instance of ReplicationConnectionInterface.
-     *
-     * @param  ReplicationConnectionInterface $connection Instance of a replication connection.
-     * @return ReplicationConnectionInterface
-     */
-    protected function checkInstance($connection)
-    {
-        if (!$connection instanceof ReplicationConnectionInterface) {
-            throw new \InvalidArgumentException('Instance of Predis\Connection\ReplicationConnectionInterface expected');
-        }
-
-        return $connection;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function filter(ClientOptionsInterface $options, $value)
@@ -74,5 +59,21 @@ class ClientReplication extends AbstractOption
     public function getDefault(ClientOptionsInterface $options)
     {
         return new MasterSlaveReplication();
+    }
+
+	/**
+	 * Checks if the specified value is a valid instance of ReplicationConnectionInterface.
+	 *
+	 * @param  ReplicationConnectionInterface $connection Instance of a replication connection.
+	 *
+	 * @return ReplicationConnectionInterface
+	 */
+	protected function checkInstance($connection)
+	{
+		if (!$connection instanceof ReplicationConnectionInterface) {
+			throw new \InvalidArgumentException('Instance of Predis\Connection\ReplicationConnectionInterface expected');
+		}
+
+		return $connection;
     }
 }

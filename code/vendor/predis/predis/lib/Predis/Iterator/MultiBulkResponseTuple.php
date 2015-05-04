@@ -54,6 +54,20 @@ class MultiBulkResponseTuple extends MultiBulkResponse implements \OuterIterator
     /**
      * {@inheritdoc}
      */
+    protected function getValue()
+    {
+        $k = $this->iterator->current();
+        $this->iterator->next();
+
+        $v = $this->iterator->current();
+        $this->iterator->next();
+
+        return array($k, $v);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getInnerIterator()
     {
         return $this->iterator;
@@ -65,19 +79,5 @@ class MultiBulkResponseTuple extends MultiBulkResponse implements \OuterIterator
     public function __destruct()
     {
         $this->iterator->sync(true);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getValue()
-    {
-        $k = $this->iterator->current();
-        $this->iterator->next();
-
-        $v = $this->iterator->current();
-        $this->iterator->next();
-
-        return array($k, $v);
     }
 }

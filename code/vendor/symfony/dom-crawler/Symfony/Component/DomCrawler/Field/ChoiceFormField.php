@@ -55,151 +55,6 @@ class ChoiceFormField extends FormField
     }
 
     /**
-     * Check if the current selected option is disabled.
-     *
-     * @return bool
-     */
-    public function isDisabled()
-    {
-        foreach ($this->options as $option) {
-            if ($option['value'] == $this->value && $option['disabled']) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Sets the value of the field.
-     *
-     * @param string $value The value of the field
-     *
-     * @api
-     */
-    public function select($value)
-    {
-        $this->setValue($value);
-    }
-
-    /**
-     * Ticks a checkbox.
-     *
-     * @throws \LogicException When the type provided is not correct
-     *
-     * @api
-     */
-    public function tick()
-    {
-        if ('checkbox' !== $this->type) {
-            throw new \LogicException(sprintf('You cannot tick "%s" as it is not a checkbox (%s).', $this->name, $this->type));
-        }
-
-        $this->setValue(true);
-    }
-
-    /**
-     * Ticks a checkbox.
-     *
-     * @throws \LogicException When the type provided is not correct
-     *
-     * @api
-     */
-    public function untick()
-    {
-        if ('checkbox' !== $this->type) {
-            throw new \LogicException(sprintf('You cannot tick "%s" as it is not a checkbox (%s).', $this->name, $this->type));
-        }
-
-        $this->setValue(false);
-    }
-
-    /**
-     * Sets the value of the field.
-     *
-     * @param string $value The value of the field
-     *
-     * @throws \InvalidArgumentException When value type provided is not correct
-     */
-    public function setValue($value)
-    {
-        if ('checkbox' === $this->type && false === $value) {
-            // uncheck
-            $this->value = null;
-        } elseif ('checkbox' === $this->type && true === $value) {
-            // check
-            $this->value = $this->options[0]['value'];
-        } else {
-            if (is_array($value)) {
-                if (!$this->multiple) {
-                    throw new \InvalidArgumentException(sprintf('The value for "%s" cannot be an array.', $this->name));
-                }
-
-                foreach ($value as $v) {
-                    if (!$this->containsOption($v, $this->options)) {
-                        throw new \InvalidArgumentException(sprintf('Input "%s" cannot take "%s" as a value (possible values: %s).', $this->name, $v, implode(', ', $this->availableOptionValues())));
-                    }
-                }
-            } elseif (!$this->containsOption($value, $this->options)) {
-                throw new \InvalidArgumentException(sprintf('Input "%s" cannot take "%s" as a value (possible values: %s).', $this->name, $value, implode(', ', $this->availableOptionValues())));
-            }
-
-            if ($this->multiple) {
-                $value = (array) $value;
-            }
-
-            if (is_array($value)) {
-                $this->value = $value;
-            } else {
-                parent::setValue($value);
-            }
-        }
-    }
-
-    /**
-     * Adds a choice to the current ones.
-     *
-     * This method should only be used internally.
-     *
-     * @param \DOMElement $node
-     *
-     * @throws \LogicException When choice provided is not multiple nor radio
-     */
-    public function addChoice(\DOMElement $node)
-    {
-        if (!$this->multiple && 'radio' !== $this->type) {
-            throw new \LogicException(sprintf('Unable to add a choice for "%s" as it is not multiple or is not a radio button.', $this->name));
-        }
-
-        $option = $this->buildOptionValue($node);
-        $this->options[] = $option;
-
-        if ($node->hasAttribute('checked')) {
-            $this->value = $option['value'];
-        }
-    }
-
-    /**
-     * Returns the type of the choice field (radio, select, or checkbox).
-     *
-     * @return string The type
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Returns true if the field accepts multiple values.
-     *
-     * @return bool true if the field accepts multiple values, false otherwise
-     */
-    public function isMultiple()
-    {
-        return $this->multiple;
-    }
-
-    /**
      * Initializes the form field.
      *
      * @throws \LogicException When node type is incorrect
@@ -257,6 +112,131 @@ class ChoiceFormField extends FormField
     }
 
     /**
+     * Check if the current selected option is disabled.
+     *
+     * @return bool
+     */
+    public function isDisabled()
+    {
+        foreach ($this->options as $option) {
+            if ($option['value'] == $this->value && $option['disabled']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Sets the value of the field.
+     *
+     * @param string $value The value of the field
+     *
+     * @throws \InvalidArgumentException When value type provided is not correct
+     */
+    public function setValue($value)
+    {
+        if ('checkbox' === $this->type && false === $value) {
+            // uncheck
+            $this->value = null;
+        } elseif ('checkbox' === $this->type && true === $value) {
+            // check
+            $this->value = $this->options[0]['value'];
+        } else {
+            if (is_array($value)) {
+                if (!$this->multiple) {
+                    throw new \InvalidArgumentException(sprintf('The value for "%s" cannot be an array.', $this->name));
+                }
+
+                foreach ($value as $v) {
+                    if (!$this->containsOption($v, $this->options)) {
+                        throw new \InvalidArgumentException(sprintf('Input "%s" cannot take "%s" as a value (possible values: %s).', $this->name, $v, implode(', ', $this->availableOptionValues())));
+                    }
+                }
+            } elseif (!$this->containsOption($value, $this->options)) {
+                throw new \InvalidArgumentException(sprintf('Input "%s" cannot take "%s" as a value (possible values: %s).', $this->name, $value, implode(', ', $this->availableOptionValues())));
+            }
+
+            if ($this->multiple) {
+                $value = (array) $value;
+            }
+
+            if (is_array($value)) {
+                $this->value = $value;
+            } else {
+                parent::setValue($value);
+            }
+        }
+    }
+
+    /**
+     * Sets the value of the field.
+     *
+     * @param string $value The value of the field
+     *
+     * @api
+     */
+    public function select($value)
+    {
+        $this->setValue($value);
+    }
+
+    /**
+     * Ticks a checkbox.
+     *
+     * @throws \LogicException When the type provided is not correct
+     *
+     * @api
+     */
+    public function tick()
+    {
+        if ('checkbox' !== $this->type) {
+            throw new \LogicException(sprintf('You cannot tick "%s" as it is not a checkbox (%s).', $this->name, $this->type));
+        }
+
+        $this->setValue(true);
+    }
+
+    /**
+     * Ticks a checkbox.
+     *
+     * @throws \LogicException When the type provided is not correct
+     *
+     * @api
+     */
+    public function untick()
+    {
+        if ('checkbox' !== $this->type) {
+            throw new \LogicException(sprintf('You cannot tick "%s" as it is not a checkbox (%s).', $this->name, $this->type));
+        }
+
+        $this->setValue(false);
+    }
+
+    /**
+     * Adds a choice to the current ones.
+     *
+     * This method should only be used internally.
+     *
+     * @param \DOMElement $node
+     *
+     * @throws \LogicException When choice provided is not multiple nor radio
+     */
+    public function addChoice(\DOMElement $node)
+    {
+        if (!$this->multiple && 'radio' !== $this->type) {
+            throw new \LogicException(sprintf('Unable to add a choice for "%s" as it is not multiple or is not a radio button.', $this->name));
+        }
+
+        $option = $this->buildOptionValue($node);
+        $this->options[] = $option;
+
+        if ($node->hasAttribute('checked')) {
+            $this->value = $option['value'];
+        }
+    }
+
+    /**
      * Returns option value with associated disabled flag.
      *
      * @param \DOMElement $node
@@ -272,6 +252,26 @@ class ChoiceFormField extends FormField
         $option['disabled'] = $node->hasAttribute('disabled');
 
         return $option;
+    }
+
+    /**
+     * Returns the type of the choice field (radio, select, or checkbox).
+     *
+     * @return string The type
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Returns true if the field accepts multiple values.
+     *
+     * @return bool true if the field accepts multiple values, false otherwise
+     */
+    public function isMultiple()
+    {
+        return $this->multiple;
     }
 
     /**

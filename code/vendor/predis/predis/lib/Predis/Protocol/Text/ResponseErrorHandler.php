@@ -11,9 +11,9 @@
 
 namespace Predis\Protocol\Text;
 
-use Predis\ResponseError;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ResponseHandlerInterface;
+use Predis\ResponseError;
 
 /**
  * Implements a response handler for error replies using the standard wire

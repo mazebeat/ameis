@@ -37,17 +37,13 @@ class Swift_Transport_NullTransport implements Swift_Transport
     }
 
     /**
-     * Starts this Transport mechanism.
+     * Register a plugin.
+     *
+     * @param Swift_Events_EventListener $plugin
      */
-    public function start()
+	public function registerPlugin(Swift_Events_EventListener $plugin)
     {
-    }
-
-    /**
-     * Stops this Transport mechanism.
-     */
-    public function stop()
-    {
+	    $this->_eventDispatcher->bindEventListener($plugin);
     }
 
     /**
@@ -82,12 +78,16 @@ class Swift_Transport_NullTransport implements Swift_Transport
     }
 
     /**
-     * Register a plugin.
-     *
-     * @param Swift_Events_EventListener $plugin
+     * Starts this Transport mechanism.
      */
-    public function registerPlugin(Swift_Events_EventListener $plugin)
+	public function start()
     {
-        $this->_eventDispatcher->bindEventListener($plugin);
+    }
+
+	/**
+	 * Stops this Transport mechanism.
+	 */
+	public function stop()
+	{
     }
 }

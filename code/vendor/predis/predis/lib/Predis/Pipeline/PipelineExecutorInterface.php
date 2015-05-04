@@ -11,8 +11,8 @@
 
 namespace Predis\Pipeline;
 
-use SplQueue;
 use Predis\Connection\ConnectionInterface;
+use SplQueue;
 
 /**
  * Defines a strategy to write a list of commands to the network

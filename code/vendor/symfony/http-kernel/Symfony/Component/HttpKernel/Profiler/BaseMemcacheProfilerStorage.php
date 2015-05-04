@@ -188,6 +188,33 @@ abstract class BaseMemcacheProfilerStorage implements ProfilerStorageInterface
     }
 
     /**
+     * Get name of index.
+     *
+     * @return string
+     */
+    private function getIndexName()
+    {
+        $name = self::TOKEN_PREFIX.'index';
+
+        if ($this->isItemNameValid($name)) {
+            return $name;
+        }
+
+        return false;
+    }
+
+    private function isItemNameValid($name)
+    {
+        $length = strlen($name);
+
+        if ($length > 250) {
+            throw new \RuntimeException(sprintf('The memcache item key "%s" is too long (%s bytes). Allowed maximum size is 250 bytes.', $name, $length));
+        }
+
+        return true;
+    }
+
+    /**
      * Retrieve item from the memcache server.
      *
      * @param string $key
@@ -195,17 +222,6 @@ abstract class BaseMemcacheProfilerStorage implements ProfilerStorageInterface
      * @return mixed
      */
     abstract protected function getValue($key);
-
-    /**
-     * Store an item on the memcache server under the specified key.
-     *
-     * @param string $key
-     * @param mixed  $value
-     * @param int    $expiration
-     *
-     * @return bool
-     */
-    abstract protected function setValue($key, $value, $expiration = 0);
 
     /**
      * Delete item from the memcache server.
@@ -217,15 +233,22 @@ abstract class BaseMemcacheProfilerStorage implements ProfilerStorageInterface
     abstract protected function delete($key);
 
     /**
-     * Append data to an existing item on the memcache server.
+     * Get item name.
      *
-     * @param string $key
-     * @param string $value
-     * @param int    $expiration
+     * @param string $token
      *
-     * @return bool
+     * @return string
      */
-    abstract protected function appendValue($key, $value, $expiration = 0);
+    private function getItemName($token)
+    {
+        $name = self::TOKEN_PREFIX.$token;
+
+        if ($this->isItemNameValid($name)) {
+            return $name;
+        }
+
+        return false;
+    }
 
     private function createProfileFromData($token, $data, $parent = null)
     {
@@ -260,47 +283,24 @@ abstract class BaseMemcacheProfilerStorage implements ProfilerStorageInterface
     }
 
     /**
-     * Get item name.
+     * Store an item on the memcache server under the specified key.
      *
-     * @param string $token
+     * @param string $key
+     * @param mixed  $value
+     * @param int    $expiration
      *
-     * @return string
+     * @return bool
      */
-    private function getItemName($token)
-    {
-        $name = self::TOKEN_PREFIX.$token;
-
-        if ($this->isItemNameValid($name)) {
-            return $name;
-        }
-
-        return false;
-    }
+    abstract protected function setValue($key, $value, $expiration = 0);
 
     /**
-     * Get name of index.
+     * Append data to an existing item on the memcache server.
      *
-     * @return string
+     * @param string $key
+     * @param string $value
+     * @param int    $expiration
+     *
+     * @return bool
      */
-    private function getIndexName()
-    {
-        $name = self::TOKEN_PREFIX.'index';
-
-        if ($this->isItemNameValid($name)) {
-            return $name;
-        }
-
-        return false;
-    }
-
-    private function isItemNameValid($name)
-    {
-        $length = strlen($name);
-
-        if ($length > 250) {
-            throw new \RuntimeException(sprintf('The memcache item key "%s" is too long (%s bytes). Allowed maximum size is 250 bytes.', $name, $length));
-        }
-
-        return true;
-    }
+    abstract protected function appendValue($key, $value, $expiration = 0);
 }

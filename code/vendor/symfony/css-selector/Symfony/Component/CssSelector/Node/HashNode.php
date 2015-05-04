@@ -60,16 +60,16 @@ class HashNode extends AbstractNode
     /**
      * {@inheritdoc}
      */
-    public function getSpecificity()
+    public function __toString()
     {
-        return $this->selector->getSpecificity()->plus(new Specificity(1, 0, 0));
+        return sprintf('%s[%s#%s]', $this->getNodeName(), $this->selector, $this->id);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function getSpecificity()
     {
-        return sprintf('%s[%s#%s]', $this->getNodeName(), $this->selector, $this->id);
+        return $this->selector->getSpecificity()->plus(new Specificity(1, 0, 0));
     }
 }

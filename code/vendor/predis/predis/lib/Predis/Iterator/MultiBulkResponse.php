@@ -28,14 +28,6 @@ abstract class MultiBulkResponse implements \Iterator, \Countable, ResponseObjec
     /**
      * {@inheritdoc}
      */
-    public function rewind()
-    {
-        // NOOP
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function current()
     {
         return $this->current;
@@ -64,10 +56,23 @@ abstract class MultiBulkResponse implements \Iterator, \Countable, ResponseObjec
     /**
      * {@inheritdoc}
      */
+    public function rewind()
+    {
+        // NOOP
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function valid()
     {
         return $this->position < $this->replySize;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    abstract protected function getValue();
 
     /**
      * Returns the number of items of the whole multibulk reply.
@@ -92,9 +97,4 @@ abstract class MultiBulkResponse implements \Iterator, \Countable, ResponseObjec
     {
         return $this->position;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    abstract protected function getValue();
 }

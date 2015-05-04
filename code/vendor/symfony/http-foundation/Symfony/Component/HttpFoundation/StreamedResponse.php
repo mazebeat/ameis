@@ -51,6 +51,21 @@ class StreamedResponse extends Response
     }
 
     /**
+     * Sets the PHP callback associated with this Response.
+     *
+     * @param callable $callback A valid PHP callback
+     *
+     * @throws \LogicException
+     */
+    public function setCallback($callback)
+    {
+        if (!is_callable($callback)) {
+            throw new \LogicException('The Response callback must be a valid PHP callable.');
+        }
+        $this->callback = $callback;
+    }
+
+    /**
      * Factory method for chainability
      *
      * @param callable|null $callback A valid PHP callback or null to set it later
@@ -65,18 +80,13 @@ class StreamedResponse extends Response
     }
 
     /**
-     * Sets the PHP callback associated with this Response.
+     * {@inheritdoc}
      *
-     * @param callable $callback A valid PHP callback
-     *
-     * @throws \LogicException
+     * @return false
      */
-    public function setCallback($callback)
+    public function getContent()
     {
-        if (!is_callable($callback)) {
-            throw new \LogicException('The Response callback must be a valid PHP callable.');
-        }
-        $this->callback = $callback;
+        return false;
     }
 
     /**
@@ -119,15 +129,5 @@ class StreamedResponse extends Response
         if (null !== $content) {
             throw new \LogicException('The content cannot be set on a StreamedResponse instance.');
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return false
-     */
-    public function getContent()
-    {
-        return false;
     }
 }

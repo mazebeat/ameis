@@ -26,10 +26,10 @@ namespace Symfony\Component\Debug;
  */
 class DebugClassLoader
 {
+    private static $caseCheck;
     private $classLoader;
     private $isFinder;
     private $wasFinder;
-    private static $caseCheck;
 
     /**
      * Constructor.
@@ -54,18 +54,6 @@ class DebugClassLoader
         if (!isset(self::$caseCheck)) {
             self::$caseCheck = false !== stripos(PHP_OS, 'win') ? (false !== stripos(PHP_OS, 'darwin') ? 2 : 1) : 0;
         }
-    }
-
-    /**
-     * Gets the wrapped class loader.
-     *
-     * @return callable|object a class loader
-     *
-     * @deprecated since 2.5, returning an object is deprecated and support for it will be removed in 3.0
-     */
-    public function getClassLoader()
-    {
-        return $this->wasFinder ? $this->classLoader[0] : $this->classLoader;
     }
 
     /**
@@ -113,6 +101,18 @@ class DebugClassLoader
 
             spl_autoload_register($function);
         }
+    }
+
+    /**
+     * Gets the wrapped class loader.
+     *
+     * @return callable|object a class loader
+     *
+     * @deprecated since 2.5, returning an object is deprecated and support for it will be removed in 3.0
+     */
+    public function getClassLoader()
+    {
+        return $this->wasFinder ? $this->classLoader[0] : $this->classLoader;
     }
 
     /**

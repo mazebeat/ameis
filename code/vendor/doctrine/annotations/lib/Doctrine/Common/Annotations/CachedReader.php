@@ -71,6 +71,20 @@ final class CachedReader implements Reader
     /**
      * {@inheritDoc}
      */
+    public function getClassAnnotation(\ReflectionClass $class, $annotationName)
+    {
+        foreach ($this->getClassAnnotations($class) as $annot) {
+            if ($annot instanceof $annotationName) {
+                return $annot;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getClassAnnotations(\ReflectionClass $class)
     {
         $cacheKey = $class->getName();
@@ -90,43 +104,9 @@ final class CachedReader implements Reader
     /**
      * {@inheritDoc}
      */
-    public function getClassAnnotation(\ReflectionClass $class, $annotationName)
+    public function getMethodAnnotation(\ReflectionMethod $method, $annotationName)
     {
-        foreach ($this->getClassAnnotations($class) as $annot) {
-            if ($annot instanceof $annotationName) {
-                return $annot;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getPropertyAnnotations(\ReflectionProperty $property)
-    {
-        $class = $property->getDeclaringClass();
-        $cacheKey = $class->getName().'$'.$property->getName();
-
-        if (isset($this->loadedAnnotations[$cacheKey])) {
-            return $this->loadedAnnotations[$cacheKey];
-        }
-
-        if (false === ($annots = $this->fetchFromCache($cacheKey, $class))) {
-            $annots = $this->delegate->getPropertyAnnotations($property);
-            $this->saveToCache($cacheKey, $annots);
-        }
-
-        return $this->loadedAnnotations[$cacheKey] = $annots;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getPropertyAnnotation(\ReflectionProperty $property, $annotationName)
-    {
-        foreach ($this->getPropertyAnnotations($property) as $annot) {
+        foreach ($this->getMethodAnnotations($method) as $annot) {
             if ($annot instanceof $annotationName) {
                 return $annot;
             }
@@ -158,15 +138,35 @@ final class CachedReader implements Reader
     /**
      * {@inheritDoc}
      */
-    public function getMethodAnnotation(\ReflectionMethod $method, $annotationName)
+    public function getPropertyAnnotation(\ReflectionProperty $property, $annotationName)
     {
-        foreach ($this->getMethodAnnotations($method) as $annot) {
+        foreach ($this->getPropertyAnnotations($property) as $annot) {
             if ($annot instanceof $annotationName) {
                 return $annot;
             }
         }
 
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPropertyAnnotations(\ReflectionProperty $property)
+    {
+        $class = $property->getDeclaringClass();
+        $cacheKey = $class->getName().'$'.$property->getName();
+
+        if (isset($this->loadedAnnotations[$cacheKey])) {
+            return $this->loadedAnnotations[$cacheKey];
+        }
+
+        if (false === ($annots = $this->fetchFromCache($cacheKey, $class))) {
+            $annots = $this->delegate->getPropertyAnnotations($property);
+            $this->saveToCache($cacheKey, $annots);
+        }
+
+        return $this->loadedAnnotations[$cacheKey] = $annots;
     }
 
     /**

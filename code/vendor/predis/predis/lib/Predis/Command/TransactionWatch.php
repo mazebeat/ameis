@@ -20,9 +20,9 @@ class TransactionWatch extends AbstractCommand implements PrefixableCommandInter
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'WATCH';
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**
@@ -40,9 +40,9 @@ class TransactionWatch extends AbstractCommand implements PrefixableCommandInter
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function getId()
     {
-        PrefixHelpers::all($this, $prefix);
+        return 'WATCH';
     }
 
     /**

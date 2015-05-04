@@ -20,9 +20,9 @@ class ListPopFirstBlocking extends AbstractCommand implements PrefixableCommandI
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'BLPOP';
+        PrefixHelpers::skipLast($this, $prefix);
     }
 
     /**
@@ -41,8 +41,8 @@ class ListPopFirstBlocking extends AbstractCommand implements PrefixableCommandI
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function getId()
     {
-        PrefixHelpers::skipLast($this, $prefix);
+        return 'BLPOP';
     }
 }

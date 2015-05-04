@@ -12,15 +12,15 @@
 namespace Predis\Pipeline;
 
 use Iterator;
-use SplQueue;
 use Predis\ClientException;
-use Predis\ResponseErrorInterface;
-use Predis\ResponseObjectInterface;
-use Predis\ServerException;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\SingleConnectionInterface;
 use Predis\Profile\ServerProfile;
 use Predis\Profile\ServerProfileInterface;
+use Predis\ResponseErrorInterface;
+use Predis\ResponseObjectInterface;
+use Predis\ServerException;
+use SplQueue;
 
 /**
  * Implements a pipeline executor that wraps the whole pipeline
@@ -42,18 +42,15 @@ class MultiExecExecutor implements PipelineExecutorInterface
     }
 
     /**
-     * Allows the pipeline executor to perform operations on the
-     * connection before starting to execute the commands stored
-     * in the pipeline.
-     *
-     * @param ConnectionInterface $connection Connection instance.
+     * @param ServerProfileInterface $profile Server profile.
      */
-    protected function checkConnection(ConnectionInterface $connection)
+    public function setProfile(ServerProfileInterface $profile)
     {
-        if (!$connection instanceof SingleConnectionInterface) {
-            $class = __CLASS__;
-            throw new ClientException("$class can be used only with single connections");
+        if (!$profile->supportsCommands(array('multi', 'exec', 'discard'))) {
+            throw new ClientException('The specified server profile must support MULTI, EXEC and DISCARD.');
         }
+
+        $this->profile = $profile;
     }
 
     /**
@@ -95,6 +92,21 @@ class MultiExecExecutor implements PipelineExecutorInterface
         $consumer = $responses instanceof Iterator ? 'consumeIteratorResponse' : 'consumeArrayResponse';
 
         return $this->$consumer($commands, $responses);
+    }
+
+    /**
+     * Allows the pipeline executor to perform operations on the
+     * connection before starting to execute the commands stored
+     * in the pipeline.
+     *
+     * @param ConnectionInterface $connection Connection instance.
+     */
+    protected function checkConnection(ConnectionInterface $connection)
+    {
+        if (!$connection instanceof SingleConnectionInterface) {
+            $class = __CLASS__;
+            throw new ClientException("$class can be used only with single connections");
+        }
     }
 
     /**
@@ -152,17 +164,5 @@ class MultiExecExecutor implements PipelineExecutorInterface
         }
 
         return $values;
-    }
-
-    /**
-     * @param ServerProfileInterface $profile Server profile.
-     */
-    public function setProfile(ServerProfileInterface $profile)
-    {
-        if (!$profile->supportsCommands(array('multi', 'exec', 'discard'))) {
-            throw new ClientException('The specified server profile must support MULTI, EXEC and DISCARD.');
-        }
-
-        $this->profile = $profile;
     }
 }

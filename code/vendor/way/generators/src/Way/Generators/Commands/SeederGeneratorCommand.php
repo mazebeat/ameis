@@ -1,9 +1,7 @@
 <?php namespace Way\Generators\Commands;
 
 use Illuminate\Support\Str;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use Config;
 
 class SeederGeneratorCommand extends GeneratorCommand {
 
@@ -20,6 +18,18 @@ class SeederGeneratorCommand extends GeneratorCommand {
      * @var string
      */
     protected $description = 'Generate a database table seeder';
+
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return array(
+            array('tableName', InputArgument::REQUIRED, 'The name of the table to seed')
+        );
+    }
 
     /**
      * The path where the file will be created
@@ -57,18 +67,6 @@ class SeederGeneratorCommand extends GeneratorCommand {
     protected function getTemplatePath()
     {
         return $this->getPathByOptionOrConfig('templatePath', 'seed_template_path');
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return array(
-            array('tableName', InputArgument::REQUIRED, 'The name of the table to seed')
-        );
     }
 
     /**

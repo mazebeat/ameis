@@ -24,39 +24,33 @@ class MemcacheProfilerStorage extends BaseMemcacheProfilerStorage
     private $memcache;
 
     /**
-     * Internal convenience method that returns the instance of the Memcache.
-     *
-     * @return \Memcache
-     *
-     * @throws \RuntimeException
+     * {@inheritdoc}
      */
-    protected function getMemcache()
+	protected function appendValue($key, $value, $expiration = 0)
     {
-        if (null === $this->memcache) {
-            if (!preg_match('#^memcache://(?(?=\[.*\])\[(.*)\]|(.*)):(.*)$#', $this->dsn, $matches)) {
-                throw new \RuntimeException(sprintf('Please check your configuration. You are trying to use Memcache with an invalid dsn "%s". The expected format is "memcache://[host]:port".', $this->dsn));
+	    $memcache = $this->getMemcache();
+
+	    if (method_exists($memcache, 'append')) {
+		    // Memcache v3.0
+		    if (!$result = $memcache->append($key, $value, false, $expiration)) {
+			    return $memcache->set($key, $value, false, $expiration);
             }
 
-            $host = $matches[1] ?: $matches[2];
-            $port = $matches[3];
-
-            $memcache = new \Memcache();
-            $memcache->addServer($host, $port);
-
-            $this->memcache = $memcache;
+		    return $result;
         }
 
-        return $this->memcache;
+	    // simulate append in Memcache <3.0
+	    $content = $memcache->get($key);
+
+	    return $memcache->set($key, $content . $value, false, $expiration);
     }
 
     /**
-     * Set instance of the Memcache.
-     *
-     * @param \Memcache $memcache
+     * {@inheritdoc}
      */
-    public function setMemcache($memcache)
+	protected function delete($key)
     {
-        $this->memcache = $memcache;
+	    return $this->getMemcache()->delete($key);
     }
 
     /**
@@ -76,32 +70,38 @@ class MemcacheProfilerStorage extends BaseMemcacheProfilerStorage
     }
 
     /**
-     * {@inheritdoc}
+     * Internal convenience method that returns the instance of the Memcache.
+     *
+     * @return \Memcache
+     *
+     * @throws \RuntimeException
      */
-    protected function delete($key)
+	protected function getMemcache()
     {
-        return $this->getMemcache()->delete($key);
-    }
+	    if (null === $this->memcache) {
+		    if (!preg_match('#^memcache://(?(?=\[.*\])\[(.*)\]|(.*)):(.*)$#', $this->dsn, $matches)) {
+			    throw new \RuntimeException(sprintf('Please check your configuration. You are trying to use Memcache with an invalid dsn "%s". The expected format is "memcache://[host]:port".', $this->dsn));
+		    }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function appendValue($key, $value, $expiration = 0)
-    {
-        $memcache = $this->getMemcache();
+		    $host = $matches[1] ?: $matches[2];
+		    $port = $matches[3];
 
-        if (method_exists($memcache, 'append')) {
-            // Memcache v3.0
-            if (!$result = $memcache->append($key, $value, false, $expiration)) {
-                return $memcache->set($key, $value, false, $expiration);
-            }
+		    $memcache = new \Memcache();
+		    $memcache->addServer($host, $port);
 
-            return $result;
+		    $this->memcache = $memcache;
         }
 
-        // simulate append in Memcache <3.0
-        $content = $memcache->get($key);
+	    return $this->memcache;
+    }
 
-        return $memcache->set($key, $content.$value, false, $expiration);
+	/**
+	 * Set instance of the Memcache.
+	 *
+	 * @param \Memcache $memcache
+	 */
+	public function setMemcache($memcache)
+	{
+		$this->memcache = $memcache;
     }
 }

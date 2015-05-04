@@ -60,16 +60,16 @@ class NegationNode extends AbstractNode
     /**
      * {@inheritdoc}
      */
-    public function getSpecificity()
+	public function __toString()
     {
-        return $this->selector->getSpecificity()->plus($this->subSelector->getSpecificity());
+	    return sprintf('%s[%s:not(%s)]', $this->getNodeName(), $this->selector, $this->subSelector);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+	public function getSpecificity()
     {
-        return sprintf('%s[%s:not(%s)]', $this->getNodeName(), $this->selector, $this->subSelector);
+	    return $this->selector->getSpecificity()->plus($this->subSelector->getSpecificity());
     }
 }

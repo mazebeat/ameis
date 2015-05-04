@@ -54,19 +54,19 @@ class PreAuthenticatedToken extends AbstractToken
     /**
      * {@inheritdoc}
      */
-    public function getCredentials()
+	public function eraseCredentials()
     {
-        return $this->credentials;
+	    parent::eraseCredentials();
+
+	    $this->credentials = null;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function eraseCredentials()
+	public function getCredentials()
     {
-        parent::eraseCredentials();
-
-        $this->credentials = null;
+	    return $this->credentials;
     }
 
     /**

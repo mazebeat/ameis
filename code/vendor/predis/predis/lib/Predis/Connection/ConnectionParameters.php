@@ -20,14 +20,13 @@ use Predis\ClientException;
  */
 class ConnectionParameters implements ConnectionParametersInterface
 {
-    private $parameters;
-
     private static $defaults = array(
         'scheme' => 'tcp',
         'host' => '127.0.0.1',
         'port' => 6379,
         'timeout' => 5.0,
     );
+    private $parameters;
 
     /**
      * @param string|array $parameters Connection parameters in the form of an URI string or a named array.
@@ -39,66 +38,6 @@ class ConnectionParameters implements ConnectionParametersInterface
         }
 
         $this->parameters = $this->filter($parameters) + $this->getDefaults();
-    }
-
-    /**
-     * Returns some default parameters with their values.
-     *
-     * @return array
-     */
-    protected function getDefaults()
-    {
-        return self::$defaults;
-    }
-
-    /**
-     * Returns cast functions for user-supplied parameter values.
-     *
-     * @return array
-     */
-    protected function getValueCasters()
-    {
-        return array(
-            'port' => 'self::castInteger',
-            'async_connect' => 'self::castBoolean',
-            'persistent' => 'self::castBoolean',
-            'timeout' => 'self::castFloat',
-            'read_write_timeout' => 'self::castFloat',
-            'iterable_multibulk' => 'self::castBoolean',
-        );
-    }
-
-    /**
-     * Validates value as boolean.
-     *
-     * @param  mixed $value Input value.
-     * @return bool
-     */
-    private static function castBoolean($value)
-    {
-        return (bool) $value;
-    }
-
-    /**
-     * Validates value as float.
-     *
-     * @param  mixed $value Input value.
-     * @return float
-     */
-    private static function castFloat($value)
-    {
-        return (float) $value;
-    }
-
-    /**
-     * Validates value as integer.
-     *
-     * @param  mixed $value Input value.
-     * @return int
-     */
-    private static function castInteger($value)
-    {
-        return (int) $value;
     }
 
     /**
@@ -145,6 +84,66 @@ class ConnectionParameters implements ConnectionParametersInterface
         }
 
         return $parameters;
+    }
+
+    /**
+     * Returns cast functions for user-supplied parameter values.
+     *
+     * @return array
+     */
+    protected function getValueCasters()
+    {
+        return array(
+            'port' => 'self::castInteger',
+            'async_connect' => 'self::castBoolean',
+            'persistent' => 'self::castBoolean',
+            'timeout' => 'self::castFloat',
+            'read_write_timeout' => 'self::castFloat',
+            'iterable_multibulk' => 'self::castBoolean',
+        );
+    }
+
+    /**
+     * Returns some default parameters with their values.
+     *
+     * @return array
+     */
+    protected function getDefaults()
+    {
+        return self::$defaults;
+    }
+
+    /**
+     * Validates value as boolean.
+     *
+     * @param  mixed $value Input value.
+     * @return bool
+     */
+    private static function castBoolean($value)
+    {
+        return (bool) $value;
+    }
+
+    /**
+     * Validates value as float.
+     *
+     * @param  mixed $value Input value.
+     * @return float
+     */
+    private static function castFloat($value)
+    {
+        return (float) $value;
+    }
+
+    /**
+     * Validates value as integer.
+     *
+     * @param  mixed $value Input value.
+     * @return int
+     */
+    private static function castInteger($value)
+    {
+        return (int) $value;
     }
 
     /**

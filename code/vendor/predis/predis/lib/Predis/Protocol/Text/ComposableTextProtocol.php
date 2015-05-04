@@ -13,9 +13,9 @@ namespace Predis\Protocol\Text;
 
 use Predis\Command\CommandInterface;
 use Predis\Connection\ComposableConnectionInterface;
-use Predis\Protocol\ResponseReaderInterface;
 use Predis\Protocol\CommandSerializerInterface;
 use Predis\Protocol\ComposableProtocolInterface;
+use Predis\Protocol\ResponseReaderInterface;
 
 /**
  * Implements a customizable protocol processor that uses the standard Redis
@@ -58,6 +58,54 @@ class ComposableTextProtocol implements ComposableProtocolInterface
     /**
      * {@inheritdoc}
      */
+    public function serialize(CommandInterface $command)
+    {
+        return $this->serializer->serialize($command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getReader()
+    {
+        return $this->reader;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setReader(ResponseReaderInterface $reader)
+    {
+        $this->reader = $reader;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSerializer()
+    {
+        return $this->serializer;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSerializer(CommandSerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function read(ComposableConnectionInterface $connection)
+    {
+        return $this->reader->read($connection);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setOption($option, $value)
     {
         switch ($option) {
@@ -74,56 +122,8 @@ class ComposableTextProtocol implements ComposableProtocolInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize(CommandInterface $command)
-    {
-        return $this->serializer->serialize($command);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function write(ComposableConnectionInterface $connection, CommandInterface $command)
     {
         $connection->writeBytes($this->serializer->serialize($command));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function read(ComposableConnectionInterface $connection)
-    {
-        return $this->reader->read($connection);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSerializer(CommandSerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSerializer()
-    {
-        return $this->serializer;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setReader(ResponseReaderInterface $reader)
-    {
-        $this->reader = $reader;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getReader()
-    {
-        return $this->reader;
     }
 }

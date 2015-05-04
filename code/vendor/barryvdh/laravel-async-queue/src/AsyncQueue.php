@@ -19,6 +19,25 @@ class AsyncQueue extends SyncQueue
     }
 
     /**
+     * Push a new job onto the queue after a delay.
+     *
+     * @param \DateTime|int $delay
+     * @param string        $job
+     * @param mixed         $data
+     * @param string|null   $queue
+     *
+     * @return int
+     */
+    public function later($delay, $job, $data = '', $queue = null)
+    {
+        $delay = $this->getSeconds($delay);
+        $id = $this->storeJob($job, $data, $delay);
+        $this->startProcess($id, $delay);
+
+        return $id;
+    }
+
+    /**
      * Push a new job onto the queue.
      *
      * @param string      $job
@@ -95,6 +114,15 @@ class AsyncQueue extends SyncQueue
         return sprintf($cmd, $binary, $jobId, $environment, $delay);
     }
 
+    protected function getBackgroundCommand($cmd)
+    {
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            return 'start /B '.$cmd.' > NUL';
+        } else {
+            return $cmd.' > /dev/null 2>&1 &';
+        }
+    }
+
     /**
      * Get the escaped PHP Binary from the configuration
      *
@@ -112,34 +140,6 @@ class AsyncQueue extends SyncQueue
             $args = implode(' ', $args);
         }
         return trim($path.' '.$args);
-    }
-
-    protected function getBackgroundCommand($cmd)
-    {
-        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
-            return 'start /B '.$cmd.' > NUL';
-        } else {
-            return $cmd.' > /dev/null 2>&1 &';
-        }
-    }
-
-    /**
-     * Push a new job onto the queue after a delay.
-     *
-     * @param \DateTime|int $delay
-     * @param string        $job
-     * @param mixed         $data
-     * @param string|null   $queue
-     *
-     * @return int
-     */
-    public function later($delay, $job, $data = '', $queue = null)
-    {
-        $delay = $this->getSeconds($delay);
-        $id = $this->storeJob($job, $data, $delay);
-        $this->startProcess($id, $delay);
-
-        return $id;
     }
 
 }

@@ -1,7 +1,7 @@
 <?php
 
-use Mockery as m;
 use Fitztrev\LaravelHtmlMinify\LaravelHtmlMinifyCompiler;
+use Mockery as m;
 
 abstract class BaseMinifyTester extends PHPUnit_Framework_TestCase
 {

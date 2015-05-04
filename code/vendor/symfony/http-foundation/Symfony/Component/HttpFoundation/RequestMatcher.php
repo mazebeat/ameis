@@ -64,16 +64,6 @@ class RequestMatcher implements RequestMatcherInterface
     }
 
     /**
-     * Adds a check for the URL host name.
-     *
-     * @param string $regexp A Regexp
-     */
-    public function matchHost($regexp)
-    {
-        $this->host = $regexp;
-    }
-
-    /**
      * Adds a check for the URL path info.
      *
      * @param string $regexp A Regexp
@@ -84,23 +74,13 @@ class RequestMatcher implements RequestMatcherInterface
     }
 
     /**
-     * Adds a check for the client IP.
+     * Adds a check for the URL host name.
      *
-     * @param string $ip A specific IP address or a range specified using IP/netmask like 192.168.1.0/24
+     * @param string $regexp A Regexp
      */
-    public function matchIp($ip)
+    public function matchHost($regexp)
     {
-        $this->matchIps($ip);
-    }
-
-    /**
-     * Adds a check for the client IP.
-     *
-     * @param string|string[] $ips A specific IP address or a range specified using IP/netmask like 192.168.1.0/24
-     */
-    public function matchIps($ips)
-    {
-        $this->ips = (array) $ips;
+        $this->host = $regexp;
     }
 
     /**
@@ -114,6 +94,16 @@ class RequestMatcher implements RequestMatcherInterface
     }
 
     /**
+     * Adds a check for the client IP.
+     *
+     * @param string|string[] $ips A specific IP address or a range specified using IP/netmask like 192.168.1.0/24
+     */
+    public function matchIps($ips)
+    {
+        $this->ips = (array) $ips;
+    }
+
+    /**
      * Adds a check for request attribute.
      *
      * @param string $key    The request attribute name
@@ -122,6 +112,16 @@ class RequestMatcher implements RequestMatcherInterface
     public function matchAttribute($key, $regexp)
     {
         $this->attributes[$key] = $regexp;
+    }
+
+    /**
+     * Adds a check for the client IP.
+     *
+     * @param string $ip A specific IP address or a range specified using IP/netmask like 192.168.1.0/24
+     */
+    public function matchIp($ip)
+    {
+        $this->matchIps($ip);
     }
 
     /**

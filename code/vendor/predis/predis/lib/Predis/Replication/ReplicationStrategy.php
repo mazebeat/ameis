@@ -11,8 +11,8 @@
 
 namespace Predis\Replication;
 
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 
 /**
  * Defines a strategy for master/reply replication.
@@ -33,109 +33,6 @@ class ReplicationStrategy
         $this->disallowed = $this->getDisallowedOperations();
         $this->readonly = $this->getReadOnlyOperations();
         $this->readonlySHA1 = array();
-    }
-
-    /**
-     * Returns if the specified command performs a read-only operation
-     * against a key stored on Redis.
-     *
-     * @param  CommandInterface $command Instance of Redis command.
-     * @return bool
-     */
-    public function isReadOperation(CommandInterface $command)
-    {
-        if (isset($this->disallowed[$id = $command->getId()])) {
-            throw new NotSupportedException("The command $id is not allowed in replication mode");
-        }
-
-        if (isset($this->readonly[$id])) {
-            if (true === $readonly = $this->readonly[$id]) {
-                return true;
-            }
-
-            return call_user_func($readonly, $command);
-        }
-
-        if (($eval = $id === 'EVAL') || $id === 'EVALSHA') {
-            $sha1 = $eval ? sha1($command->getArgument(0)) : $command->getArgument(0);
-
-            if (isset($this->readonlySHA1[$sha1])) {
-                if (true === $readonly = $this->readonlySHA1[$sha1]) {
-                    return true;
-                }
-
-                return call_user_func($readonly, $command);
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns if the specified command is disallowed in a master/slave
-     * replication context.
-     *
-     * @param  CommandInterface $command Instance of Redis command.
-     * @return bool
-     */
-    public function isDisallowedOperation(CommandInterface $command)
-    {
-        return isset($this->disallowed[$command->getId()]);
-    }
-
-    /**
-     * Checks if a SORT command is a readable operation by parsing the arguments
-     * array of the specified commad instance.
-     *
-     * @param  CommandInterface $command Instance of Redis command.
-     * @return bool
-     */
-    protected function isSortReadOnly(CommandInterface $command)
-    {
-        $arguments = $command->getArguments();
-
-        return ($c = count($arguments)) === 1 ? true : $arguments[$c - 2] !== 'STORE';
-    }
-
-    /**
-     * Marks a command as a read-only operation. When the behaviour of a
-     * command can be decided only at runtime depending on its arguments,
-     * a callable object can be provided to dynamically check if the passed
-     * instance of a command performs write operations or not.
-     *
-     * @param string $commandID ID of the command.
-     * @param mixed  $readonly  A boolean or a callable object.
-     */
-    public function setCommandReadOnly($commandID, $readonly = true)
-    {
-        $commandID = strtoupper($commandID);
-
-        if ($readonly) {
-            $this->readonly[$commandID] = $readonly;
-        } else {
-            unset($this->readonly[$commandID]);
-        }
-    }
-
-    /**
-     * Marks a Lua script for EVAL and EVALSHA as a read-only operation. When
-     * the behaviour of a script can be decided only at runtime depending on
-     * its arguments, a callable object can be provided to dynamically check
-     * if the passed instance of EVAL or EVALSHA performs write operations or
-     * not.
-     *
-     * @param string $script   Body of the Lua script.
-     * @param mixed  $readonly A boolean or a callable object.
-     */
-    public function setScriptReadOnly($script, $readonly = true)
-    {
-        $sha1 = sha1($script);
-
-        if ($readonly) {
-            $this->readonlySHA1[$sha1] = $readonly;
-        } else {
-            unset($this->readonlySHA1[$sha1]);
-        }
     }
 
     /**
@@ -222,5 +119,108 @@ class ReplicationStrategy
             'PFCOUNT'           => true,
             'SORT'              => array($this, 'isSortReadOnly'),
         );
+    }
+
+    /**
+     * Returns if the specified command performs a read-only operation
+     * against a key stored on Redis.
+     *
+     * @param  CommandInterface $command Instance of Redis command.
+     * @return bool
+     */
+    public function isReadOperation(CommandInterface $command)
+    {
+        if (isset($this->disallowed[$id = $command->getId()])) {
+            throw new NotSupportedException("The command $id is not allowed in replication mode");
+        }
+
+        if (isset($this->readonly[$id])) {
+            if (true === $readonly = $this->readonly[$id]) {
+                return true;
+            }
+
+            return call_user_func($readonly, $command);
+        }
+
+        if (($eval = $id === 'EVAL') || $id === 'EVALSHA') {
+            $sha1 = $eval ? sha1($command->getArgument(0)) : $command->getArgument(0);
+
+            if (isset($this->readonlySHA1[$sha1])) {
+                if (true === $readonly = $this->readonlySHA1[$sha1]) {
+                    return true;
+                }
+
+                return call_user_func($readonly, $command);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns if the specified command is disallowed in a master/slave
+     * replication context.
+     *
+     * @param  CommandInterface $command Instance of Redis command.
+     * @return bool
+     */
+    public function isDisallowedOperation(CommandInterface $command)
+    {
+        return isset($this->disallowed[$command->getId()]);
+    }
+
+    /**
+     * Marks a command as a read-only operation. When the behaviour of a
+     * command can be decided only at runtime depending on its arguments,
+     * a callable object can be provided to dynamically check if the passed
+     * instance of a command performs write operations or not.
+     *
+     * @param string $commandID ID of the command.
+     * @param mixed  $readonly  A boolean or a callable object.
+     */
+    public function setCommandReadOnly($commandID, $readonly = true)
+    {
+        $commandID = strtoupper($commandID);
+
+        if ($readonly) {
+            $this->readonly[$commandID] = $readonly;
+        } else {
+            unset($this->readonly[$commandID]);
+        }
+    }
+
+    /**
+     * Marks a Lua script for EVAL and EVALSHA as a read-only operation. When
+     * the behaviour of a script can be decided only at runtime depending on
+     * its arguments, a callable object can be provided to dynamically check
+     * if the passed instance of EVAL or EVALSHA performs write operations or
+     * not.
+     *
+     * @param string $script   Body of the Lua script.
+     * @param mixed  $readonly A boolean or a callable object.
+     */
+    public function setScriptReadOnly($script, $readonly = true)
+    {
+        $sha1 = sha1($script);
+
+        if ($readonly) {
+            $this->readonlySHA1[$sha1] = $readonly;
+        } else {
+            unset($this->readonlySHA1[$sha1]);
+        }
+    }
+
+    /**
+     * Checks if a SORT command is a readable operation by parsing the arguments
+     * array of the specified commad instance.
+     *
+     * @param  CommandInterface $command Instance of Redis command.
+     * @return bool
+     */
+    protected function isSortReadOnly(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        return ($c = count($arguments)) === 1 ? true : $arguments[$c - 2] !== 'STORE';
     }
 }

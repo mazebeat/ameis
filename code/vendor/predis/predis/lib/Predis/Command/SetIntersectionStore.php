@@ -20,9 +20,9 @@ class SetIntersectionStore extends AbstractCommand implements PrefixableCommandI
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'SINTERSTORE';
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**
@@ -40,8 +40,8 @@ class SetIntersectionStore extends AbstractCommand implements PrefixableCommandI
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function getId()
     {
-        PrefixHelpers::all($this, $prefix);
+        return 'SINTERSTORE';
     }
 }

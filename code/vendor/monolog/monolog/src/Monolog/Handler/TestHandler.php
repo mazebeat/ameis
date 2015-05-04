@@ -35,6 +35,25 @@ class TestHandler extends AbstractProcessingHandler
         return $this->hasRecord($record, Logger::EMERGENCY);
     }
 
+    protected function hasRecord($record, $level)
+    {
+        if (!isset($this->recordsByLevel[$level])) {
+            return false;
+        }
+
+        if (is_array($record)) {
+            $record = $record['message'];
+        }
+
+        foreach ($this->recordsByLevel[$level] as $rec) {
+            if ($rec['message'] === $record) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function hasAlert($record)
     {
         return $this->hasRecord($record, Logger::ALERT);
@@ -110,23 +129,59 @@ class TestHandler extends AbstractProcessingHandler
         return isset($this->recordsByLevel[Logger::DEBUG]);
     }
 
-    protected function hasRecord($record, $level)
+    public function hasEmergencyThatContains($message)
+    {
+        return $this->hasRecordThatContains($message, Logger::EMERGENCY);
+    }
+
+    public function hasRecordThatContains($message, $level)
     {
         if (!isset($this->recordsByLevel[$level])) {
             return false;
         }
 
-        if (is_array($record)) {
-            $record = $record['message'];
-        }
-
         foreach ($this->recordsByLevel[$level] as $rec) {
-            if ($rec['message'] === $record) {
+            if (strpos($rec['message'], $message) !== false) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public function hasAlertThatContains($message)
+    {
+        return $this->hasRecordThatContains($message, Logger::ALERT);
+    }
+
+    public function hasCriticalThatContains($message)
+    {
+        return $this->hasRecordThatContains($message, Logger::CRITICAL);
+    }
+
+    public function hasErrorThatContains($message)
+    {
+        return $this->hasRecordThatContains($message, Logger::ERROR);
+    }
+
+    public function hasWarningThatContains($message)
+    {
+        return $this->hasRecordThatContains($message, Logger::WARNING);
+    }
+
+    public function hasNoticeThatContains($message)
+    {
+        return $this->hasRecordThatContains($message, Logger::NOTICE);
+    }
+
+    public function hasInfoThatContains($message)
+    {
+        return $this->hasRecordThatContains($message, Logger::INFO);
+    }
+
+    public function hasDebugThatContains($message)
+    {
+        return $this->hasRecordThatContains($message, Logger::DEBUG);
     }
 
     /**

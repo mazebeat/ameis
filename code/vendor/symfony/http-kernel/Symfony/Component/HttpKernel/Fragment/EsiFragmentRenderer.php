@@ -47,6 +47,14 @@ class EsiFragmentRenderer extends RoutableFragmentRenderer
 
     /**
      * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'esi';
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * Note that if the current Request has no ESI capability, this method
      * falls back to use the inline rendering strategy.
@@ -76,14 +84,6 @@ class EsiFragmentRenderer extends RoutableFragmentRenderer
         $tag = $this->esi->renderIncludeTag($uri, $alt, isset($options['ignore_errors']) ? $options['ignore_errors'] : false, isset($options['comment']) ? $options['comment'] : '');
 
         return new Response($tag);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'esi';
     }
 
     private function generateSignedFragmentUri($uri, Request $request)

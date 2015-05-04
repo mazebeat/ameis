@@ -15,7 +15,7 @@ return array(
 	|
 	*/
 
-	'driver' => 'eloquent',
+	'driver'   => 'eloquent',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return array(
 	|
 	*/
 
-	'model' => 'User',
+	'model'    => 'Usuario',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return array(
 	|
 	*/
 
-	'table' => 'users',
+	'table'    => 'AME_Mant_Usuarios',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -59,13 +59,9 @@ return array(
 	*/
 
 	'reminder' => array(
-
-		'email' => 'emails.auth.reminder',
-
-		'table' => 'password_reminders',
-
+		'email'  => 'emails.auth.reminder',
+		'table'  => 'password_reminders',
 		'expire' => 60,
-
 	),
 
 );

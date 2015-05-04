@@ -55,13 +55,13 @@ class TestCacheWarmer extends CacheWarmer
         $this->file = $file;
     }
 
-    public function warmUp($cacheDir)
-    {
-        $this->writeCacheFile($this->file, 'content');
-    }
-
     public function isOptional()
     {
         return false;
+    }
+
+    public function warmUp($cacheDir)
+    {
+        $this->writeCacheFile($this->file, 'content');
     }
 }

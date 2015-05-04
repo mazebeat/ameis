@@ -50,47 +50,6 @@ class ConnectionFactory implements ConnectionFactoryInterface
     }
 
     /**
-     * Checks if the provided argument represents a valid connection class
-     * implementing Predis\Connection\SingleConnectionInterface. Optionally,
-     * callable objects are used for lazy initialization of connection objects.
-     *
-     * @param  mixed $initializer FQN of a connection class or a callable for lazy initialization.
-     * @return mixed
-     */
-    protected function checkInitializer($initializer)
-    {
-        if (is_callable($initializer)) {
-            return $initializer;
-        }
-
-        $initializerReflection = new \ReflectionClass($initializer);
-
-        if (!$initializerReflection->isSubclassOf('Predis\Connection\SingleConnectionInterface')) {
-            throw new \InvalidArgumentException(
-                'A connection initializer must be a valid connection class or a callable object'
-            );
-        }
-
-        return $initializer;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function define($scheme, $initializer)
-    {
-        $this->schemes[$scheme] = $this->checkInitializer($initializer);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function undefine($scheme)
-    {
-        unset($this->schemes[$scheme]);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function create($parameters)
@@ -137,6 +96,67 @@ class ConnectionFactory implements ConnectionFactoryInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function define($scheme, $initializer)
+    {
+        $this->schemes[$scheme] = $this->checkInitializer($initializer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function undefine($scheme)
+    {
+        unset($this->schemes[$scheme]);
+    }
+
+    /**
+     * Checks if the provided argument represents a valid connection class
+     * implementing Predis\Connection\SingleConnectionInterface. Optionally,
+     * callable objects are used for lazy initialization of connection objects.
+     *
+     * @param  mixed $initializer FQN of a connection class or a callable for lazy initialization.
+     * @return mixed
+     */
+    protected function checkInitializer($initializer)
+    {
+        if (is_callable($initializer)) {
+            return $initializer;
+        }
+
+        $initializerReflection = new \ReflectionClass($initializer);
+
+        if (!$initializerReflection->isSubclassOf('Predis\Connection\SingleConnectionInterface')) {
+            throw new \InvalidArgumentException(
+                'A connection initializer must be a valid connection class or a callable object'
+            );
+        }
+
+        return $initializer;
+    }
+
+    /**
+     * Returns the server profile used to create initialization commands for connections.
+     *
+     * @return ServerProfileInterface
+     */
+    public function getProfile()
+    {
+        return $this->profile;
+    }
+
+    /**
+     * Sets the server profile used to create initialization commands for connections.
+     *
+     * @param ServerProfileInterface $profile Server profile instance.
+     */
+    public function setProfile(ServerProfileInterface $profile)
+    {
+        $this->profile = $profile;
+    }
+
+    /**
      * Prepares a connection object after its initialization.
      *
      * @param SingleConnectionInterface $connection Instance of a connection object.
@@ -156,25 +176,5 @@ class ConnectionFactory implements ConnectionFactoryInterface
                 $connection->pushInitCommand($command);
             }
         }
-    }
-
-    /**
-     * Sets the server profile used to create initialization commands for connections.
-     *
-     * @param ServerProfileInterface $profile Server profile instance.
-     */
-    public function setProfile(ServerProfileInterface $profile)
-    {
-        $this->profile = $profile;
-    }
-
-    /**
-     * Returns the server profile used to create initialization commands for connections.
-     *
-     * @return ServerProfileInterface
-     */
-    public function getProfile()
-    {
-        return $this->profile;
     }
 }

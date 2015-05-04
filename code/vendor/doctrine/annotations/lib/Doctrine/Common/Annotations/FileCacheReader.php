@@ -79,6 +79,22 @@ class FileCacheReader implements Reader
     /**
      * {@inheritDoc}
      */
+    public function getClassAnnotation(\ReflectionClass $class, $annotationName)
+    {
+        $annotations = $this->getClassAnnotations($class);
+
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof $annotationName) {
+                return $annotation;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getClassAnnotations(\ReflectionClass $class)
     {
         if ( ! isset($this->classNameHashes[$class->name])) {
@@ -113,36 +129,17 @@ class FileCacheReader implements Reader
     /**
      * {@inheritDoc}
      */
-    public function getPropertyAnnotations(\ReflectionProperty $property)
+    public function getMethodAnnotation(\ReflectionMethod $method, $annotationName)
     {
-        $class = $property->getDeclaringClass();
-        if ( ! isset($this->classNameHashes[$class->name])) {
-            $this->classNameHashes[$class->name] = sha1($class->name);
-        }
-        $key = $this->classNameHashes[$class->name].'$'.$property->getName();
+        $annotations = $this->getMethodAnnotations($method);
 
-        if (isset($this->loadedAnnotations[$key])) {
-            return $this->loadedAnnotations[$key];
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof $annotationName) {
+                return $annotation;
+            }
         }
 
-        $path = $this->dir.'/'.strtr($key, '\\', '-').'.cache.php';
-        if (!is_file($path)) {
-            $annot = $this->reader->getPropertyAnnotations($property);
-            $this->saveCacheFile($path, $annot);
-            return $this->loadedAnnotations[$key] = $annot;
-        }
-
-        if ($this->debug
-            && (false !== $filename = $class->getFilename())
-            && filemtime($path) < filemtime($filename)) {
-            @unlink($path);
-
-            $annot = $this->reader->getPropertyAnnotations($property);
-            $this->saveCacheFile($path, $annot);
-            return $this->loadedAnnotations[$key] = $annot;
-        }
-
-        return $this->loadedAnnotations[$key] = include $path;
+        return null;
     }
 
     /**
@@ -181,6 +178,67 @@ class FileCacheReader implements Reader
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getPropertyAnnotation(\ReflectionProperty $property, $annotationName)
+    {
+        $annotations = $this->getPropertyAnnotations($property);
+
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof $annotationName) {
+                return $annotation;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPropertyAnnotations(\ReflectionProperty $property)
+    {
+        $class = $property->getDeclaringClass();
+        if ( ! isset($this->classNameHashes[$class->name])) {
+            $this->classNameHashes[$class->name] = sha1($class->name);
+        }
+        $key = $this->classNameHashes[$class->name].'$'.$property->getName();
+
+        if (isset($this->loadedAnnotations[$key])) {
+            return $this->loadedAnnotations[$key];
+        }
+
+        $path = $this->dir.'/'.strtr($key, '\\', '-').'.cache.php';
+        if (!is_file($path)) {
+            $annot = $this->reader->getPropertyAnnotations($property);
+            $this->saveCacheFile($path, $annot);
+            return $this->loadedAnnotations[$key] = $annot;
+        }
+
+        if ($this->debug
+            && (false !== $filename = $class->getFilename())
+            && filemtime($path) < filemtime($filename)) {
+            @unlink($path);
+
+            $annot = $this->reader->getPropertyAnnotations($property);
+            $this->saveCacheFile($path, $annot);
+            return $this->loadedAnnotations[$key] = $annot;
+        }
+
+        return $this->loadedAnnotations[$key] = include $path;
+    }
+
+    /**
+     * Clears loaded annotations.
+     *
+     * @return void
+     */
+    public function clearLoadedAnnotations()
+    {
+        $this->loadedAnnotations = array();
+    }
+
+    /**
      * Saves the cache file.
      *
      * @param string $path
@@ -212,63 +270,5 @@ class FileCacheReader implements Reader
         }
 
         @chmod($path, 0666 & ~umask());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getClassAnnotation(\ReflectionClass $class, $annotationName)
-    {
-        $annotations = $this->getClassAnnotations($class);
-
-        foreach ($annotations as $annotation) {
-            if ($annotation instanceof $annotationName) {
-                return $annotation;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getMethodAnnotation(\ReflectionMethod $method, $annotationName)
-    {
-        $annotations = $this->getMethodAnnotations($method);
-
-        foreach ($annotations as $annotation) {
-            if ($annotation instanceof $annotationName) {
-                return $annotation;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getPropertyAnnotation(\ReflectionProperty $property, $annotationName)
-    {
-        $annotations = $this->getPropertyAnnotations($property);
-
-        foreach ($annotations as $annotation) {
-            if ($annotation instanceof $annotationName) {
-                return $annotation;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Clears loaded annotations.
-     *
-     * @return void
-     */
-    public function clearLoadedAnnotations()
-    {
-        $this->loadedAnnotations = array();
     }
 }

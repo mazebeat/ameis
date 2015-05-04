@@ -42,6 +42,27 @@ class ControllerResolver implements ControllerResolverInterface
     /**
      * {@inheritdoc}
      *
+     * @api
+     */
+	public function getArguments(Request $request, $controller)
+	{
+		if (is_array($controller)) {
+			$r = new \ReflectionMethod($controller[0], $controller[1]);
+		}
+		elseif (is_object($controller) && !$controller instanceof \Closure) {
+			$r = new \ReflectionObject($controller);
+			$r = $r->getMethod('__invoke');
+		}
+		else {
+			$r = new \ReflectionFunction($controller);
+		}
+
+		return $this->doGetArguments($request, $controller, $r->getParameters());
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
      * This method looks for a '_controller' request attribute that represents
      * the controller name (a string like ClassName::MethodName).
      *
@@ -87,22 +108,30 @@ class ControllerResolver implements ControllerResolverInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns a callable for the given controller.
      *
-     * @api
+     * @param string $controller A Controller string
+     *
+     * @return mixed A PHP callable
+     *
+     * @throws \InvalidArgumentException
      */
-    public function getArguments(Request $request, $controller)
+	protected function createController($controller)
     {
-        if (is_array($controller)) {
-            $r = new \ReflectionMethod($controller[0], $controller[1]);
-        } elseif (is_object($controller) && !$controller instanceof \Closure) {
-            $r = new \ReflectionObject($controller);
-            $r = $r->getMethod('__invoke');
-        } else {
-            $r = new \ReflectionFunction($controller);
+	    if (false === strpos($controller, '::')) {
+		    throw new \InvalidArgumentException(sprintf('Unable to find controller "%s".', $controller));
         }
 
-        return $this->doGetArguments($request, $controller, $r->getParameters());
+	    list($class, $method) = explode('::', $controller, 2);
+
+	    if (!class_exists($class)) {
+		    throw new \InvalidArgumentException(sprintf('Class "%s" does not exist.', $class));
+	    }
+
+	    return array(
+		    new $class(),
+		    $method
+	    );
     }
 
     protected function doGetArguments(Request $request, $controller, array $parameters)
@@ -130,29 +159,5 @@ class ControllerResolver implements ControllerResolverInterface
         }
 
         return $arguments;
-    }
-
-    /**
-     * Returns a callable for the given controller.
-     *
-     * @param string $controller A Controller string
-     *
-     * @return mixed A PHP callable
-     *
-     * @throws \InvalidArgumentException
-     */
-    protected function createController($controller)
-    {
-        if (false === strpos($controller, '::')) {
-            throw new \InvalidArgumentException(sprintf('Unable to find controller "%s".', $controller));
-        }
-
-        list($class, $method) = explode('::', $controller, 2);
-
-        if (!class_exists($class)) {
-            throw new \InvalidArgumentException(sprintf('Class "%s" does not exist.', $class));
-        }
-
-        return array(new $class(), $method);
     }
 }

@@ -20,14 +20,6 @@ class ZSetRange extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return 'ZRANGE';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 4) {
@@ -47,6 +39,32 @@ class ZSetRange extends PrefixableCommand
         }
 
         return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZRANGE';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if ($this->withScores()) {
+            $result = array();
+
+            for ($i = 0; $i < count($data); $i++) {
+                $result[] = array($data[$i], $data[++$i]);
+            }
+
+            return $result;
+        }
+
+        return $data;
     }
 
     /**
@@ -81,23 +99,5 @@ class ZSetRange extends PrefixableCommand
         }
 
         return strtoupper($arguments[3]) === 'WITHSCORES';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        if ($this->withScores()) {
-            $result = array();
-
-            for ($i = 0; $i < count($data); $i++) {
-                $result[] = array($data[$i], $data[++$i]);
-            }
-
-            return $result;
-        }
-
-        return $data;
     }
 }

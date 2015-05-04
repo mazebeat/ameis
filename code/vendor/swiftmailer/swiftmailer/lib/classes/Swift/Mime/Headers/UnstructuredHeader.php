@@ -37,6 +37,34 @@ class Swift_Mime_Headers_UnstructuredHeader extends Swift_Mime_Headers_AbstractH
     }
 
     /**
+     * Get the value of this header prepared for rendering.
+     *
+     * @return string
+     */
+    public function getFieldBody()
+    {
+        if (!$this->getCachedValue()) {
+            $this->setCachedValue(
+                $this->encodeWords($this, $this->_value)
+                );
+        }
+
+        return $this->getCachedValue();
+    }
+
+    /**
+     * Get the model for the field body.
+     *
+     * This method returns a string.
+     *
+     * @return string
+     */
+    public function getFieldBodyModel()
+    {
+        return $this->getValue();
+    }
+
+    /**
      * Get the type of Header that this instance represents.
      *
      * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
@@ -62,18 +90,6 @@ class Swift_Mime_Headers_UnstructuredHeader extends Swift_Mime_Headers_AbstractH
     }
 
     /**
-     * Get the model for the field body.
-     *
-     * This method returns a string.
-     *
-     * @return string
-     */
-    public function getFieldBodyModel()
-    {
-        return $this->getValue();
-    }
-
-    /**
      * Get the (unencoded) value of this header.
      *
      * @return string
@@ -92,21 +108,5 @@ class Swift_Mime_Headers_UnstructuredHeader extends Swift_Mime_Headers_AbstractH
     {
         $this->clearCachedValueIf($this->_value != $value);
         $this->_value = $value;
-    }
-
-    /**
-     * Get the value of this header prepared for rendering.
-     *
-     * @return string
-     */
-    public function getFieldBody()
-    {
-        if (!$this->getCachedValue()) {
-            $this->setCachedValue(
-                $this->encodeWords($this, $this->_value)
-                );
-        }
-
-        return $this->getCachedValue();
     }
 }

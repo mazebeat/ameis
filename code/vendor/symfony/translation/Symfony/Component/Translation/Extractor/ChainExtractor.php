@@ -41,20 +41,20 @@ class ChainExtractor implements ExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function setPrefix($prefix)
+    public function extract($directory, MessageCatalogue $catalogue)
     {
         foreach ($this->extractors as $extractor) {
-            $extractor->setPrefix($prefix);
+            $extractor->extract($directory, $catalogue);
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function extract($directory, MessageCatalogue $catalogue)
+    public function setPrefix($prefix)
     {
         foreach ($this->extractors as $extractor) {
-            $extractor->extract($directory, $catalogue);
+            $extractor->setPrefix($prefix);
         }
     }
 }

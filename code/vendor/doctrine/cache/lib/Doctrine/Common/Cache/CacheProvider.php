@@ -48,19 +48,6 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     private $namespaceVersion;
 
     /**
-     * Sets the namespace to prefix all cache ids with.
-     *
-     * @param string $namespace
-     *
-     * @return void
-     */
-    public function setNamespace($namespace)
-    {
-        $this->namespace        = (string) $namespace;
-        $this->namespaceVersion = null;
-    }
-
-    /**
      * Retrieves the namespace that prefixes all cache ids.
      *
      * @return string
@@ -71,11 +58,16 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     }
 
     /**
-     * {@inheritdoc}
+     * Sets the namespace to prefix all cache ids with.
+     *
+     * @param string $namespace
+     *
+     * @return void
      */
-    public function fetch($id)
+    public function setNamespace($namespace)
     {
-        return $this->doFetch($this->getNamespacedId($id));
+        $this->namespace        = (string) $namespace;
+        $this->namespaceVersion = null;
     }
 
     /**
@@ -100,19 +92,30 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     }
 
     /**
-     * {@inheritdoc}
+     * Default implementation of doFetchMultiple. Each driver that supports multi-get should owerwrite it.
+     *
+     * @param array $keys Array of keys to retrieve from cache
+     * @return array Array of values retrieved for the given keys.
      */
-    public function contains($id)
+    protected function doFetchMultiple(array $keys)
     {
-        return $this->doContains($this->getNamespacedId($id));
+        $returnValues = array();
+
+        foreach ($keys as $index => $key) {
+            if (false !== ($item = $this->doFetch($key))) {
+                $returnValues[$key] = $item;
+            }
+        }
+
+        return $returnValues;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function save($id, $data, $lifeTime = 0)
+    public function contains($id)
     {
-        return $this->doSave($this->getNamespacedId($id), $data, $lifeTime);
+        return $this->doContains($this->getNamespacedId($id));
     }
 
     /**
@@ -126,31 +129,35 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     /**
      * {@inheritdoc}
      */
+    public function fetch($id)
+    {
+        return $this->doFetch($this->getNamespacedId($id));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getStats()
     {
         return $this->doGetStats();
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function flushAll()
+    public function save($id, $data, $lifeTime = 0)
     {
-        return $this->doFlush();
+        return $this->doSave($this->getNamespacedId($id), $data, $lifeTime);
     }
 
     /**
-     * {@inheritDoc}
+     * Fetches an entry from the cache.
+     *
+     * @param string $id The id of the cache entry to fetch.
+     *
+     * @return mixed|boolean The cached data or FALSE, if no cache entry exists for the given id.
      */
-    public function deleteAll()
-    {
-        $namespaceCacheKey = $this->getNamespaceCacheKey();
-        $namespaceVersion  = $this->getNamespaceVersion() + 1;
-
-        $this->namespaceVersion = $namespaceVersion;
-
-        return $this->doSave($namespaceCacheKey, $namespaceVersion);
-    }
+    abstract protected function doFetch($id);
 
     /**
      * Prefixes the passed id with the configured namespace value.
@@ -164,16 +171,6 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
         $namespaceVersion  = $this->getNamespaceVersion();
 
         return sprintf('%s[%s][%s]', $this->namespace, $id, $namespaceVersion);
-    }
-
-    /**
-     * Returns the namespace cache key.
-     *
-     * @return string
-     */
-    private function getNamespaceCacheKey()
-    {
-        return sprintf(self::DOCTRINE_NAMESPACE_CACHEKEY, $this->namespace);
     }
 
     /**
@@ -202,41 +199,14 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     }
 
     /**
-     * Default implementation of doFetchMultiple. Each driver that supports multi-get should owerwrite it.
+     * Returns the namespace cache key.
      *
-     * @param array $keys Array of keys to retrieve from cache
-     * @return array Array of values retrieved for the given keys.
+     * @return string
      */
-    protected function doFetchMultiple(array $keys)
+    private function getNamespaceCacheKey()
     {
-        $returnValues = array();
-
-        foreach ($keys as $index => $key) {
-            if (false !== ($item = $this->doFetch($key))) {
-                $returnValues[$key] = $item;
-            }
-        }
-
-        return $returnValues;
+        return sprintf(self::DOCTRINE_NAMESPACE_CACHEKEY, $this->namespace);
     }
-
-    /**
-     * Fetches an entry from the cache.
-     *
-     * @param string $id The id of the cache entry to fetch.
-     *
-     * @return string|boolean The cached data or FALSE, if no cache entry exists for the given id.
-     */
-    abstract protected function doFetch($id);
-
-    /**
-     * Tests if an entry exists in the cache.
-     *
-     * @param string $id The cache id of the entry to check for.
-     *
-     * @return boolean TRUE if a cache entry exists for the given cache id, FALSE otherwise.
-     */
-    abstract protected function doContains($id);
 
     /**
      * Puts data into the cache.
@@ -251,6 +221,15 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     abstract protected function doSave($id, $data, $lifeTime = 0);
 
     /**
+     * Tests if an entry exists in the cache.
+     *
+     * @param string $id The cache id of the entry to check for.
+     *
+     * @return boolean TRUE if a cache entry exists for the given cache id, FALSE otherwise.
+     */
+    abstract protected function doContains($id);
+
+    /**
      * Deletes a cache entry.
      *
      * @param string $id The cache id.
@@ -260,13 +239,6 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     abstract protected function doDelete($id);
 
     /**
-     * Flushes all cache entries.
-     *
-     * @return boolean TRUE if the cache entries were successfully flushed, FALSE otherwise.
-     */
-    abstract protected function doFlush();
-
-    /**
      * Retrieves cached information from the data store.
      *
      * @since 2.2
@@ -274,4 +246,32 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      * @return array|null An associative array with server's statistics if available, NULL otherwise.
      */
     abstract protected function doGetStats();
+
+    /**
+     * {@inheritDoc}
+     */
+    public function flushAll()
+    {
+        return $this->doFlush();
+    }
+
+    /**
+     * Flushes all cache entries.
+     *
+     * @return boolean TRUE if the cache entries were successfully flushed, FALSE otherwise.
+     */
+    abstract protected function doFlush();
+
+    /**
+     * {@inheritDoc}
+     */
+    public function deleteAll()
+    {
+        $namespaceCacheKey = $this->getNamespaceCacheKey();
+        $namespaceVersion  = $this->getNamespaceVersion() + 1;
+
+        $this->namespaceVersion = $namespaceVersion;
+
+        return $this->doSave($namespaceCacheKey, $namespaceVersion);
+    }
 }

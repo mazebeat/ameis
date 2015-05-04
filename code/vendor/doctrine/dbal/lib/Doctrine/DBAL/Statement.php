@@ -19,9 +19,9 @@
 
 namespace Doctrine\DBAL;
 
-use PDO;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Driver\Statement as DriverStatement;
+use Doctrine\DBAL\Types\Type;
+use PDO;
 
 /**
  * A thin wrapper around a Doctrine\DBAL\Driver\Statement that adds support
@@ -89,6 +89,24 @@ class Statement implements \IteratorAggregate, DriverStatement
     }
 
     /**
+     * Binds a parameter to a value by reference.
+     *
+     * Binding a parameter by reference does not support DBAL mapping types.
+     *
+     * @param string       $name   The name or position of the parameter.
+     * @param mixed        $var    The reference to the variable to bind.
+     * @param integer      $type   The PDO binding type.
+     * @param integer|null $length Must be specified when using an OUT bind
+     *                             so that PHP allocates enough memory to hold the returned value.
+     *
+     * @return boolean TRUE on success, FALSE on failure.
+     */
+	public function bindParam($name, &$var, $type = PDO::PARAM_STR, $length = null)
+	{
+		return $this->stmt->bindParam($name, $var, $type, $length);
+	}
+
+	/**
      * Binds a parameter value to the statement.
      *
      * The value can optionally be bound with a PDO binding type or a DBAL mapping type.
@@ -124,24 +142,46 @@ class Statement implements \IteratorAggregate, DriverStatement
     }
 
     /**
-     * Binds a parameter to a value by reference.
-     *
-     * Binding a parameter by reference does not support DBAL mapping types.
-     *
-     * @param string       $name   The name or position of the parameter.
-     * @param mixed        $var    The reference to the variable to bind.
-     * @param integer      $type   The PDO binding type.
-     * @param integer|null $length Must be specified when using an OUT bind
-     *                             so that PHP allocates enough memory to hold the returned value.
+     * Closes the cursor, freeing the database resources used by this statement.
      *
      * @return boolean TRUE on success, FALSE on failure.
      */
-    public function bindParam($name, &$var, $type = PDO::PARAM_STR, $length = null)
+	public function closeCursor()
+	{
+		return $this->stmt->closeCursor();
+	}
+
+	/**
+	 * Returns the number of columns in the result set.
+     *
+	 * @return integer
+	 */
+	public function columnCount()
+	{
+		return $this->stmt->columnCount();
+	}
+
+	/**
+	 * Fetches the SQLSTATE associated with the last operation on the statement.
+     *
+	 * @return string
+     */
+	public function errorCode()
     {
-        return $this->stmt->bindParam($name, $var, $type, $length);
+	    return $this->stmt->errorCode();
     }
 
     /**
+     * Fetches extended error information associated with the last operation on the statement.
+     *
+     * @return array
+     */
+	public function errorInfo()
+	{
+		return $this->stmt->errorInfo();
+	}
+
+	/**
      * Executes the statement with the currently bound parameters.
      *
      * @param array|null $params
@@ -164,6 +204,9 @@ class Statement implements \IteratorAggregate, DriverStatement
         try {
             $stmt = $this->stmt->execute($params);
         } catch (\Exception $ex) {
+	        if ($logger) {
+		        $logger->stopQuery();
+	        }
             throw DBALException::driverExceptionDuringQuery(
                 $this->conn->getDriver(),
                 $ex,
@@ -179,70 +222,6 @@ class Statement implements \IteratorAggregate, DriverStatement
         $this->types = array();
 
         return $stmt;
-    }
-
-    /**
-     * Closes the cursor, freeing the database resources used by this statement.
-     *
-     * @return boolean TRUE on success, FALSE on failure.
-     */
-    public function closeCursor()
-    {
-        return $this->stmt->closeCursor();
-    }
-
-    /**
-     * Returns the number of columns in the result set.
-     *
-     * @return integer
-     */
-    public function columnCount()
-    {
-        return $this->stmt->columnCount();
-    }
-
-    /**
-     * Fetches the SQLSTATE associated with the last operation on the statement.
-     *
-     * @return string
-     */
-    public function errorCode()
-    {
-        return $this->stmt->errorCode();
-    }
-
-    /**
-     * Fetches extended error information associated with the last operation on the statement.
-     *
-     * @return array
-     */
-    public function errorInfo()
-    {
-        return $this->stmt->errorInfo();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null)
-    {
-        if ($arg2 === null) {
-            return $this->stmt->setFetchMode($fetchMode);
-        } elseif ($arg3 === null) {
-            return $this->stmt->setFetchMode($fetchMode, $arg2);
-        }
-
-        return $this->stmt->setFetchMode($fetchMode, $arg2, $arg3);
-    }
-
-    /**
-     * Required by interface IteratorAggregate.
-     *
-     * {@inheritdoc}
-     */
-    public function getIterator()
-    {
-        return $this->stmt;
     }
 
     /**
@@ -295,6 +274,31 @@ class Statement implements \IteratorAggregate, DriverStatement
     public function rowCount()
     {
         return $this->stmt->rowCount();
+    }
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null)
+	{
+		if ($arg2 === null) {
+			return $this->stmt->setFetchMode($fetchMode);
+		}
+		elseif ($arg3 === null) {
+			return $this->stmt->setFetchMode($fetchMode, $arg2);
+		}
+
+		return $this->stmt->setFetchMode($fetchMode, $arg2, $arg3);
+	}
+
+	/**
+	 * Required by interface IteratorAggregate.
+	 *
+	 * {@inheritdoc}
+	 */
+	public function getIterator()
+	{
+		return $this->stmt;
     }
 
     /**

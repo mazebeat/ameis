@@ -47,33 +47,6 @@ class AutoExpireFlashBag implements FlashBagInterface
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function initialize(array &$flashes)
-    {
-        $this->flashes = &$flashes;
-
-        // The logic: messages from the last request will be stored in new, so we move them to previous
-        // This request we will show what is in 'display'.  What is placed into 'new' this time round will
-        // be moved to display next time round.
-        $this->flashes['display'] = array_key_exists('new', $this->flashes) ? $this->flashes['new'] : array();
-        $this->flashes['new'] = array();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function add($type, $message)
     {
         $this->flashes['new'][$type][] = $message;
@@ -82,17 +55,20 @@ class AutoExpireFlashBag implements FlashBagInterface
     /**
      * {@inheritdoc}
      */
-    public function peek($type, array $default = array())
+    public function all()
     {
-        return $this->has($type) ? $this->flashes['display'][$type] : $default;
+        $return = $this->flashes['display'];
+        $this->flashes = array('new' => array(), 'display' => array());
+
+        return $return;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function peekAll()
+    public function clear()
     {
-        return array_key_exists('display', $this->flashes) ? (array) $this->flashes['display'] : array();
+        return $this->all();
     }
 
     /**
@@ -117,44 +93,14 @@ class AutoExpireFlashBag implements FlashBagInterface
     /**
      * {@inheritdoc}
      */
-    public function all()
+    public function getName()
     {
-        $return = $this->flashes['display'];
-        $this->flashes = array('new' => array(), 'display' => array());
-
-        return $return;
+        return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setAll(array $messages)
+    public function setName($name)
     {
-        $this->flashes['new'] = $messages;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function set($type, $messages)
-    {
-        $this->flashes['new'][$type] = (array) $messages;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function has($type)
-    {
-        return array_key_exists($type, $this->flashes['display']) && $this->flashes['display'][$type];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function keys()
-    {
-        return array_keys($this->flashes['display']);
+        $this->name = $name;
     }
 
     /**
@@ -168,8 +114,62 @@ class AutoExpireFlashBag implements FlashBagInterface
     /**
      * {@inheritdoc}
      */
-    public function clear()
+    public function has($type)
     {
-        return $this->all();
+        return array_key_exists($type, $this->flashes['display']) && $this->flashes['display'][$type];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function initialize(array &$flashes)
+    {
+        $this->flashes = &$flashes;
+
+        // The logic: messages from the last request will be stored in new, so we move them to previous
+        // This request we will show what is in 'display'.  What is placed into 'new' this time round will
+        // be moved to display next time round.
+        $this->flashes['display'] = array_key_exists('new', $this->flashes) ? $this->flashes['new'] : array();
+        $this->flashes['new'] = array();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function keys()
+    {
+        return array_keys($this->flashes['display']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function peek($type, array $default = array())
+    {
+        return $this->has($type) ? $this->flashes['display'][$type] : $default;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function peekAll()
+    {
+        return array_key_exists('display', $this->flashes) ? (array) $this->flashes['display'] : array();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function set($type, $messages)
+    {
+        $this->flashes['new'][$type] = (array) $messages;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setAll(array $messages)
+    {
+        $this->flashes['new'] = $messages;
     }
 }

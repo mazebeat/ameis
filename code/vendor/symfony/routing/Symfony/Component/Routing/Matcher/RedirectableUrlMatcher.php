@@ -24,6 +24,26 @@ abstract class RedirectableUrlMatcher extends UrlMatcher implements Redirectable
     /**
      * {@inheritdoc}
      */
+    protected function handleRouteRequirements($pathinfo, $name, Route $route)
+    {
+        // expression condition
+        if ($route->getCondition() && !$this->getExpressionLanguage()->evaluate($route->getCondition(), array('context' => $this->context, 'request' => $this->request))) {
+            return array(self::REQUIREMENT_MISMATCH, null);
+        }
+
+        // check HTTP scheme requirement
+        $scheme = $this->context->getScheme();
+        $schemes = $route->getSchemes();
+        if ($schemes && !$route->hasScheme($scheme)) {
+            return array(self::ROUTE_MATCH, $this->redirect($pathinfo, $name, current($schemes)));
+        }
+
+        return array(self::REQUIREMENT_MATCH, null);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function match($pathinfo)
     {
         try {
@@ -43,25 +63,5 @@ abstract class RedirectableUrlMatcher extends UrlMatcher implements Redirectable
         }
 
         return $parameters;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function handleRouteRequirements($pathinfo, $name, Route $route)
-    {
-        // expression condition
-        if ($route->getCondition() && !$this->getExpressionLanguage()->evaluate($route->getCondition(), array('context' => $this->context, 'request' => $this->request))) {
-            return array(self::REQUIREMENT_MISMATCH, null);
-        }
-
-        // check HTTP scheme requirement
-        $scheme = $this->context->getScheme();
-        $schemes = $route->getSchemes();
-        if ($schemes && !$route->hasScheme($scheme)) {
-            return array(self::ROUTE_MATCH, $this->redirect($pathinfo, $name, current($schemes)));
-        }
-
-        return array(self::REQUIREMENT_MATCH, null);
     }
 }

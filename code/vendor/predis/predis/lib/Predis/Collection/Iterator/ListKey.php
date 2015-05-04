@@ -89,50 +89,6 @@ class ListKey implements Iterator
     }
 
     /**
-     * Fetches a new set of elements from the remote collection,
-     * effectively advancing the iteration process.
-     *
-     * @return array
-     */
-    protected function executeCommand()
-    {
-        return $this->client->lrange($this->key, $this->position + 1, $this->position + $this->count);
-    }
-
-    /**
-     * Populates the local buffer of elements fetched from the
-     * server during the iteration.
-     */
-    protected function fetch()
-    {
-        $elements = $this->executeCommand();
-
-        if (count($elements) < $this->count) {
-            $this->fetchmore = false;
-        }
-
-        $this->elements = $elements;
-    }
-
-    /**
-     * Extracts next values for key() and current().
-     */
-    protected function extractNext()
-    {
-        $this->position++;
-        $this->current = array_shift($this->elements);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rewind()
-    {
-        $this->reset();
-        $this->next();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function current()
@@ -167,8 +123,52 @@ class ListKey implements Iterator
     /**
      * {@inheritdoc}
      */
+    public function rewind()
+    {
+        $this->reset();
+        $this->next();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function valid()
     {
         return $this->valid;
+    }
+
+    /**
+     * Populates the local buffer of elements fetched from the
+     * server during the iteration.
+     */
+    protected function fetch()
+    {
+        $elements = $this->executeCommand();
+
+        if (count($elements) < $this->count) {
+            $this->fetchmore = false;
+        }
+
+        $this->elements = $elements;
+    }
+
+    /**
+     * Fetches a new set of elements from the remote collection,
+     * effectively advancing the iteration process.
+     *
+     * @return array
+     */
+    protected function executeCommand()
+    {
+        return $this->client->lrange($this->key, $this->position + 1, $this->position + $this->count);
+    }
+
+    /**
+     * Extracts next values for key() and current().
+     */
+    protected function extractNext()
+    {
+        $this->position++;
+        $this->current = array_shift($this->elements);
     }
 }

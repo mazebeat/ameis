@@ -37,6 +37,14 @@ class CombinationExtension extends AbstractExtension
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'combination';
+    }
+
+    /**
      * @param XPathExpr $xpath
      * @param XPathExpr $combinedXpath
      *
@@ -81,13 +89,5 @@ class CombinationExtension extends AbstractExtension
     public function translateIndirectAdjacent(XPathExpr $xpath, XPathExpr $combinedXpath)
     {
         return $xpath->join('/following-sibling::', $combinedXpath);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'combination';
     }
 }

@@ -23,6 +23,16 @@ class LaravelHtmlMinifyServiceProvider extends ServiceProvider
     }
 
     /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array();
+    }
+
+    /**
      * Register the service provider.
      *
      * @return void
@@ -44,16 +54,6 @@ class LaravelHtmlMinifyServiceProvider extends ServiceProvider
             }
         );
         $app->view->addExtension('blade.php', 'blade.php');
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return array();
     }
 
 }

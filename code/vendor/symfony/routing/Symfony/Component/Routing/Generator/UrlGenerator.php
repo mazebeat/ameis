@@ -11,12 +11,12 @@
 
 namespace Symfony\Component\Routing\Generator;
 
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Exception\InvalidParameterException;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
-use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Exception\InvalidParameterException;
+use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * UrlGenerator can generate a URL or a path for any route in the RouteCollection
@@ -96,17 +96,9 @@ class UrlGenerator implements UrlGeneratorInterface, ConfigurableRequirementsInt
     /**
      * {@inheritdoc}
      */
-    public function setContext(RequestContext $context)
+    public function isStrictRequirements()
     {
-        $this->context = $context;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getContext()
-    {
-        return $this->context;
+        return $this->strictRequirements;
     }
 
     /**
@@ -115,14 +107,6 @@ class UrlGenerator implements UrlGeneratorInterface, ConfigurableRequirementsInt
     public function setStrictRequirements($enabled)
     {
         $this->strictRequirements = null === $enabled ? null : (bool) $enabled;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isStrictRequirements()
-    {
-        return $this->strictRequirements;
     }
 
     /**
@@ -138,6 +122,22 @@ class UrlGenerator implements UrlGeneratorInterface, ConfigurableRequirementsInt
         $compiledRoute = $route->compile();
 
         return $this->doGenerate($compiledRoute->getVariables(), $route->getDefaults(), $route->getRequirements(), $compiledRoute->getTokens(), $parameters, $name, $referenceType, $compiledRoute->getHostTokens(), $route->getSchemes());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setContext(RequestContext $context)
+    {
+        $this->context = $context;
     }
 
     /**

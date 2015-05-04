@@ -362,106 +362,6 @@ class Crypt_RC2 extends Crypt_Base
     }
 
     /**
-     * Sets the key.
-     *
-     * Keys can be of any length. RC2, itself, uses 1 to 1024 bit keys (eg.
-     * strlen($key) <= 128), however, we only use the first 128 bytes if $key
-     * has more then 128 bytes in it, and set $key to a single null byte if
-     * it is empty.
-     *
-     * If the key is not explicitly set, it'll be assumed to be a single
-     * null byte.
-     *
-     * @see Crypt_Base::setKey()
-     * @access public
-     * @param String $key
-     * @param Integer $t1 optional          Effective key length in bits.
-     */
-    function setKey($key, $t1 = 0)
-    {
-        if ($t1 <= 0) {
-            $t1 = $this->default_key_length;
-        } else if ($t1 > 1024) {
-            $t1 = 1024;
-        }
-        // Key byte count should be 1..128.
-        $key = strlen($key) ? substr($key, 0, 128) : "\x00";
-        $t = strlen($key);
-
-        // The mcrypt RC2 implementation only supports effective key length
-        // of 1024 bits. It is however possible to handle effective key
-        // lengths in range 1..1024 by expanding the key and applying
-        // inverse pitable mapping to the first byte before submitting it
-        // to mcrypt.
-
-        // Key expansion.
-        $l = array_values(unpack('C*', $key));
-        $t8 = ($t1 + 7) >> 3;
-        $tm = 0xFF >> (8 * $t8 - $t1);
-
-        // Expand key.
-        $pitable = $this->pitable;
-        for ($i = $t; $i < 128; $i++) {
-            $l[$i] = $pitable[$l[$i - 1] + $l[$i - $t]];
-        }
-        $i = 128 - $t8;
-        $l[$i] = $pitable[$l[$i] & $tm];
-        while ($i--) {
-            $l[$i] = $pitable[$l[$i + 1] ^ $l[$i + $t8]];
-        }
-
-        // Prepare the key for mcrypt.
-        $l[0] = $this->invpitable[$l[0]];
-        array_unshift($l, 'C*');
-        parent::setKey(call_user_func_array('pack', $l));
-    }
-
-    /**
-     * Encrypts a block
-     *
-     * @see Crypt_Base::_encryptBlock()
-     * @see Crypt_Base::encrypt()
-     * @access private
-     * @param String $in
-     * @return String
-     */
-    function _encryptBlock($in)
-    {
-        list($r0, $r1, $r2, $r3) = array_values(unpack('v*', $in));
-        $keys = $this->keys;
-        $limit = 20;
-        $actions = array($limit => 44, 44 => 64);
-        $j = 0;
-
-        for (;;) {
-            // Mixing round.
-            $r0 = (($r0 + $keys[$j++] + ((($r1 ^ $r2) & $r3) ^ $r1)) & 0xFFFF) << 1;
-            $r0 |= $r0 >> 16;
-            $r1 = (($r1 + $keys[$j++] + ((($r2 ^ $r3) & $r0) ^ $r2)) & 0xFFFF) << 2;
-            $r1 |= $r1 >> 16;
-            $r2 = (($r2 + $keys[$j++] + ((($r3 ^ $r0) & $r1) ^ $r3)) & 0xFFFF) << 3;
-            $r2 |= $r2 >> 16;
-            $r3 = (($r3 + $keys[$j++] + ((($r0 ^ $r1) & $r2) ^ $r0)) & 0xFFFF) << 5;
-            $r3 |= $r3 >> 16;
-
-            if ($j === $limit) {
-                if ($limit === 64) {
-                    break;
-                }
-
-                // Mashing round.
-                $r0 += $keys[$r3 & 0x3F];
-                $r1 += $keys[$r0 & 0x3F];
-                $r2 += $keys[$r1 & 0x3F];
-                $r3 += $keys[$r2 & 0x3F];
-                $limit = $actions[$limit];
-            }
-        }
-
-        return pack('vvvv', $r0, $r1, $r2, $r3);
-    }
-
-    /**
      * Decrypts a block
      *
      * @see Crypt_Base::_decryptBlock()
@@ -507,20 +407,48 @@ class Crypt_RC2 extends Crypt_Base
     }
 
     /**
-     * Creates the key schedule
+     * Encrypts a block
      *
-     * @see Crypt_Base::_setupKey()
+     * @see Crypt_Base::_encryptBlock()
+     * @see Crypt_Base::encrypt()
      * @access private
+     * @param String $in
+     * @return String
      */
-    function _setupKey()
+    function _encryptBlock($in)
     {
-        // Key has already been expanded in Crypt_RC2::setKey():
-        // Only the first value must be altered.
-        $l = unpack('Ca/Cb/v*', $this->key);
-        array_unshift($l, $this->pitable[$l['a']] | ($l['b'] << 8));
-        unset($l['a']);
-        unset($l['b']);
-        $this->keys = $l;
+        list($r0, $r1, $r2, $r3) = array_values(unpack('v*', $in));
+        $keys = $this->keys;
+        $limit = 20;
+        $actions = array($limit => 44, 44 => 64);
+        $j = 0;
+
+        for (;;) {
+            // Mixing round.
+            $r0 = (($r0 + $keys[$j++] + ((($r1 ^ $r2) & $r3) ^ $r1)) & 0xFFFF) << 1;
+            $r0 |= $r0 >> 16;
+            $r1 = (($r1 + $keys[$j++] + ((($r2 ^ $r3) & $r0) ^ $r2)) & 0xFFFF) << 2;
+            $r1 |= $r1 >> 16;
+            $r2 = (($r2 + $keys[$j++] + ((($r3 ^ $r0) & $r1) ^ $r3)) & 0xFFFF) << 3;
+            $r2 |= $r2 >> 16;
+            $r3 = (($r3 + $keys[$j++] + ((($r0 ^ $r1) & $r2) ^ $r0)) & 0xFFFF) << 5;
+            $r3 |= $r3 >> 16;
+
+            if ($j === $limit) {
+                if ($limit === 64) {
+                    break;
+                }
+
+                // Mashing round.
+                $r0 += $keys[$r3 & 0x3F];
+                $r1 += $keys[$r0 & 0x3F];
+                $r2 += $keys[$r1 & 0x3F];
+                $r3 += $keys[$r2 & 0x3F];
+                $limit = $actions[$limit];
+            }
+        }
+
+        return pack('vvvv', $r0, $r1, $r2, $r3);
     }
 
     /**
@@ -648,5 +576,77 @@ class Crypt_RC2 extends Crypt_Base
 
         // Set the inline-crypt function as callback in: $this->inline_crypt
         $this->inline_crypt = $lambda_functions[$code_hash];
+    }
+
+    /**
+     * Creates the key schedule
+     *
+     * @see Crypt_Base::_setupKey()
+     * @access private
+     */
+    function _setupKey()
+    {
+        // Key has already been expanded in Crypt_RC2::setKey():
+        // Only the first value must be altered.
+        $l = unpack('Ca/Cb/v*', $this->key);
+        array_unshift($l, $this->pitable[$l['a']] | ($l['b'] << 8));
+        unset($l['a']);
+        unset($l['b']);
+        $this->keys = $l;
+    }
+
+    /**
+     * Sets the key.
+     *
+     * Keys can be of any length. RC2, itself, uses 1 to 1024 bit keys (eg.
+     * strlen($key) <= 128), however, we only use the first 128 bytes if $key
+     * has more then 128 bytes in it, and set $key to a single null byte if
+     * it is empty.
+     *
+     * If the key is not explicitly set, it'll be assumed to be a single
+     * null byte.
+     *
+     * @see Crypt_Base::setKey()
+     * @access public
+     * @param String $key
+     * @param Integer $t1 optional          Effective key length in bits.
+     */
+    function setKey($key, $t1 = 0)
+    {
+        if ($t1 <= 0) {
+            $t1 = $this->default_key_length;
+        } else if ($t1 > 1024) {
+            $t1 = 1024;
+        }
+        // Key byte count should be 1..128.
+        $key = strlen($key) ? substr($key, 0, 128) : "\x00";
+        $t = strlen($key);
+
+        // The mcrypt RC2 implementation only supports effective key length
+        // of 1024 bits. It is however possible to handle effective key
+        // lengths in range 1..1024 by expanding the key and applying
+        // inverse pitable mapping to the first byte before submitting it
+        // to mcrypt.
+
+        // Key expansion.
+        $l = array_values(unpack('C*', $key));
+        $t8 = ($t1 + 7) >> 3;
+        $tm = 0xFF >> (8 * $t8 - $t1);
+
+        // Expand key.
+        $pitable = $this->pitable;
+        for ($i = $t; $i < 128; $i++) {
+            $l[$i] = $pitable[$l[$i - 1] + $l[$i - $t]];
+        }
+        $i = 128 - $t8;
+        $l[$i] = $pitable[$l[$i] & $tm];
+        while ($i--) {
+            $l[$i] = $pitable[$l[$i + 1] ^ $l[$i + $t8]];
+        }
+
+        // Prepare the key for mcrypt.
+        $l[0] = $this->invpitable[$l[0]];
+        array_unshift($l, 'C*');
+        parent::setKey(call_user_func_array('pack', $l));
     }
 }

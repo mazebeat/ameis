@@ -32,6 +32,34 @@ class MigrationNameParser {
     }
 
     /**
+     * Try to mold user's input
+     * to one of the CRUD operations
+     *
+     * @param $action
+     * @return string
+     */
+    protected function normalizeActionName($action)
+    {
+        switch ($action)
+        {
+            case 'create':
+            case 'make':
+                return 'create';
+            case 'delete':
+            case 'destroy':
+            case 'drop':
+                return 'delete';
+            case 'add':
+            case 'append':
+            case 'update':
+            case 'insert':
+                return 'add';
+            default:
+                return $action;
+        }
+    }
+
+    /**
      * Determine what the table name should be
      *
      * @param array $pieces
@@ -58,34 +86,6 @@ class MigrationNameParser {
 
         // We can't forget to reverse it back again!
         return implode('_', array_reverse($tableName));
-    }
-
-    /**
-     * Try to mold user's input
-     * to one of the CRUD operations
-     *
-     * @param $action
-     * @return string
-     */
-    protected function normalizeActionName($action)
-    {
-        switch ($action)
-        {
-            case 'create':
-            case 'make':
-                return 'create';
-            case 'delete':
-            case 'destroy':
-            case 'drop':
-                return 'delete';
-            case 'add':
-            case 'append':
-            case 'update':
-            case 'insert':
-                return 'add';
-            default:
-                return $action;
-        }
     }
 
 }

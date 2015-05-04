@@ -31,6 +31,11 @@ class DebugHandlersListener implements EventSubscriberInterface
         }
     }
 
+    public static function getSubscribedEvents()
+    {
+        return array(KernelEvents::REQUEST => array('configure', 2048));
+    }
+
     public function configure()
     {
         if ($this->exceptionHandler) {
@@ -42,10 +47,5 @@ class DebugHandlersListener implements EventSubscriberInterface
             }
             $this->exceptionHandler = null;
         }
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return array(KernelEvents::REQUEST => array('configure', 2048));
     }
 }

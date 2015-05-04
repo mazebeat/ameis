@@ -39,16 +39,19 @@ class Swift_Events_SimpleEventDispatcher implements Swift_Events_EventDispatcher
     }
 
     /**
-     * Create a new SendEvent for $source and $message.
+     * Bind an event listener to this dispatcher.
      *
-     * @param Swift_Transport $source
-     * @param Swift_Mime_Message
-     *
-     * @return Swift_Events_SendEvent
+     * @param Swift_Events_EventListener $listener
      */
-    public function createSendEvent(Swift_Transport $source, Swift_Mime_Message $message)
+    public function bindEventListener(Swift_Events_EventListener $listener)
     {
-        return new Swift_Events_SendEvent($source, $message);
+        foreach ($this->_listeners as $l) {
+            // Already loaded
+            if ($l === $listener) {
+                return;
+            }
+        }
+        $this->_listeners[] = $listener;
     }
 
     /**
@@ -80,6 +83,19 @@ class Swift_Events_SimpleEventDispatcher implements Swift_Events_EventDispatcher
     }
 
     /**
+     * Create a new SendEvent for $source and $message.
+     *
+     * @param Swift_Transport $source
+     * @param Swift_Mime_Message
+     *
+     * @return Swift_Events_SendEvent
+     */
+    public function createSendEvent(Swift_Transport $source, Swift_Mime_Message $message)
+    {
+        return new Swift_Events_SendEvent($source, $message);
+    }
+
+    /**
      * Create a new TransportChangeEvent for $source.
      *
      * @param Swift_Transport $source
@@ -102,22 +118,6 @@ class Swift_Events_SimpleEventDispatcher implements Swift_Events_EventDispatcher
     public function createTransportExceptionEvent(Swift_Transport $source, Swift_TransportException $ex)
     {
         return new Swift_Events_TransportExceptionEvent($source, $ex);
-    }
-
-    /**
-     * Bind an event listener to this dispatcher.
-     *
-     * @param Swift_Events_EventListener $listener
-     */
-    public function bindEventListener(Swift_Events_EventListener $listener)
-    {
-        foreach ($this->_listeners as $l) {
-            // Already loaded
-            if ($l === $listener) {
-                return;
-            }
-        }
-        $this->_listeners[] = $listener;
     }
 
     /**

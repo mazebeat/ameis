@@ -28,9 +28,24 @@ class CacheWarmerAggregate implements CacheWarmerInterface
         }
     }
 
+    public function add(CacheWarmerInterface $warmer)
+    {
+        $this->warmers[] = $warmer;
+    }
+
     public function enableOptionalWarmers()
     {
         $this->optionalsEnabled = true;
+    }
+
+    /**
+     * Checks whether this warmer is optional or not.
+     *
+     * @return bool always false
+     */
+    public function isOptional()
+    {
+        return false;
     }
 
     /**
@@ -49,26 +64,11 @@ class CacheWarmerAggregate implements CacheWarmerInterface
         }
     }
 
-    /**
-     * Checks whether this warmer is optional or not.
-     *
-     * @return bool always false
-     */
-    public function isOptional()
-    {
-        return false;
-    }
-
     public function setWarmers(array $warmers)
     {
         $this->warmers = array();
         foreach ($warmers as $warmer) {
             $this->add($warmer);
         }
-    }
-
-    public function add(CacheWarmerInterface $warmer)
-    {
-        $this->warmers[] = $warmer;
     }
 }

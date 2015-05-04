@@ -20,16 +20,16 @@ class SetRemove extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    protected function filterArguments(Array $arguments)
     {
-        return 'SREM';
+        return self::normalizeVariadic($arguments);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    public function getId()
     {
-        return self::normalizeVariadic($arguments);
+        return 'SREM';
     }
 }

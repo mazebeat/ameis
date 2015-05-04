@@ -4,8 +4,8 @@ namespace spec\Way\Generators;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Compilers\TemplateCompiler;
+use Way\Generators\Filesystem\Filesystem;
 
 class GeneratorSpec extends ObjectBehavior {
 

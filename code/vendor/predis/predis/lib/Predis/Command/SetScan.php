@@ -20,14 +20,6 @@ class SetScan extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return 'SSCAN';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 3 && is_array($arguments[2])) {
@@ -36,6 +28,26 @@ class SetScan extends PrefixableCommand
         }
 
         return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SSCAN';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (is_array($data)) {
+            $data[0] = (int) $data[0];
+        }
+
+        return $data;
     }
 
     /**
@@ -60,17 +72,5 @@ class SetScan extends PrefixableCommand
         }
 
         return $normalized;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        if (is_array($data)) {
-            $data[0] = (int) $data[0];
-        }
-
-        return $data;
     }
 }

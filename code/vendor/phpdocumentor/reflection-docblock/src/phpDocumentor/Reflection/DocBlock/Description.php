@@ -44,16 +44,6 @@ class Description implements \Reflector
     }
 
     /**
-     * Gets the text of this description.
-     *
-     * @return string
-     */
-    public function getContents()
-    {
-        return $this->contents;
-    }
-
-    /**
      * Sets the text of this description.
      *
      * @param string $content The new text of this description.
@@ -201,6 +191,16 @@ class Description implements \Reflector
     }
 
     /**
+     * Returns the long description as a string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getContents();
+    }
+
+    /**
      * Builds a string representation of this object.
      *
      * @todo determine the exact format as used by PHP Reflection
@@ -215,12 +215,12 @@ class Description implements \Reflector
     }
 
     /**
-     * Returns the long description as a string.
+     * Gets the text of this description.
      *
      * @return string
      */
-    public function __toString()
+    public function getContents()
     {
-        return $this->getContents();
+        return $this->contents;
     }
 }

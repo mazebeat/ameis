@@ -24,6 +24,44 @@ class MemcachedProfilerStorage extends BaseMemcacheProfilerStorage
     private $memcached;
 
     /**
+     * {@inheritdoc}
+     */
+	protected function appendValue($key, $value, $expiration = 0)
+	{
+		$memcached = $this->getMemcached();
+
+		if (!$result = $memcached->append($key, $value)) {
+			return $memcached->set($key, $value, $expiration);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function delete($key)
+	{
+		return $this->getMemcached()->delete($key);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function getValue($key)
+	{
+		return $this->getMemcached()->get($key);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function setValue($key, $value, $expiration = 0)
+	{
+		return $this->getMemcached()->set($key, $value, time() + $expiration);
+	}
+
+	/**
      * Internal convenience method that returns the instance of the Memcached.
      *
      * @return \Memcached
@@ -61,43 +99,5 @@ class MemcachedProfilerStorage extends BaseMemcacheProfilerStorage
     public function setMemcached($memcached)
     {
         $this->memcached = $memcached;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getValue($key)
-    {
-        return $this->getMemcached()->get($key);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setValue($key, $value, $expiration = 0)
-    {
-        return $this->getMemcached()->set($key, $value, time() + $expiration);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function delete($key)
-    {
-        return $this->getMemcached()->delete($key);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function appendValue($key, $value, $expiration = 0)
-    {
-        $memcached = $this->getMemcached();
-
-        if (!$result = $memcached->append($key, $value)) {
-            return $memcached->set($key, $value, $expiration);
-        }
-
-        return $result;
     }
 }

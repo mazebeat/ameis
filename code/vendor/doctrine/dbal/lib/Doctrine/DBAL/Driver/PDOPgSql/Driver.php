@@ -19,11 +19,11 @@
 
 namespace Doctrine\DBAL\Driver\PDOPgSql;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\AbstractPostgreSQLDriver;
 use Doctrine\DBAL\Driver\PDOConnection;
-use Doctrine\DBAL\DBALException;
-use PDOException;
 use PDO;
+use PDOException;
 
 /**
  * Driver that connects through pdo_pgsql.
@@ -53,10 +53,26 @@ class Driver extends AbstractPostgreSQLDriver
                 $pdo->setAttribute(PDO::PGSQL_ATTR_DISABLE_PREPARES, true);
             }
 
+            /* defining client_encoding via SET NAMES to avoid inconsistent DSN support
+             * - the 'client_encoding' connection param only works with postgres >= 9.1
+             * - passing client_encoding via the 'options' param breaks pgbouncer support
+             */
+            if (isset($params['charset'])) {
+              $pdo->query('SET NAMES \''.$params['charset'].'\'');
+            }
+
             return $pdo;
         } catch (PDOException $e) {
             throw DBALException::driverException($this, $e);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'pdo_pgsql';
     }
 
     /**
@@ -80,10 +96,11 @@ class Driver extends AbstractPostgreSQLDriver
 
         if (isset($params['dbname'])) {
             $dsn .= 'dbname=' . $params['dbname'] . ' ';
-        }
-
-        if (isset($params['charset'])) {
-            $dsn .= 'client_encoding=' . $params['charset'] . ' ';
+        } else {
+            // Used for temporary connections to allow operations like dropping the database currently connected to.
+            // Connecting without an explicit database does not work, therefore "template1" database is used
+            // as it is certainly present in every server setup.
+            $dsn .= 'dbname=template1' . ' ';
         }
 
         if (isset($params['sslmode'])) {
@@ -91,13 +108,5 @@ class Driver extends AbstractPostgreSQLDriver
         }
 
         return $dsn;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'pdo_pgsql';
     }
 }

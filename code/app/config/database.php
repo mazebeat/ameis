@@ -76,10 +76,10 @@ return array(
 
 		'sqlsrv' => array(
 			'driver'   => 'sqlsrv',
-			'host'     => 'localhost',
-			'database' => '',
-			'username' => '',
-			'password' => '',
+			'host'     => '190.44.200.136',
+			'database' => 'AMEIS',
+			'username' => 'sa',
+			'password' => 'Ameis*2015',
 			'prefix'   => '',
 		),
 

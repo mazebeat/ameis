@@ -12,13 +12,13 @@
 namespace Predis\Pipeline;
 
 use Iterator;
-use SplQueue;
-use Predis\ResponseErrorInterface;
-use Predis\ResponseObjectInterface;
-use Predis\ServerException;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ReplicationConnectionInterface;
+use Predis\ResponseErrorInterface;
+use Predis\ResponseObjectInterface;
+use Predis\ServerException;
+use SplQueue;
 
 /**
  * Implements the standard pipeline executor strategy used
@@ -37,6 +37,33 @@ class StandardExecutor implements PipelineExecutorInterface
     public function __construct($exceptions = true)
     {
         $this->exceptions = (bool) $exceptions;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function execute(ConnectionInterface $connection, SplQueue $commands)
+    {
+        $this->checkConnection($connection);
+
+        foreach ($commands as $command) {
+            $connection->writeCommand($command);
+        }
+
+        $values = array();
+
+        while (!$commands->isEmpty()) {
+            $command = $commands->dequeue();
+            $response = $connection->readResponse($command);
+
+            if ($response instanceof ResponseObjectInterface) {
+                $values[] = $this->onResponseObject($connection, $command, $response);
+            } else {
+                $values[] = $command->parseResponse($response);
+            }
+        }
+
+        return $values;
     }
 
     /**
@@ -92,32 +119,5 @@ class StandardExecutor implements PipelineExecutorInterface
         $message = $response->getMessage();
 
         throw new ServerException($message);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function execute(ConnectionInterface $connection, SplQueue $commands)
-    {
-        $this->checkConnection($connection);
-
-        foreach ($commands as $command) {
-            $connection->writeCommand($command);
-        }
-
-        $values = array();
-
-        while (!$commands->isEmpty()) {
-            $command = $commands->dequeue();
-            $response = $connection->readResponse($command);
-
-            if ($response instanceof ResponseObjectInterface) {
-                $values[] = $this->onResponseObject($connection, $command, $response);
-            } else {
-                $values[] = $command->parseResponse($response);
-            }
-        }
-
-        return $values;
     }
 }

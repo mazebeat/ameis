@@ -37,24 +37,6 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     }
 
     /**
-     * Checks if one master and at least one slave have been defined.
-     */
-    protected function check()
-    {
-        if (!isset($this->master) || !$this->slaves) {
-            throw new \RuntimeException('Replication needs a master and at least one slave.');
-        }
-    }
-
-    /**
-     * Resets the connection state.
-     */
-    protected function reset()
-    {
-        $this->current = null;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function add(SingleConnectionInterface $connection)
@@ -73,28 +55,41 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function remove(SingleConnectionInterface $connection)
+	public function connect()
     {
-        if ($connection->getParameters()->alias === 'master') {
-            $this->master = null;
-            $this->reset();
+	    if ($this->current === null) {
+		    $this->check();
+		    $this->current = $this->pickSlave();
+	    }
 
-            return true;
-        } else {
-            if (($id = array_search($connection, $this->slaves, true)) !== false) {
-                unset($this->slaves[$id]);
-                $this->reset();
+	    $this->current->connect();
+    }
 
-                return true;
-            }
+	/**
+	 * {@inheritdoc}
+	 */
+	public function disconnect()
+	{
+		if ($this->master) {
+			$this->master->disconnect();
         }
 
-        return false;
+		foreach ($this->slaves as $connection) {
+			$connection->disconnect();
+		}
     }
 
     /**
      * {@inheritdoc}
      */
+	public function executeCommand(CommandInterface $command)
+	{
+		return $this->getConnection($command)->executeCommand($command);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
     public function getConnection(CommandInterface $command)
     {
         if ($this->current === null) {
@@ -134,23 +129,6 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function switchTo($connection)
-    {
-        $this->check();
-
-        if (!$connection instanceof SingleConnectionInterface) {
-            $connection = $this->getConnectionById($connection);
-        }
-        if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
-            throw new \InvalidArgumentException('The specified connection is not valid.');
-        }
-
-        $this->current = $connection;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getCurrent()
     {
         return $this->current;
@@ -173,13 +151,85 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     }
 
     /**
-     * Returns the underlying replication strategy.
-     *
-     * @return ReplicationStrategy
+     * {@inheritdoc}
      */
-    public function getReplicationStrategy()
+	public function isConnected()
     {
-        return $this->strategy;
+	    return $this->current ? $this->current->isConnected() : false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+	public function readResponse(CommandInterface $command)
+    {
+	    return $this->getConnection($command)->readResponse($command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+	public function remove(SingleConnectionInterface $connection)
+    {
+	    if ($connection->getParameters()->alias === 'master') {
+		    $this->master = null;
+		    $this->reset();
+
+		    return true;
+	    }
+	    else {
+		    if (($id = array_search($connection, $this->slaves, true)) !== false) {
+			    unset($this->slaves[$id]);
+			    $this->reset();
+
+			    return true;
+		    }
+	    }
+
+	    return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+	public function switchTo($connection)
+    {
+	    $this->check();
+
+	    if (!$connection instanceof SingleConnectionInterface) {
+		    $connection = $this->getConnectionById($connection);
+        }
+	    if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
+		    throw new \InvalidArgumentException('The specified connection is not valid.');
+	    }
+
+	    $this->current = $connection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+	public function writeCommand(CommandInterface $command)
+    {
+	    $this->getConnection($command)->writeCommand($command);
+    }
+
+	/**
+	 * Resets the connection state.
+	 */
+	protected function reset()
+	{
+		$this->current = null;
+    }
+
+    /**
+     * Checks if one master and at least one slave have been defined.
+     */
+	protected function check()
+    {
+	    if (!isset($this->master) || !$this->slaves) {
+		    throw new \RuntimeException('Replication needs a master and at least one slave.');
+	    }
     }
 
     /**
@@ -187,68 +237,19 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
      *
      * @return SingleConnectionInterface
      */
-    protected function pickSlave()
+	protected function pickSlave()
     {
-        return $this->slaves[array_rand($this->slaves)];
+	    return $this->slaves[array_rand($this->slaves)];
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the underlying replication strategy.
+     *
+     * @return ReplicationStrategy
      */
-    public function isConnected()
+	public function getReplicationStrategy()
     {
-        return $this->current ? $this->current->isConnected() : false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function connect()
-    {
-        if ($this->current === null) {
-            $this->check();
-            $this->current = $this->pickSlave();
-        }
-
-        $this->current->connect();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function disconnect()
-    {
-        if ($this->master) {
-            $this->master->disconnect();
-        }
-
-        foreach ($this->slaves as $connection) {
-            $connection->disconnect();
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function writeCommand(CommandInterface $command)
-    {
-        $this->getConnection($command)->writeCommand($command);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function readResponse(CommandInterface $command)
-    {
-        return $this->getConnection($command)->readResponse($command);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function executeCommand(CommandInterface $command)
-    {
-        return $this->getConnection($command)->executeCommand($command);
+	    return $this->strategy;
     }
 
     /**

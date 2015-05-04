@@ -32,19 +32,19 @@ class ResponseError implements ResponseErrorInterface
     /**
      * {@inheritdoc}
      */
-    public function getMessage()
-    {
-        return $this->message;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getErrorType()
     {
         list($errorType, ) = explode(' ', $this->getMessage(), 2);
 
         return $errorType;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMessage()
+    {
+        return $this->message;
     }
 
     /**

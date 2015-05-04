@@ -68,9 +68,9 @@ final class PersistentToken implements PersistentTokenInterface
     /**
      * {@inheritdoc}
      */
-    public function getUsername()
+    public function getLastUsed()
     {
-        return $this->username;
+        return $this->lastUsed;
     }
 
     /**
@@ -92,8 +92,8 @@ final class PersistentToken implements PersistentTokenInterface
     /**
      * {@inheritdoc}
      */
-    public function getLastUsed()
+    public function getUsername()
     {
-        return $this->lastUsed;
+        return $this->username;
     }
 }

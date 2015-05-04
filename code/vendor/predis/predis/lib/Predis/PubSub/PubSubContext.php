@@ -14,8 +14,8 @@ namespace Predis\PubSub;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\AbstractCommand as Command;
-use Predis\NotSupportedException;
 use Predis\Connection\AggregatedConnectionInterface;
+use Predis\NotSupportedException;
 
 /**
  * Client-side abstraction of a Publish / Subscribe context.
@@ -39,16 +39,6 @@ class PubSubContext extends AbstractPubSubContext
 
         $this->genericSubscribeInit('subscribe');
         $this->genericSubscribeInit('psubscribe');
-    }
-
-    /**
-     * Returns the underlying client instance used by the pub/sub iterator.
-     *
-     * @return ClientInterface
-     */
-    public function getClient()
-    {
-        return $this->client;
     }
 
     /**
@@ -83,13 +73,13 @@ class PubSubContext extends AbstractPubSubContext
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the underlying client instance used by the pub/sub iterator.
+     *
+     * @return ClientInterface
      */
-    protected function writeCommand($method, $arguments)
+    public function getClient()
     {
-        $arguments = Command::normalizeArguments($arguments);
-        $command = $this->client->createCommand($method, $arguments);
-        $this->client->getConnection()->writeCommand($command);
+        return $this->client;
     }
 
     /**
@@ -143,5 +133,15 @@ class PubSubContext extends AbstractPubSubContext
                 $message = "Received an unknown message type {$response[0]} inside of a pubsub context";
                 throw new ClientException($message);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function writeCommand($method, $arguments)
+    {
+        $arguments = Command::normalizeArguments($arguments);
+        $command = $this->client->createCommand($method, $arguments);
+        $this->client->getConnection()->writeCommand($command);
     }
 }

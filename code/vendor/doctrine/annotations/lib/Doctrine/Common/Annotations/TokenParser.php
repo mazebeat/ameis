@@ -68,6 +68,34 @@ class TokenParser
     }
 
     /**
+     * Gets all use statements.
+     *
+     * @param string $namespaceName The namespace name of the reflected class.
+     *
+     * @return array A list with all found use statements.
+     */
+    public function parseUseStatements($namespaceName)
+    {
+        $statements = array();
+        while (($token = $this->next())) {
+            if ($token[0] === T_USE) {
+                $statements = array_merge($statements, $this->parseUseStatement());
+                continue;
+            }
+            if ($token[0] !== T_NAMESPACE || $this->parseNamespace() != $namespaceName) {
+                continue;
+            }
+
+            // Get fresh array for new namespace. This is to prevent the parser to collect the use statements
+            // for a previous namespace with the same name. This is the case if a namespace is defined twice
+            // or if a namespace with the same name is commented out.
+            $statements = array();
+        }
+
+        return $statements;
+    }
+
+    /**
      * Gets the next non whitespace and non comment token.
      *
      * @param boolean $docCommentIsComment If TRUE then a doc comment is considered a comment and skipped.
@@ -124,34 +152,6 @@ class TokenParser
             } else {
                 break;
             }
-        }
-
-        return $statements;
-    }
-
-    /**
-     * Gets all use statements.
-     *
-     * @param string $namespaceName The namespace name of the reflected class.
-     *
-     * @return array A list with all found use statements.
-     */
-    public function parseUseStatements($namespaceName)
-    {
-        $statements = array();
-        while (($token = $this->next())) {
-            if ($token[0] === T_USE) {
-                $statements = array_merge($statements, $this->parseUseStatement());
-                continue;
-            }
-            if ($token[0] !== T_NAMESPACE || $this->parseNamespace() != $namespaceName) {
-                continue;
-            }
-
-            // Get fresh array for new namespace. This is to prevent the parser to collect the use statements
-            // for a previous namespace with the same name. This is the case if a namespace is defined twice
-            // or if a namespace with the same name is commented out.
-            $statements = array();
         }
 
         return $statements;

@@ -67,7 +67,7 @@ class MemcachedSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function open($savePath, $sessionName)
+    public function close()
     {
         return true;
     }
@@ -75,7 +75,24 @@ class MemcachedSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function destroy($sessionId)
+    {
+        return $this->memcached->delete($this->prefix.$sessionId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function gc($maxlifetime)
+    {
+        // not required here because memcached will auto expire the records anyhow.
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function open($savePath, $sessionName)
     {
         return true;
     }
@@ -94,23 +111,6 @@ class MemcachedSessionHandler implements \SessionHandlerInterface
     public function write($sessionId, $data)
     {
         return $this->memcached->set($this->prefix.$sessionId, $data, time() + $this->ttl);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function destroy($sessionId)
-    {
-        return $this->memcached->delete($this->prefix.$sessionId);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function gc($maxlifetime)
-    {
-        // not required here because memcached will auto expire the records anyhow.
-        return true;
     }
 
     /**

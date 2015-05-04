@@ -38,18 +38,6 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
     /**
      * {@inheritdoc}
      */
-    public function setProtocol(ProtocolInterface $protocol)
-    {
-        if ($protocol === null) {
-            throw new \InvalidArgumentException("The protocol instance cannot be a null value");
-        }
-
-        $this->protocol = $protocol;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getProtocol()
     {
         return $this->protocol;
@@ -58,9 +46,13 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
     /**
      * {@inheritdoc}
      */
-    public function writeBytes($buffer)
+    public function setProtocol(ProtocolInterface $protocol)
     {
-        parent::writeBytes($buffer);
+        if ($protocol === null) {
+            throw new \InvalidArgumentException("The protocol instance cannot be a null value");
+        }
+
+        $this->protocol = $protocol;
     }
 
     /**
@@ -112,9 +104,9 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(CommandInterface $command)
+    public function __sleep()
     {
-        $this->protocol->write($this, $command);
+        return array_diff(array_merge(parent::__sleep(), array('protocol')), array('mbiterable'));
     }
 
     /**
@@ -128,8 +120,16 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
     /**
      * {@inheritdoc}
      */
-    public function __sleep()
+    public function writeBytes($buffer)
     {
-        return array_diff(array_merge(parent::__sleep(), array('protocol')), array('mbiterable'));
+        parent::writeBytes($buffer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function writeCommand(CommandInterface $command)
+    {
+        $this->protocol->write($this, $command);
     }
 }

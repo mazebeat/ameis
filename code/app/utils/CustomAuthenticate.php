@@ -17,6 +17,25 @@ class DummyAuthProvider implements UserProviderInterface
 	 */
 	private $credentials;
 
+	/**
+	 * @param array $credentials
+	 *
+	 * @return \Illuminate\Auth\GenericUser
+	 */
+	public function retrieveByCredentials(array $credentials)
+	{
+		if (count($credentials) && Session::has('credentials')) {
+			Session::flash('credentials', $credentials);
+
+			return $this->dummyUser();
+		}
+
+		if (count($credentials)) {
+			Session::put('credentials', $credentials);
+
+			return $this->dummyUser();
+		}
+	}
 
 	/**
 	 * @param mixed $identifier
@@ -26,6 +45,39 @@ class DummyAuthProvider implements UserProviderInterface
 	public function retrieveById($identifier)
 	{
 		return $this->dummyUser();
+	}
+
+	/**
+	 * @param mixed  $identifier
+	 * @param string $token
+	 *
+	 * @return \Exception
+	 */
+	public function retrieveByToken($identifier, $token)
+	{
+		return new \Exception('not implemented');
+	}
+
+	/**
+	 * @param \Illuminate\Auth\UserInterface $user
+	 * @param string                         $token
+	 *
+	 * @return \Exception
+	 */
+	public function updateRememberToken(UserInterface $user, $token)
+	{
+		return new \Exception('not implemented');
+	}
+
+	/**
+	 * @param \Illuminate\Auth\UserInterface $user
+	 * @param array                          $credentials
+	 *
+	 * @return bool
+	 */
+	public function validateCredentials(UserInterface $user, array $credentials)
+	{
+		return true;
 	}
 
 	/**
@@ -51,58 +103,5 @@ class DummyAuthProvider implements UserProviderInterface
 		                    'negocios'               => $this->credentials['negocios'],);
 
 		return new GenericUser($attributes);
-	}
-
-	/**
-	 * @param array $credentials
-	 *
-	 * @return \Illuminate\Auth\GenericUser
-	 */
-	public function retrieveByCredentials(array $credentials)
-	{
-		if (count($credentials) && Session::has('credentials')) {
-			Session::flash('credentials', $credentials);
-
-			return $this->dummyUser();
-		}
-
-		if (count($credentials)) {
-			Session::put('credentials', $credentials);
-
-			return $this->dummyUser();
-		}
-	}
-
-	/**
-	 * @param \Illuminate\Auth\UserInterface $user
-	 * @param array                          $credentials
-	 *
-	 * @return bool
-	 */
-	public function validateCredentials(UserInterface $user, array $credentials)
-	{
-		return true;
-	}
-
-	/**
-	 * @param mixed  $identifier
-	 * @param string $token
-	 *
-	 * @return \Exception
-	 */
-	public function retrieveByToken($identifier, $token)
-	{
-		return new \Exception('not implemented');
-	}
-
-	/**
-	 * @param \Illuminate\Auth\UserInterface $user
-	 * @param string                         $token
-	 *
-	 * @return \Exception
-	 */
-	public function updateRememberToken(UserInterface $user, $token)
-	{
-		return new \Exception('not implemented');
 	}
 }

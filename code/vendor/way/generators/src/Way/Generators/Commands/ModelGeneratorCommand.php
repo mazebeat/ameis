@@ -1,6 +1,5 @@
 <?php namespace Way\Generators\Commands;
 
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ModelGeneratorCommand extends GeneratorCommand {
@@ -20,6 +19,22 @@ class ModelGeneratorCommand extends GeneratorCommand {
     protected $description = 'Generate a model';
 
     /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+	protected function getArguments()
+	{
+		return [
+			[
+				'modelName',
+				InputArgument::REQUIRED,
+				'The name of the desired Eloquent model'
+			]
+		];
+	}
+
+	/**
      * The path where the file will be created
      *
      * @return mixed
@@ -51,18 +66,6 @@ class ModelGeneratorCommand extends GeneratorCommand {
     protected function getTemplatePath()
     {
         return $this->getPathByOptionOrConfig('templatePath', 'model_template_path');
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['modelName', InputArgument::REQUIRED, 'The name of the desired Eloquent model']
-        ];
     }
 
 }

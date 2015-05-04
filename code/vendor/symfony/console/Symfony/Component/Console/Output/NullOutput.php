@@ -29,14 +29,6 @@ class NullOutput implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function setFormatter(OutputFormatterInterface $formatter)
-    {
-        // do nothing
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getFormatter()
     {
         // to comply with the interface we must return a OutputFormatterInterface
@@ -46,9 +38,9 @@ class NullOutput implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function setDecorated($decorated)
+    public function getVerbosity()
     {
-        // do nothing
+        return self::VERBOSITY_QUIET;
     }
 
     /**
@@ -62,6 +54,22 @@ class NullOutput implements OutputInterface
     /**
      * {@inheritdoc}
      */
+    public function setDecorated($decorated)
+    {
+        // do nothing
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFormatter(OutputFormatterInterface $formatter)
+    {
+        // do nothing
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setVerbosity($level)
     {
         // do nothing
@@ -70,9 +78,17 @@ class NullOutput implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function getVerbosity()
+    public function write($messages, $newline = false, $type = self::OUTPUT_NORMAL)
     {
-        return self::VERBOSITY_QUIET;
+        // do nothing
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function writeln($messages, $type = self::OUTPUT_NORMAL)
+    {
+        // do nothing
     }
 
     public function isQuiet()
@@ -93,21 +109,5 @@ class NullOutput implements OutputInterface
     public function isDebug()
     {
         return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function writeln($messages, $type = self::OUTPUT_NORMAL)
-    {
-        // do nothing
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function write($messages, $newline = false, $type = self::OUTPUT_NORMAL)
-    {
-        // do nothing
     }
 }

@@ -32,6 +32,16 @@ class VendorCleanupServiceProvider extends ServiceProvider {
 	}
 
 	/**
+	 * Get the services provided by the provider.
+	 *
+	 * @return array
+	 */
+	public function provides()
+	{
+        return array('command.vendor-cleanup');
+	}
+
+	/**
 	 * Register the service provider.
 	 *
 	 * @return void
@@ -43,16 +53,6 @@ class VendorCleanupServiceProvider extends ServiceProvider {
                 return new VendorCleanupCommand;
             });
         $this->commands('command.vendor-cleanup');
-	}
-
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-        return array('command.vendor-cleanup');
 	}
 
 }

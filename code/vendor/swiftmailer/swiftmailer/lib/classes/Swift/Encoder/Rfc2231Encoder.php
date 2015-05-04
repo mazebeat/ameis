@@ -33,6 +33,16 @@ class Swift_Encoder_Rfc2231Encoder implements Swift_Encoder
     }
 
     /**
+     * Updates the charset used.
+     *
+     * @param string $charset
+     */
+    public function charsetChanged($charset)
+    {
+        $this->_charStream->setCharacterSet($charset);
+    }
+
+    /**
      * Takes an unencoded string and produces a string encoded according to
      * RFC 2231 from it.
      *
@@ -70,16 +80,6 @@ class Swift_Encoder_Rfc2231Encoder implements Swift_Encoder
         }
 
         return implode("\r\n", $lines);
-    }
-
-    /**
-     * Updates the charset used.
-     *
-     * @param string $charset
-     */
-    public function charsetChanged($charset)
-    {
-        $this->_charStream->setCharacterSet($charset);
     }
 
     /**

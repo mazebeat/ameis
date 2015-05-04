@@ -20,9 +20,9 @@ class StringSetMultiple extends AbstractCommand implements PrefixableCommandInte
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'MSET';
+        PrefixHelpers::interleaved($this, $prefix);
     }
 
     /**
@@ -48,8 +48,8 @@ class StringSetMultiple extends AbstractCommand implements PrefixableCommandInte
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function getId()
     {
-        PrefixHelpers::interleaved($this, $prefix);
+        return 'MSET';
     }
 }

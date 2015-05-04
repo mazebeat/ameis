@@ -67,24 +67,6 @@ class ServerInfo extends AbstractCommand
     }
 
     /**
-     * Parses the reply buffer and extracts the statistics of each logical DB.
-     *
-     * @param  string $str Reply buffer.
-     * @return array
-     */
-    protected function parseDatabaseStats($str)
-    {
-        $db = array();
-
-        foreach (explode(',', $str) as $dbvar) {
-            list($dbvk, $dbvv) = explode('=', $dbvar);
-            $db[trim($dbvk)] = $dbvv;
-        }
-
-        return $db;
-    }
-
-    /**
      * Parses the reply buffer and extracts the allocation statistics.
      *
      * @param  string $str Reply buffer.
@@ -107,5 +89,23 @@ class ServerInfo extends AbstractCommand
         }
 
         return $stats;
+    }
+
+    /**
+     * Parses the reply buffer and extracts the statistics of each logical DB.
+     *
+     * @param  string $str Reply buffer.
+     * @return array
+     */
+    protected function parseDatabaseStats($str)
+    {
+        $db = array();
+
+        foreach (explode(',', $str) as $dbvar) {
+            list($dbvk, $dbvv) = explode('=', $dbvar);
+            $db[trim($dbvk)] = $dbvv;
+        }
+
+        return $db;
     }
 }

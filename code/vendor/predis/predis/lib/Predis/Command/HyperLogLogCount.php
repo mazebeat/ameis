@@ -20,17 +20,17 @@ class HyperLogLogCount extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    protected function filterArguments(array $arguments)
     {
-        return 'PFCOUNT';
+        return self::normalizeArguments($arguments);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function getId()
     {
-        return self::normalizeArguments($arguments);
+        return 'PFCOUNT';
     }
 
     /**

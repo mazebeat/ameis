@@ -25,22 +25,18 @@ class MetadataBag implements SessionBagInterface
     const CREATED = 'c';
     const UPDATED = 'u';
     const LIFETIME = 'l';
-
-    /**
-     * @var string
-     */
-    private $name = '__metadata';
-
-    /**
-     * @var string
-     */
-    private $storageKey;
-
     /**
      * @var array
      */
     protected $meta = array(self::CREATED => 0, self::UPDATED => 0, self::LIFETIME => 0);
-
+    /**
+     * @var string
+     */
+    private $name = '__metadata';
+    /**
+     * @var string
+     */
+    private $storageKey;
     /**
      * Unix timestamp.
      *
@@ -66,25 +62,6 @@ class MetadataBag implements SessionBagInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function initialize(array &$array)
-    {
-        $this->meta = &$array;
-
-        if (isset($array[self::CREATED])) {
-            $this->lastUsed = $this->meta[self::UPDATED];
-
-            $timeStamp = time();
-            if ($timeStamp - $array[self::UPDATED] >= $this->updateThreshold) {
-                $this->meta[self::UPDATED] = $timeStamp;
-            }
-        } else {
-            $this->stampCreated();
-        }
-    }
-
-    /**
      * Gets the lifetime that the session cookie was set with.
      *
      * @return int
@@ -105,14 +82,6 @@ class MetadataBag implements SessionBagInterface
     public function stampNew($lifetime = null)
     {
         $this->stampCreated($lifetime);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStorageKey()
-    {
-        return $this->storageKey;
     }
 
     /**
@@ -159,6 +128,33 @@ class MetadataBag implements SessionBagInterface
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStorageKey()
+    {
+        return $this->storageKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function initialize(array &$array)
+    {
+        $this->meta = &$array;
+
+        if (isset($array[self::CREATED])) {
+            $this->lastUsed = $this->meta[self::UPDATED];
+
+            $timeStamp = time();
+            if ($timeStamp - $array[self::UPDATED] >= $this->updateThreshold) {
+                $this->meta[self::UPDATED] = $timeStamp;
+            }
+        } else {
+            $this->stampCreated();
+        }
     }
 
     private function stampCreated($lifetime = null)

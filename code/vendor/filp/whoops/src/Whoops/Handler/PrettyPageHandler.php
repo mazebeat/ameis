@@ -15,43 +15,6 @@ use Whoops\Util\TemplateHelper;
 class PrettyPageHandler extends Handler
 {
     /**
-     * Search paths to be scanned for resources, in the reverse
-     * order they're declared.
-     *
-     * @var array
-     */
-    private $searchPaths = array();
-
-    /**
-     * Fast lookup cache for known resource locations.
-     *
-     * @var array
-     */
-    private $resourceCache = array();
-
-    /**
-     * The name of the custom css file.
-     *
-     * @var string
-     */
-    private $customCss = null;
-
-    /**
-     * @var array[]
-     */
-    private $extraTables = array();
-
-    /**
-     * @var bool
-     */
-    private $handleUnconditionally = false;
-
-    /**
-     * @var string
-     */
-    private $pageTitle = "Whoops! There was an error.";
-
-    /**
      * A string identifier for a known IDE/text editor, or a closure
      * that resolves a string that can be used to open a given file
      * in an editor. If the string contains the special substrings
@@ -62,7 +25,6 @@ class PrettyPageHandler extends Handler
      * @var mixed $editor
      */
     protected $editor;
-
     /**
      * A list of known editor strings
      * @var array
@@ -73,6 +35,37 @@ class PrettyPageHandler extends Handler
         "emacs"    => "emacs://open?url=file://%file&line=%line",
         "macvim"   => "mvim://open/?url=file://%file&line=%line",
     );
+    /**
+     * Search paths to be scanned for resources, in the reverse
+     * order they're declared.
+     *
+     * @var array
+     */
+    private $searchPaths = array();
+    /**
+     * Fast lookup cache for known resource locations.
+     *
+     * @var array
+     */
+    private $resourceCache = array();
+    /**
+     * The name of the custom css file.
+     *
+     * @var string
+     */
+    private $customCss = null;
+    /**
+     * @var array[]
+     */
+    private $extraTables = array();
+    /**
+     * @var bool
+     */
+    private $handleUnconditionally = false;
+    /**
+     * @var string
+     */
+    private $pageTitle = "Whoops! There was an error.";
 
     /**
      * Constructor.
@@ -130,7 +123,8 @@ class PrettyPageHandler extends Handler
         $code = $inspector->getException()->getCode();
 
         if ($inspector->getException() instanceof \ErrorException) {
-            $code = Misc::translateErrorCode($code);
+            // ErrorExceptions wrap the php-error types within the "severity" property
+            $code = Misc::translateErrorCode($inspector->getException()->getSeverity());
         }
 
         // List of variables that will be passed to the layout template.
@@ -187,6 +181,94 @@ class PrettyPageHandler extends Handler
     }
 
     /**
+     * Allows to disable all attempts to dynamically decide whether to
+     * handle or return prematurely.
+     * Set this to ensure that the handler will perform no matter what.
+     * @param  bool|null $value
+     * @return bool|null
+     */
+    public function handleUnconditionally($value = null)
+    {
+        if (func_num_args() == 0) {
+            return $this->handleUnconditionally;
+        }
+
+        $this->handleUnconditionally = (bool) $value;
+    }
+
+    /**
+     * Finds a resource, by its relative path, in all available search paths.
+     * The search is performed starting at the last search path, and all the
+     * way back to the first, enabling a cascading-type system of overrides
+     * for all resources.
+     *
+     * @throws RuntimeException If resource cannot be found in any of the available paths
+     *
+     * @param  string $resource
+     * @return string
+     */
+    protected function getResource($resource)
+    {
+        // If the resource was found before, we can speed things up
+        // by caching its absolute, resolved path:
+        if (isset($this->resourceCache[$resource])) {
+            return $this->resourceCache[$resource];
+        }
+
+        // Search through available search paths, until we find the
+        // resource we're after:
+        foreach ($this->searchPaths as $path) {
+            $fullPath = $path . "/$resource";
+
+            if (is_file($fullPath)) {
+                // Cache the result:
+                $this->resourceCache[$resource] = $fullPath;
+                return $fullPath;
+            }
+        }
+
+        // If we got this far, nothing was found.
+        throw new RuntimeException(
+            "Could not find resource '$resource' in any resource paths."
+            . "(searched: " . join(", ", $this->searchPaths). ")"
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getPageTitle()
+    {
+        return $this->pageTitle;
+    }
+
+    /**
+     * @param  string $title
+     * @return void
+     */
+    public function setPageTitle($title)
+    {
+        $this->pageTitle = (string) $title;
+    }
+
+    /**
+     * Returns all the extra data tables registered with this handler.
+     * Optionally accepts a 'label' parameter, to only return the data
+     * table under that label.
+     * @param  string|null      $label
+     * @return array[]|callable
+     */
+    public function getDataTables($label = null)
+    {
+        if ($label !== null) {
+            return isset($this->extraTables[$label]) ?
+                   $this->extraTables[$label] : array();
+        }
+
+        return $this->extraTables;
+    }
+
+    /**
      * Adds an entry to the list of tables displayed in the template.
      * The expected data is a simple associative array. Any nested arrays
      * will be flattened with print_r
@@ -225,39 +307,6 @@ class PrettyPageHandler extends Handler
                 return array();
             }
         };
-    }
-
-    /**
-     * Returns all the extra data tables registered with this handler.
-     * Optionally accepts a 'label' parameter, to only return the data
-     * table under that label.
-     * @param  string|null      $label
-     * @return array[]|callable
-     */
-    public function getDataTables($label = null)
-    {
-        if ($label !== null) {
-            return isset($this->extraTables[$label]) ?
-                   $this->extraTables[$label] : array();
-        }
-
-        return $this->extraTables;
-    }
-
-    /**
-     * Allows to disable all attempts to dynamically decide whether to
-     * handle or return prematurely.
-     * Set this to ensure that the handler will perform no matter what.
-     * @param  bool|null $value
-     * @return bool|null
-     */
-    public function handleUnconditionally($value = null)
-    {
-        if (func_num_args() == 0) {
-            return $this->handleUnconditionally;
-        }
-
-        $this->handleUnconditionally = (bool) $value;
     }
 
     /**
@@ -348,20 +397,46 @@ class PrettyPageHandler extends Handler
     }
 
     /**
-     * @param  string $title
+     * Adds a custom css file to be loaded.
+     *
+     * @param  string $name
      * @return void
      */
-    public function setPageTitle($title)
+    public function addCustomCss($name)
     {
-        $this->pageTitle = (string) $title;
+        $this->customCss = $name;
     }
 
     /**
+     * @deprecated
+     *
      * @return string
      */
-    public function getPageTitle()
+    public function getResourcesPath()
     {
-        return $this->pageTitle;
+        $allPaths = $this->getResourcePaths();
+
+        // Compat: return only the first path added
+        return end($allPaths) ?: null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResourcePaths()
+    {
+        return $this->searchPaths;
+    }
+
+    /**
+     * @deprecated
+     *
+     * @param  string $resourcesPath
+     * @return void
+     */
+    public function setResourcesPath($resourcesPath)
+    {
+        $this->addResourcePath($resourcesPath);
     }
 
     /**
@@ -382,86 +457,5 @@ class PrettyPageHandler extends Handler
         }
 
         array_unshift($this->searchPaths, $path);
-    }
-
-    /**
-     * Adds a custom css file to be loaded.
-     *
-     * @param  string $name
-     * @return void
-     */
-    public function addCustomCss($name)
-    {
-        $this->customCss = $name;
-    }
-
-    /**
-     * @return array
-     */
-    public function getResourcePaths()
-    {
-        return $this->searchPaths;
-    }
-
-    /**
-     * Finds a resource, by its relative path, in all available search paths.
-     * The search is performed starting at the last search path, and all the
-     * way back to the first, enabling a cascading-type system of overrides
-     * for all resources.
-     *
-     * @throws RuntimeException If resource cannot be found in any of the available paths
-     *
-     * @param  string $resource
-     * @return string
-     */
-    protected function getResource($resource)
-    {
-        // If the resource was found before, we can speed things up
-        // by caching its absolute, resolved path:
-        if (isset($this->resourceCache[$resource])) {
-            return $this->resourceCache[$resource];
-        }
-
-        // Search through available search paths, until we find the
-        // resource we're after:
-        foreach ($this->searchPaths as $path) {
-            $fullPath = $path . "/$resource";
-
-            if (is_file($fullPath)) {
-                // Cache the result:
-                $this->resourceCache[$resource] = $fullPath;
-                return $fullPath;
-            }
-        }
-
-        // If we got this far, nothing was found.
-        throw new RuntimeException(
-            "Could not find resource '$resource' in any resource paths."
-            . "(searched: " . join(", ", $this->searchPaths). ")"
-        );
-    }
-
-    /**
-     * @deprecated
-     *
-     * @return string
-     */
-    public function getResourcesPath()
-    {
-        $allPaths = $this->getResourcePaths();
-
-        // Compat: return only the first path added
-        return end($allPaths) ?: null;
-    }
-
-    /**
-     * @deprecated
-     *
-     * @param  string $resourcesPath
-     * @return void
-     */
-    public function setResourcesPath($resourcesPath)
-    {
-        $this->addResourcePath($resourcesPath);
     }
 }

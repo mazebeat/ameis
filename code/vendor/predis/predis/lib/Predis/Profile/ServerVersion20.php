@@ -21,14 +21,6 @@ class ServerVersion20 extends ServerProfile
     /**
      * {@inheritdoc}
      */
-    public function getVersion()
-    {
-        return '2.0';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSupportedCommands()
     {
         return array(
@@ -169,5 +161,13 @@ class ServerVersion20 extends ServerProfile
             /* remote server control commands */
             'config'                    => 'Predis\Command\ServerConfig',
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion()
+    {
+        return '2.0';
     }
 }

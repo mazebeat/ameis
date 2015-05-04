@@ -12,9 +12,9 @@
 namespace Predis\Connection;
 
 use Predis\ClientException;
+use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
 use Predis\NotSupportedException;
-use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolException;
 
 /**
@@ -24,11 +24,10 @@ use Predis\Protocol\ProtocolException;
  */
 abstract class AbstractConnection implements SingleConnectionInterface
 {
-    private $resource;
-    private $cachedId;
-
     protected $parameters;
     protected $initCmds = array();
+    private $resource;
+    private $cachedId;
 
     /**
      * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
@@ -36,15 +35,6 @@ abstract class AbstractConnection implements SingleConnectionInterface
     public function __construct(ConnectionParametersInterface $parameters)
     {
         $this->parameters = $this->checkParameters($parameters);
-    }
-
-    /**
-     * Disconnects from the server and destroys the underlying resource when
-     * PHP's garbage collector kicks in.
-     */
-    public function __destruct()
-    {
-        $this->disconnect();
     }
 
     /**
@@ -70,18 +60,24 @@ abstract class AbstractConnection implements SingleConnectionInterface
     }
 
     /**
-     * Creates the underlying resource used to communicate with Redis.
-     *
-     * @return mixed
+     * Disconnects from the server and destroys the underlying resource when
+     * PHP's garbage collector kicks in.
      */
-    abstract protected function createResource();
+    public function __destruct()
+    {
+        $this->disconnect();
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function isConnected()
+    public function __toString()
     {
-        return isset($this->resource);
+        if (!isset($this->cachedId)) {
+            $this->cachedId = $this->getIdentifier();
+        }
+
+        return $this->cachedId;
     }
 
     /**
@@ -107,19 +103,49 @@ abstract class AbstractConnection implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function pushInitCommand(CommandInterface $command)
-    {
-        $this->initCmds[] = $command;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function executeCommand(CommandInterface $command)
     {
         $this->writeCommand($command);
 
         return $this->readResponse($command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getResource()
+    {
+        if (isset($this->resource)) {
+            return $this->resource;
+        }
+
+        $this->connect();
+
+        return $this->resource;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isConnected()
+    {
+        return isset($this->resource);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function pushInitCommand(CommandInterface $command)
+    {
+        $this->initCmds[] = $command;
     }
 
     /**
@@ -131,6 +157,21 @@ abstract class AbstractConnection implements SingleConnectionInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function __sleep()
+    {
+        return array('parameters', 'initCmds');
+    }
+
+    /**
+     * Creates the underlying resource used to communicate with Redis.
+     *
+     * @return mixed
+     */
+    abstract protected function createResource();
+
+    /**
      * Helper method to handle connection errors.
      *
      * @param string $message Error message.
@@ -139,6 +180,20 @@ abstract class AbstractConnection implements SingleConnectionInterface
     protected function onConnectionError($message, $code = null)
     {
         CommunicationException::handle(new ConnectionException($this, "$message [{$this->parameters->scheme}://{$this->getIdentifier()}]", $code));
+    }
+
+    /**
+     * Gets an identifier for the connection.
+     *
+     * @return string
+     */
+    protected function getIdentifier()
+    {
+        if ($this->parameters->scheme === 'unix') {
+            return $this->parameters->path;
+        }
+
+        return "{$this->parameters->host}:{$this->parameters->port}";
     }
 
     /**
@@ -167,61 +222,5 @@ abstract class AbstractConnection implements SingleConnectionInterface
         }
 
         throw new NotSupportedException($message);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getResource()
-    {
-        if (isset($this->resource)) {
-            return $this->resource;
-        }
-
-        $this->connect();
-
-        return $this->resource;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getParameters()
-    {
-        return $this->parameters;
-    }
-
-    /**
-     * Gets an identifier for the connection.
-     *
-     * @return string
-     */
-    protected function getIdentifier()
-    {
-        if ($this->parameters->scheme === 'unix') {
-            return $this->parameters->path;
-        }
-
-        return "{$this->parameters->host}:{$this->parameters->port}";
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString()
-    {
-        if (!isset($this->cachedId)) {
-            $this->cachedId = $this->getIdentifier();
-        }
-
-        return $this->cachedId;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __sleep()
-    {
-        return array('parameters', 'initCmds');
     }
 }

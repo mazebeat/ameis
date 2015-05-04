@@ -105,14 +105,6 @@ class AttributeNode extends AbstractNode
     /**
      * {@inheritdoc}
      */
-    public function getSpecificity()
-    {
-        return $this->selector->getSpecificity()->plus(new Specificity(0, 1, 0));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function __toString()
     {
         $attribute = $this->namespace ? $this->namespace.'|'.$this->attribute : $this->attribute;
@@ -120,5 +112,13 @@ class AttributeNode extends AbstractNode
         return 'exists' === $this->operator
             ? sprintf('%s[%s[%s]]', $this->getNodeName(), $this->selector, $attribute)
             : sprintf("%s[%s[%s %s '%s']]", $this->getNodeName(), $this->selector, $attribute, $this->operator, $this->value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSpecificity()
+    {
+        return $this->selector->getSpecificity()->plus(new Specificity(0, 1, 0));
     }
 }

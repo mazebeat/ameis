@@ -16,6 +16,13 @@
 class Swift_Encoder_Base64Encoder implements Swift_Encoder
 {
     /**
+     * Does nothing.
+     */
+    public function charsetChanged($charset)
+    {
+    }
+
+    /**
      * Takes an unencoded string and produces a Base64 encoded string from it.
      *
      * Base64 encoded strings have a maximum line length of 76 characters.
@@ -47,12 +54,5 @@ class Swift_Encoder_Base64Encoder implements Swift_Encoder
         }
 
         return $firstLine.trim(chunk_split($encodedString, $maxLineLength, "\r\n"));
-    }
-
-    /**
-     * Does nothing.
-     */
-    public function charsetChanged($charset)
-    {
     }
 }

@@ -54,26 +54,6 @@ class MockFileSessionStorage extends MockArraySessionStorage
     /**
      * {@inheritdoc}
      */
-    public function start()
-    {
-        if ($this->started) {
-            return true;
-        }
-
-        if (!$this->id) {
-            $this->id = $this->generateId();
-        }
-
-        $this->read();
-
-        $this->started = true;
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function regenerate($destroy = false, $lifetime = null)
     {
         if (!$this->started) {
@@ -102,6 +82,26 @@ class MockFileSessionStorage extends MockArraySessionStorage
         // in functional tests. In Symfony, the container is rebooted, so we don't have
         // this issue
         $this->started = false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function start()
+    {
+        if ($this->started) {
+            return true;
+        }
+
+        if (!$this->id) {
+            $this->id = $this->generateId();
+        }
+
+        $this->read();
+
+        $this->started = true;
+
+        return true;
     }
 
     /**

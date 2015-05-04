@@ -54,13 +54,24 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
     }
 
     /**
-     * Returns the development server profile.
+     * Returns the specified server profile.
      *
+     * @param  string                 $version Profile version or alias.
      * @return ServerProfileInterface
      */
-    public static function getDevelopment()
+    public static function get($version)
     {
-        return self::get('dev');
+        if (!isset(self::$profiles)) {
+            self::$profiles = self::getDefaultProfiles();
+        }
+
+        if (!isset(self::$profiles[$version])) {
+            throw new ClientException("Unknown server profile: $version");
+        }
+
+        $profile = self::$profiles[$version];
+
+        return new $profile();
     }
 
     /**
@@ -85,6 +96,16 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
     }
 
     /**
+     * Returns the development server profile.
+     *
+     * @return ServerProfileInterface
+     */
+    public static function getDevelopment()
+    {
+        return self::get('dev');
+    }
+
+    /**
      * Registers a new server profile.
      *
      * @param string $alias        Profile version or alias.
@@ -103,49 +124,6 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
         }
 
         self::$profiles[$alias] = $profileClass;
-    }
-
-    /**
-     * Returns the specified server profile.
-     *
-     * @param  string                 $version Profile version or alias.
-     * @return ServerProfileInterface
-     */
-    public static function get($version)
-    {
-        if (!isset(self::$profiles)) {
-            self::$profiles = self::getDefaultProfiles();
-        }
-
-        if (!isset(self::$profiles[$version])) {
-            throw new ClientException("Unknown server profile: $version");
-        }
-
-        $profile = self::$profiles[$version];
-
-        return new $profile();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function supportsCommands(Array $commands)
-    {
-        foreach ($commands as $command) {
-            if (!$this->supportsCommand($command)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function supportsCommand($command)
-    {
-        return isset($this->commands[strtolower($command)]);
     }
 
     /**
@@ -185,6 +163,28 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function supportsCommand($command)
+    {
+        return isset($this->commands[strtolower($command)]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsCommands(Array $commands)
+    {
+        foreach ($commands as $command) {
+            if (!$this->supportsCommand($command)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Defines a new commands in the server profile.
      *
      * @param string $alias   Command ID.
@@ -204,17 +204,17 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
     /**
      * {@inheritdoc}
      */
-    public function setProcessor(CommandProcessorInterface $processor = null)
+    public function getProcessor()
     {
-        $this->processor = $processor;
+        return $this->processor;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getProcessor()
+    public function setProcessor(CommandProcessorInterface $processor = null)
     {
-        return $this->processor;
+        $this->processor = $processor;
     }
 
     /**

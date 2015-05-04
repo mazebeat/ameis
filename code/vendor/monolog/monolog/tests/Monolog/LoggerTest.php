@@ -11,8 +11,8 @@
 
 namespace Monolog;
 
-use Monolog\Processor\WebProcessor;
 use Monolog\Handler\TestHandler;
+use Monolog\Processor\WebProcessor;
 
 class LoggerTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,6 +31,21 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     public function testGetLevelName()
     {
         $this->assertEquals('ERROR', Logger::getLevelName(Logger::ERROR));
+    }
+
+    /**
+     * @covers Monolog\Logger::toMonologLevel
+     */
+    public function testConvertPSR3ToMonologLevel()
+    {
+        $this->assertEquals(Logger::toMonologLevel('debug'), 100);
+        $this->assertEquals(Logger::toMonologLevel('info'), 200);
+        $this->assertEquals(Logger::toMonologLevel('notice'), 250);
+        $this->assertEquals(Logger::toMonologLevel('warning'), 300);
+        $this->assertEquals(Logger::toMonologLevel('error'), 400);
+        $this->assertEquals(Logger::toMonologLevel('critical'), 500);
+        $this->assertEquals(Logger::toMonologLevel('alert'), 550);
+        $this->assertEquals(Logger::toMonologLevel('emergency'), 600);
     }
 
     /**

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="1052583781">
+    <data-source source="LOCAL" name="SQL Server - AMEIS@190.44.200.136" uuid="85e71271-7c7a-42d6-9024-7151be8a90e4">
+      <driver-ref>sqlserver.ms</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
+      <jdbc-url>jdbc:sqlserver://190.44.200.136:1433;databaseName=AMEIS</jdbc-url>
+      <libraries />
+    </data-source>
+  </component>
+</project>

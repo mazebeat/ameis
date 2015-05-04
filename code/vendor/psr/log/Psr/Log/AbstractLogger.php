@@ -12,19 +12,6 @@ namespace Psr\Log;
 abstract class AbstractLogger implements LoggerInterface
 {
     /**
-     * System is unusable.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return null
-     */
-    public function emergency($message, array $context = array())
-    {
-        $this->log(LogLevel::EMERGENCY, $message, $context);
-    }
-
-    /**
      * Action must be taken immediately.
      *
      * Example: Entire website down, database unavailable, etc. This should
@@ -56,6 +43,32 @@ abstract class AbstractLogger implements LoggerInterface
     }
 
     /**
+     * Detailed debug information.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return null
+     */
+    public function debug($message, array $context = array())
+    {
+        $this->log(LogLevel::DEBUG, $message, $context);
+    }
+
+    /**
+     * System is unusable.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return null
+     */
+    public function emergency($message, array $context = array())
+    {
+        $this->log(LogLevel::EMERGENCY, $message, $context);
+    }
+
+    /**
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
@@ -67,35 +80,6 @@ abstract class AbstractLogger implements LoggerInterface
     public function error($message, array $context = array())
     {
         $this->log(LogLevel::ERROR, $message, $context);
-    }
-
-    /**
-     * Exceptional occurrences that are not errors.
-     *
-     * Example: Use of deprecated APIs, poor use of an API, undesirable things
-     * that are not necessarily wrong.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return null
-     */
-    public function warning($message, array $context = array())
-    {
-        $this->log(LogLevel::WARNING, $message, $context);
-    }
-
-    /**
-     * Normal but significant events.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return null
-     */
-    public function notice($message, array $context = array())
-    {
-        $this->log(LogLevel::NOTICE, $message, $context);
     }
 
     /**
@@ -114,15 +98,31 @@ abstract class AbstractLogger implements LoggerInterface
     }
 
     /**
-     * Detailed debug information.
+     * Normal but significant events.
      *
      * @param string $message
      * @param array  $context
      *
      * @return null
      */
-    public function debug($message, array $context = array())
+    public function notice($message, array $context = array())
     {
-        $this->log(LogLevel::DEBUG, $message, $context);
+        $this->log(LogLevel::NOTICE, $message, $context);
+    }
+
+    /**
+     * Exceptional occurrences that are not errors.
+     *
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things
+     * that are not necessarily wrong.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return null
+     */
+    public function warning($message, array $context = array())
+    {
+        $this->log(LogLevel::WARNING, $message, $context);
     }
 }

@@ -11,9 +11,9 @@
 
 namespace Symfony\Component\Debug;
 
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\Exception\OutOfMemoryException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * ExceptionHandler converts an exception to a Response object.
@@ -140,30 +140,6 @@ class ExceptionHandler
     }
 
     /**
-     * Sends the error associated with the given Exception as a plain PHP response.
-     *
-     * This method uses plain PHP functions like header() and echo to output
-     * the response.
-     *
-     * @param \Exception|FlattenException $exception An \Exception instance
-     */
-    public function sendPhpResponse($exception)
-    {
-        if (!$exception instanceof FlattenException) {
-            $exception = FlattenException::create($exception);
-        }
-
-        if (!headers_sent()) {
-            header(sprintf('HTTP/1.0 %s', $exception->getStatusCode()));
-            foreach ($exception->getHeaders() as $name => $value) {
-                header($name.': '.$value, false);
-            }
-        }
-
-        echo $this->decorate($this->getContent($exception), $this->getStylesheet($exception));
-    }
-
-    /**
      * Creates the error Response associated with the given Exception.
      *
      * @param \Exception|FlattenException $exception An \Exception instance
@@ -177,6 +153,31 @@ class ExceptionHandler
         }
 
         return new Response($this->decorate($this->getContent($exception), $this->getStylesheet($exception)), $exception->getStatusCode(), $exception->getHeaders());
+    }
+
+    private function decorate($content, $css)
+    {
+        return <<<EOF
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="robots" content="noindex,nofollow" />
+        <style>
+            /* Copyright (c) 2010, Yahoo! Inc. All rights reserved. Code licensed under the BSD License: http://developer.yahoo.com/yui/license.html */
+            html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+
+            html { background: #eee; padding: 10px }
+            img { border: 0; }
+            #sf-resetcontent { width:970px; margin:0 auto; }
+            $css
+        </style>
+    </head>
+    <body>
+        $content
+    </body>
+</html>
+EOF;
     }
 
     /**
@@ -250,6 +251,51 @@ EOF
 EOF;
     }
 
+    private function abbrClass($class)
+    {
+        $parts = explode('\\', $class);
+
+        return sprintf("<abbr title=\"%s\">%s</abbr>", $class, array_pop($parts));
+    }
+
+    /**
+     * Formats an array as a string.
+     *
+     * @param array $args The argument array
+     *
+     * @return string
+     */
+    private function formatArgs(array $args)
+    {
+        if (PHP_VERSION_ID >= 50400) {
+            $flags = ENT_QUOTES | ENT_SUBSTITUTE;
+        } else {
+            $flags = ENT_QUOTES;
+        }
+        $result = array();
+        foreach ($args as $key => $item) {
+            if ('object' === $item[0]) {
+                $formattedValue = sprintf("<em>object</em>(%s)", $this->abbrClass($item[1]));
+            } elseif ('array' === $item[0]) {
+                $formattedValue = sprintf("<em>array</em>(%s)", is_array($item[1]) ? $this->formatArgs($item[1]) : $item[1]);
+            } elseif ('string' === $item[0]) {
+                $formattedValue = sprintf("'%s'", htmlspecialchars($item[1], $flags, $this->charset));
+            } elseif ('null' === $item[0]) {
+                $formattedValue = '<em>null</em>';
+            } elseif ('boolean' === $item[0]) {
+                $formattedValue = '<em>'.strtolower(var_export($item[1], true)).'</em>';
+            } elseif ('resource' === $item[0]) {
+                $formattedValue = '<em>resource</em>';
+            } else {
+                $formattedValue = str_replace("\n", '', var_export(htmlspecialchars((string) $item[1], $flags, $this->charset), true));
+            }
+
+            $result[] = is_int($key) ? $formattedValue : sprintf("'%s' => %s", $key, $formattedValue);
+        }
+
+        return implode(', ', $result);
+    }
+
     /**
      * Gets the stylesheet associated with the given exception.
      *
@@ -313,74 +359,28 @@ EOF;
 EOF;
     }
 
-    private function decorate($content, $css)
-    {
-        return <<<EOF
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="robots" content="noindex,nofollow" />
-        <style>
-            /* Copyright (c) 2010, Yahoo! Inc. All rights reserved. Code licensed under the BSD License: http://developer.yahoo.com/yui/license.html */
-            html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
-
-            html { background: #eee; padding: 10px }
-            img { border: 0; }
-            #sf-resetcontent { width:970px; margin:0 auto; }
-            $css
-        </style>
-    </head>
-    <body>
-        $content
-    </body>
-</html>
-EOF;
-    }
-
-    private function abbrClass($class)
-    {
-        $parts = explode('\\', $class);
-
-        return sprintf("<abbr title=\"%s\">%s</abbr>", $class, array_pop($parts));
-    }
-
     /**
-     * Formats an array as a string.
+     * Sends the error associated with the given Exception as a plain PHP response.
      *
-     * @param array $args The argument array
+     * This method uses plain PHP functions like header() and echo to output
+     * the response.
      *
-     * @return string
+     * @param \Exception|FlattenException $exception An \Exception instance
      */
-    private function formatArgs(array $args)
+    public function sendPhpResponse($exception)
     {
-        if (PHP_VERSION_ID >= 50400) {
-            $flags = ENT_QUOTES | ENT_SUBSTITUTE;
-        } else {
-            $flags = ENT_QUOTES;
+        if (!$exception instanceof FlattenException) {
+            $exception = FlattenException::create($exception);
         }
-        $result = array();
-        foreach ($args as $key => $item) {
-            if ('object' === $item[0]) {
-                $formattedValue = sprintf("<em>object</em>(%s)", $this->abbrClass($item[1]));
-            } elseif ('array' === $item[0]) {
-                $formattedValue = sprintf("<em>array</em>(%s)", is_array($item[1]) ? $this->formatArgs($item[1]) : $item[1]);
-            } elseif ('string' === $item[0]) {
-                $formattedValue = sprintf("'%s'", htmlspecialchars($item[1], $flags, $this->charset));
-            } elseif ('null' === $item[0]) {
-                $formattedValue = '<em>null</em>';
-            } elseif ('boolean' === $item[0]) {
-                $formattedValue = '<em>'.strtolower(var_export($item[1], true)).'</em>';
-            } elseif ('resource' === $item[0]) {
-                $formattedValue = '<em>resource</em>';
-            } else {
-                $formattedValue = str_replace("\n", '', var_export(htmlspecialchars((string) $item[1], $flags, $this->charset), true));
+
+        if (!headers_sent()) {
+            header(sprintf('HTTP/1.0 %s', $exception->getStatusCode()));
+            foreach ($exception->getHeaders() as $name => $value) {
+                header($name.': '.$value, false);
             }
-
-            $result[] = is_int($key) ? $formattedValue : sprintf("'%s' => %s", $key, $formattedValue);
         }
 
-        return implode(', ', $result);
+        echo $this->decorate($this->getContent($exception), $this->getStylesheet($exception));
     }
 
     /**

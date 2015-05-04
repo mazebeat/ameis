@@ -19,7 +19,7 @@
 
 namespace Doctrine\Common\Cache;
 
-use \Memcache;
+use Memcache;
 
 /**
  * Memcache cache provider.
@@ -40,6 +40,16 @@ class MemcacheCache extends CacheProvider
     private $memcache;
 
     /**
+     * Gets the memcache instance used by the cache.
+     *
+     * @return Memcache|null
+     */
+    public function getMemcache()
+    {
+        return $this->memcache;
+    }
+
+    /**
      * Sets the memcache instance to use.
      *
      * @param Memcache $memcache
@@ -52,40 +62,15 @@ class MemcacheCache extends CacheProvider
     }
 
     /**
-     * Gets the memcache instance used by the cache.
-     *
-     * @return Memcache|null
-     */
-    public function getMemcache()
-    {
-        return $this->memcache;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function doFetch($id)
-    {
-        return $this->memcache->get($id);
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function doContains($id)
     {
-        return (bool) $this->memcache->get($id);
-    }
+        $flags = null;
+        $this->memcache->get($id, $flags);
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function doSave($id, $data, $lifeTime = 0)
-    {
-        if ($lifeTime > 30 * 24 * 3600) {
-            $lifeTime = time() + $lifeTime;
-        }
-        return $this->memcache->set($id, $data, 0, (int) $lifeTime);
+        //if memcache has changed the value of "flags", it means the value exists
+        return ($flags !== null);
     }
 
     /**
@@ -94,6 +79,14 @@ class MemcacheCache extends CacheProvider
     protected function doDelete($id)
     {
         return $this->memcache->delete($id);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doFetch($id)
+    {
+        return $this->memcache->get($id);
     }
 
     /**
@@ -117,5 +110,16 @@ class MemcacheCache extends CacheProvider
             Cache::STATS_MEMORY_USAGE     => $stats['bytes'],
             Cache::STATS_MEMORY_AVAILABLE => $stats['limit_maxbytes'],
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doSave($id, $data, $lifeTime = 0)
+    {
+        if ($lifeTime > 30 * 24 * 3600) {
+            $lifeTime = time() + $lifeTime;
+        }
+        return $this->memcache->set($id, $data, 0, (int) $lifeTime);
     }
 }

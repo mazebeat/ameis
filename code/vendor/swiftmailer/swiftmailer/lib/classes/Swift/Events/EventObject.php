@@ -32,13 +32,13 @@ class Swift_Events_EventObject implements Swift_Events_Event
     }
 
     /**
-     * Get the source object of this event.
+     * Returns true if this Event will not bubble any further up the stack.
      *
-     * @return object
+     * @return bool
      */
-    public function getSource()
+    public function bubbleCancelled()
     {
-        return $this->_source;
+        return $this->_bubbleCancelled;
     }
 
     /**
@@ -52,12 +52,12 @@ class Swift_Events_EventObject implements Swift_Events_Event
     }
 
     /**
-     * Returns true if this Event will not bubble any further up the stack.
+     * Get the source object of this event.
      *
-     * @return bool
+     * @return object
      */
-    public function bubbleCancelled()
+    public function getSource()
     {
-        return $this->_bubbleCancelled;
+        return $this->_source;
     }
 }

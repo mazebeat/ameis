@@ -18,6 +18,7 @@ namespace Symfony\Component\Finder\Adapter;
  */
 abstract class AbstractAdapter implements AdapterInterface
 {
+    private static $areSupported = array();
     protected $followLinks = false;
     protected $mode = 0;
     protected $minDepth = 0;
@@ -35,7 +36,15 @@ abstract class AbstractAdapter implements AdapterInterface
     protected $notPaths = array();
     protected $ignoreUnreadableDirs = false;
 
-    private static $areSupported = array();
+    /**
+     * {@inheritdoc}
+     */
+    public function ignoreUnreadableDirs($ignore = true)
+    {
+        $this->ignoreUnreadableDirs = (bool) $ignore;
+
+        return $this;
+    }
 
     /**
      * {@inheritdoc}
@@ -54,9 +63,9 @@ abstract class AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function setFollowLinks($followLinks)
+    public function setContains(array $contains)
     {
-        $this->followLinks = $followLinks;
+        $this->contains = $contains;
 
         return $this;
     }
@@ -64,9 +73,9 @@ abstract class AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function setMode($mode)
+    public function setDates(array $dates)
     {
-        $this->mode = $mode;
+        $this->dates = $dates;
 
         return $this;
     }
@@ -114,29 +123,39 @@ abstract class AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
+    public function setFilters(array $filters)
+    {
+        $this->filters = $filters;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFollowLinks($followLinks)
+    {
+        $this->followLinks = $followLinks;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setNames(array $names)
     {
         $this->names = $names;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setNotNames(array $notNames)
-    {
-        $this->notNames = $notNames;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setContains(array $contains)
-    {
-        $this->contains = $contains;
 
         return $this;
     }
@@ -154,49 +173,9 @@ abstract class AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function setSizes(array $sizes)
+    public function setNotNames(array $notNames)
     {
-        $this->sizes = $sizes;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setDates(array $dates)
-    {
-        $this->dates = $dates;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setFilters(array $filters)
-    {
-        $this->filters = $filters;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSort($sort)
-    {
-        $this->sort = $sort;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setPath(array $paths)
-    {
-        $this->paths = $paths;
+        $this->notNames = $notNames;
 
         return $this;
     }
@@ -214,9 +193,29 @@ abstract class AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function ignoreUnreadableDirs($ignore = true)
+    public function setPath(array $paths)
     {
-        $this->ignoreUnreadableDirs = (bool) $ignore;
+        $this->paths = $paths;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSizes(array $sizes)
+    {
+        $this->sizes = $sizes;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSort($sort)
+    {
+        $this->sort = $sort;
 
         return $this;
     }

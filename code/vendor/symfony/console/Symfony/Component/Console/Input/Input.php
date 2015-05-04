@@ -62,20 +62,83 @@ abstract class Input implements InputInterface
     }
 
     /**
-     * Processes command line arguments.
+     * Returns the argument value for a given argument name.
+     *
+     * @param string $name The argument name
+     *
+     * @return mixed The argument value
+     *
+     * @throws \InvalidArgumentException When argument given doesn't exist
      */
-    abstract protected function parse();
+    public function getArgument($name)
+    {
+        if (!$this->definition->hasArgument($name)) {
+            throw new \InvalidArgumentException(sprintf('The "%s" argument does not exist.', $name));
+        }
+
+        return isset($this->arguments[$name]) ? $this->arguments[$name] : $this->definition->getArgument($name)->getDefault();
+    }
 
     /**
-     * Validates the input.
+     * Returns the argument values.
      *
-     * @throws \RuntimeException When not enough arguments are given
+     * @return array An array of argument values
      */
-    public function validate()
+    public function getArguments()
     {
-        if (count($this->arguments) < $this->definition->getArgumentRequiredCount()) {
-            throw new \RuntimeException('Not enough arguments.');
+        return array_merge($this->definition->getArgumentDefaults(), $this->arguments);
+    }
+
+    /**
+     * Returns the option value for a given option name.
+     *
+     * @param string $name The option name
+     *
+     * @return mixed The option value
+     *
+     * @throws \InvalidArgumentException When option given doesn't exist
+     */
+    public function getOption($name)
+    {
+        if (!$this->definition->hasOption($name)) {
+            throw new \InvalidArgumentException(sprintf('The "%s" option does not exist.', $name));
         }
+
+        return isset($this->options[$name]) ? $this->options[$name] : $this->definition->getOption($name)->getDefault();
+    }
+
+    /**
+     * Returns the options values.
+     *
+     * @return array An array of option values
+     */
+    public function getOptions()
+    {
+        return array_merge($this->definition->getOptionDefaults(), $this->options);
+    }
+
+    /**
+     * Returns true if an InputArgument object exists by name or position.
+     *
+     * @param string|int $name The InputArgument name or position
+     *
+     * @return bool true if the InputArgument object exists, false otherwise
+     */
+    public function hasArgument($name)
+    {
+        return $this->definition->hasArgument($name);
+    }
+
+    /**
+     * Returns true if an InputOption object exists by name.
+     *
+     * @param string $name The InputOption name
+     *
+     * @return bool true if the InputOption object exists, false otherwise
+     */
+    public function hasOption($name)
+    {
+        return $this->definition->hasOption($name);
     }
 
     /**
@@ -99,34 +162,6 @@ abstract class Input implements InputInterface
     }
 
     /**
-     * Returns the argument values.
-     *
-     * @return array An array of argument values
-     */
-    public function getArguments()
-    {
-        return array_merge($this->definition->getArgumentDefaults(), $this->arguments);
-    }
-
-    /**
-     * Returns the argument value for a given argument name.
-     *
-     * @param string $name The argument name
-     *
-     * @return mixed The argument value
-     *
-     * @throws \InvalidArgumentException When argument given doesn't exist
-     */
-    public function getArgument($name)
-    {
-        if (!$this->definition->hasArgument($name)) {
-            throw new \InvalidArgumentException(sprintf('The "%s" argument does not exist.', $name));
-        }
-
-        return isset($this->arguments[$name]) ? $this->arguments[$name] : $this->definition->getArgument($name)->getDefault();
-    }
-
-    /**
      * Sets an argument value by name.
      *
      * @param string $name  The argument name
@@ -141,46 +176,6 @@ abstract class Input implements InputInterface
         }
 
         $this->arguments[$name] = $value;
-    }
-
-    /**
-     * Returns true if an InputArgument object exists by name or position.
-     *
-     * @param string|int $name The InputArgument name or position
-     *
-     * @return bool true if the InputArgument object exists, false otherwise
-     */
-    public function hasArgument($name)
-    {
-        return $this->definition->hasArgument($name);
-    }
-
-    /**
-     * Returns the options values.
-     *
-     * @return array An array of option values
-     */
-    public function getOptions()
-    {
-        return array_merge($this->definition->getOptionDefaults(), $this->options);
-    }
-
-    /**
-     * Returns the option value for a given option name.
-     *
-     * @param string $name The option name
-     *
-     * @return mixed The option value
-     *
-     * @throws \InvalidArgumentException When option given doesn't exist
-     */
-    public function getOption($name)
-    {
-        if (!$this->definition->hasOption($name)) {
-            throw new \InvalidArgumentException(sprintf('The "%s" option does not exist.', $name));
-        }
-
-        return isset($this->options[$name]) ? $this->options[$name] : $this->definition->getOption($name)->getDefault();
     }
 
     /**
@@ -201,16 +196,21 @@ abstract class Input implements InputInterface
     }
 
     /**
-     * Returns true if an InputOption object exists by name.
+     * Validates the input.
      *
-     * @param string $name The InputOption name
-     *
-     * @return bool true if the InputOption object exists, false otherwise
+     * @throws \RuntimeException When not enough arguments are given
      */
-    public function hasOption($name)
+    public function validate()
     {
-        return $this->definition->hasOption($name);
+        if (count($this->arguments) < $this->definition->getArgumentRequiredCount()) {
+            throw new \RuntimeException('Not enough arguments.');
+        }
     }
+
+    /**
+     * Processes command line arguments.
+     */
+    abstract protected function parse();
 
     /**
      * Escapes a token through escapeshellarg if it contains unsafe chars.

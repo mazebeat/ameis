@@ -18,6 +18,7 @@ use Symfony\Component\Process\Exception\RuntimeException;
  */
 class ProcessPipes
 {
+    const CHUNK_SIZE = 16384;
     /** @var array */
     public $pipes = array();
     /** @var array */
@@ -34,8 +35,6 @@ class ProcessPipes
     private $ptyMode;
     /** @var bool    */
     private $disableOutput;
-
-    const CHUNK_SIZE = 16384;
 
     public function __construct($useFiles, $ttyMode, $ptyMode = false, $disableOutput = false)
     {
@@ -73,16 +72,6 @@ class ProcessPipes
     }
 
     /**
-     * Sets non-blocking mode on pipes.
-     */
-    public function unblock()
-    {
-        foreach ($this->pipes as $pipe) {
-            stream_set_blocking($pipe, 0);
-        }
-    }
-
-    /**
      * Closes file handles and pipes.
      */
     public function close()
@@ -105,6 +94,29 @@ class ProcessPipes
             fclose($pipe);
         }
         $this->pipes = array();
+    }
+
+    /**
+     * Removes temporary files.
+     */
+    private function removeFiles()
+    {
+        foreach ($this->files as $filename) {
+            if (file_exists($filename)) {
+                @unlink($filename);
+            }
+        }
+        $this->files = array();
+    }
+
+    /**
+     * Sets non-blocking mode on pipes.
+     */
+    public function unblock()
+    {
+        foreach ($this->pipes as $pipe) {
+            stream_set_blocking($pipe, 0);
+        }
     }
 
     /**
@@ -183,6 +195,114 @@ class ProcessPipes
     }
 
     /**
+     * Reads data in file pipes streams.
+     *
+     * @param bool $blocking Whether to use blocking calls or not.
+     * @param bool $close    Whether to close file handles or not.
+     *
+     * @return array An array of read data indexed by their fd.
+     */
+    private function readStreams($blocking, $close = false)
+    {
+        if (empty($this->pipes)) {
+            usleep(Process::TIMEOUT_PRECISION * 1E4);
+
+            return array();
+        }
+
+        $read = array();
+
+        $r = $this->pipes;
+        $w = null;
+        $e = null;
+
+        // let's have a look if something changed in streams
+        if (false === $n = @stream_select($r, $w, $e, 0, $blocking ? ceil(Process::TIMEOUT_PRECISION * 1E6) : 0)) {
+            // if a system call has been interrupted, forget about it, let's try again
+            // otherwise, an error occurred, let's reset pipes
+            if (!$this->hasSystemCallBeenInterrupted()) {
+                $this->pipes = array();
+            }
+
+            return $read;
+        }
+
+        // nothing has changed
+        if (0 === $n) {
+            return $read;
+        }
+
+        foreach ($r as $pipe) {
+            $type = array_search($pipe, $this->pipes);
+
+            $data = '';
+            while ('' !== $dataread = (string) fread($pipe, self::CHUNK_SIZE)) {
+                $data .= $dataread;
+            }
+
+            if ('' !== $data) {
+                $read[$type] = $data;
+            }
+
+            if (false === $data || (true === $close && feof($pipe) && '' === $data)) {
+                fclose($this->pipes[$type]);
+                unset($this->pipes[$type]);
+            }
+        }
+
+        return $read;
+    }
+
+    /**
+     * Returns true if a system call has been interrupted.
+     *
+     * @return bool
+     */
+    private function hasSystemCallBeenInterrupted()
+    {
+        $lastError = error_get_last();
+
+        // stream_select returns false when the `select` system call is interrupted by an incoming signal
+        return isset($lastError['message']) && false !== stripos($lastError['message'], 'interrupted system call');
+    }
+
+    /**
+     * Reads data in file handles.
+     *
+     * @param bool $close Whether to close file handles or not.
+     *
+     * @return array An array of read data indexed by their fd.
+     */
+    private function readFileHandles($close = false)
+    {
+        $read = array();
+        $fh = $this->fileHandles;
+        foreach ($fh as $type => $fileHandle) {
+            if (0 !== fseek($fileHandle, $this->readBytes[$type])) {
+                continue;
+            }
+            $data = '';
+            $dataread = null;
+            while (!feof($fileHandle)) {
+                if (false !== $dataread = fread($fileHandle, self::CHUNK_SIZE)) {
+                    $data .= $dataread;
+                }
+            }
+            if (0 < $length = strlen($data)) {
+                $this->readBytes[$type] += $length;
+                $read[$type] = $data;
+            }
+
+            if (false === $dataread || (true === $close && feof($fileHandle) && '' === $data)) {
+                fclose($this->fileHandles[$type]);
+                unset($this->fileHandles[$type]);
+            }
+        }
+
+        return $read;
+    }
+
+    /**
      * Reads data in file handles and pipes, closes them if EOF is reached.
      *
      * @param bool $blocking Whether to use blocking calls or not.
@@ -257,126 +377,5 @@ class ProcessPipes
                 }
             }
         }
-    }
-
-    /**
-     * Reads data in file handles.
-     *
-     * @param bool $close Whether to close file handles or not.
-     *
-     * @return array An array of read data indexed by their fd.
-     */
-    private function readFileHandles($close = false)
-    {
-        $read = array();
-        $fh = $this->fileHandles;
-        foreach ($fh as $type => $fileHandle) {
-            if (0 !== fseek($fileHandle, $this->readBytes[$type])) {
-                continue;
-            }
-            $data = '';
-            $dataread = null;
-            while (!feof($fileHandle)) {
-                if (false !== $dataread = fread($fileHandle, self::CHUNK_SIZE)) {
-                    $data .= $dataread;
-                }
-            }
-            if (0 < $length = strlen($data)) {
-                $this->readBytes[$type] += $length;
-                $read[$type] = $data;
-            }
-
-            if (false === $dataread || (true === $close && feof($fileHandle) && '' === $data)) {
-                fclose($this->fileHandles[$type]);
-                unset($this->fileHandles[$type]);
-            }
-        }
-
-        return $read;
-    }
-
-    /**
-     * Reads data in file pipes streams.
-     *
-     * @param bool $blocking Whether to use blocking calls or not.
-     * @param bool $close    Whether to close file handles or not.
-     *
-     * @return array An array of read data indexed by their fd.
-     */
-    private function readStreams($blocking, $close = false)
-    {
-        if (empty($this->pipes)) {
-            usleep(Process::TIMEOUT_PRECISION * 1E4);
-
-            return array();
-        }
-
-        $read = array();
-
-        $r = $this->pipes;
-        $w = null;
-        $e = null;
-
-        // let's have a look if something changed in streams
-        if (false === $n = @stream_select($r, $w, $e, 0, $blocking ? ceil(Process::TIMEOUT_PRECISION * 1E6) : 0)) {
-            // if a system call has been interrupted, forget about it, let's try again
-            // otherwise, an error occurred, let's reset pipes
-            if (!$this->hasSystemCallBeenInterrupted()) {
-                $this->pipes = array();
-            }
-
-            return $read;
-        }
-
-        // nothing has changed
-        if (0 === $n) {
-            return $read;
-        }
-
-        foreach ($r as $pipe) {
-            $type = array_search($pipe, $this->pipes);
-
-            $data = '';
-            while ('' !== $dataread = (string) fread($pipe, self::CHUNK_SIZE)) {
-                $data .= $dataread;
-            }
-
-            if ('' !== $data) {
-                $read[$type] = $data;
-            }
-
-            if (false === $data || (true === $close && feof($pipe) && '' === $data)) {
-                fclose($this->pipes[$type]);
-                unset($this->pipes[$type]);
-            }
-        }
-
-        return $read;
-    }
-
-    /**
-     * Returns true if a system call has been interrupted.
-     *
-     * @return bool
-     */
-    private function hasSystemCallBeenInterrupted()
-    {
-        $lastError = error_get_last();
-
-        // stream_select returns false when the `select` system call is interrupted by an incoming signal
-        return isset($lastError['message']) && false !== stripos($lastError['message'], 'interrupted system call');
-    }
-
-    /**
-     * Removes temporary files.
-     */
-    private function removeFiles()
-    {
-        foreach ($this->files as $filename) {
-            if (file_exists($filename)) {
-                @unlink($filename);
-            }
-        }
-        $this->files = array();
     }
 }

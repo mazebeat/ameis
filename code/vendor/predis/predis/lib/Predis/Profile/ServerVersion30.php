@@ -21,14 +21,6 @@ class ServerVersion30 extends ServerProfile
     /**
      * {@inheritdoc}
      */
-    public function getVersion()
-    {
-        return '3.0';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSupportedCommands()
     {
         return array(
@@ -257,5 +249,13 @@ class ServerVersion30 extends ServerProfile
             /* ---------------- Redis 3.0 ---------------- */
 
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion()
+    {
+        return '3.0';
     }
 }

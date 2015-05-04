@@ -94,40 +94,25 @@ class ExampleTag extends SourceTag
     }
 
     /**
-     * Returns the file path.
+     * Returns true if the provided URI is relative or contains a complete scheme (and thus is absolute).
      *
-     * @return string Path to a file to use as an example.
-     *     May also be an absolute URI.
+     * @param string $uri
+     *
+     * @return bool
      */
-    public function getFilePath()
+    private function isUriRelative($uri)
     {
-        return $this->filePath;
-    }
-    
-    /**
-     * Sets the file path.
-     * 
-     * @param string $filePath The new file path to use for the example.
-     * 
-     * @return $this
-     */
-    public function setFilePath($filePath)
-    {
-        $this->isURI = false;
-        $this->filePath = trim($filePath);
-
-        $this->content = null;
-        return $this;
+        return false === strpos($uri, ':');
     }
     
     /**
      * Sets the file path as an URI.
-     * 
+     *
      * This function is equivalent to {@link setFilePath()}, except that it
      * converts an URI to a file path before that.
-     * 
+     *
      * There is no getFileURI(), as {@link getFilePath()} is compatible.
-     * 
+     *
      * @param string $uri The new file URI to use as an example.
      *
      * @return $this
@@ -143,16 +128,31 @@ class ExampleTag extends SourceTag
 
         return $this;
     }
+    
+    /**
+     * Returns the file path.
+     *
+     * @return string Path to a file to use as an example.
+     *     May also be an absolute URI.
+     */
+    public function getFilePath()
+    {
+        return $this->filePath;
+    }
 
     /**
-     * Returns true if the provided URI is relative or contains a complete scheme (and thus is absolute).
+     * Sets the file path.
      *
-     * @param string $uri
+     * @param string $filePath The new file path to use for the example.
      *
-     * @return bool
+     * @return $this
      */
-    private function isUriRelative($uri)
+    public function setFilePath($filePath)
     {
-        return false === strpos($uri, ':');
+        $this->isURI = false;
+        $this->filePath = trim($filePath);
+
+        $this->content = null;
+        return $this;
     }
 }

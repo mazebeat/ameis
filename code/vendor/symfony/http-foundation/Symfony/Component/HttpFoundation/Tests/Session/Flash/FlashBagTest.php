@@ -21,22 +21,13 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 class FlashBagTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface
-     */
-    private $bag;
-
-    /**
      * @var array
      */
     protected $array = array();
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->bag = new FlashBag();
-        $this->array = array('notice' => array('A previous flash message'));
-        $this->bag->initialize($this->array);
-    }
+    /**
+     * @var \Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface
+     */
+    private $bag;
 
     public function tearDown()
     {
@@ -150,5 +141,13 @@ class FlashBagTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(count($flashes), $i);
         $this->assertCount(0, $this->bag->all());
+    }
+
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->bag = new FlashBag();
+        $this->array = array('notice' => array('A previous flash message'));
+        $this->bag->initialize($this->array);
     }
 }

@@ -21,11 +21,14 @@ namespace Predis\Command;
 abstract class ScriptedCommand extends ServerEvalSHA
 {
     /**
-     * Gets the body of a Lua script.
+     * Returns the elements from the arguments that are identified as keys.
      *
-     * @return string
+     * @return array
      */
-    abstract public function getScript();
+    public function getKeys()
+    {
+        return array_slice($this->getArguments(), 2, $this->getKeysCount());
+    }
 
     /**
      * Specifies the number of arguments that should be considered as keys.
@@ -42,13 +45,14 @@ abstract class ScriptedCommand extends ServerEvalSHA
     }
 
     /**
-     * Returns the elements from the arguments that are identified as keys.
-     *
      * @return array
      */
-    public function getKeys()
+    public function getEvalArguments()
     {
-        return array_slice($this->getArguments(), 2, $this->getKeysCount());
+        $arguments = $this->getArguments();
+        $arguments[0] = $this->getScript();
+
+        return $arguments;
     }
 
     /**
@@ -64,13 +68,9 @@ abstract class ScriptedCommand extends ServerEvalSHA
     }
 
     /**
-     * @return array
+     * Gets the body of a Lua script.
+     *
+     * @return string
      */
-    public function getEvalArguments()
-    {
-        $arguments = $this->getArguments();
-        $arguments[0] = $this->getScript();
-
-        return $arguments;
-    }
+    abstract public function getScript();
 }

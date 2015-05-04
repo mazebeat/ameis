@@ -2,6 +2,28 @@
 
 class UsuarioController extends BaseController
 {
+	public function postLogin(){
+
+		$validator = Usuario::validate(Input::all());
+		if ($validator->fails()) {
+			return Redirect::back()->withErrors($validator->messages())->withInput(Input::except(array('password','_token')));
+		}
+		else {
+
+			$userdata = array(
+				'Usuario'  => Input::get('user'),
+				'password' => Input::get('password')
+			);
+
+			if (Auth::attempt($userdata, true)) {
+				return Redirect::to('admin');
+			}
+			else {
+				return Redirect::back()->withErrors()->withInput(Input::except(array('password','_token')));
+			}
+
+		}
+	}
 
 	public function index()
 	{

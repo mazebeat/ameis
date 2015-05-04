@@ -1,11 +1,10 @@
 <?php namespace Way\Generators\Commands;
 
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
+use Config;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
 use Way\Generators\Filesystem\FileAlreadyExists;
 use Way\Generators\Generator;
-use Config;
 
 abstract class GeneratorCommand extends Command {
 
@@ -23,27 +22,6 @@ abstract class GeneratorCommand extends Command {
 
         parent::__construct();
     }
-
-    /**
-     * Fetch the template data
-     *
-     * @return array
-     */
-    protected abstract function getTemplateData();
-
-    /**
-     * The path where the file will be created
-     *
-     * @return mixed
-     */
-    protected abstract function getFileGenerationPath();
-
-    /**
-     * Get the path to the generator template
-     *
-     * @return mixed
-     */
-    protected abstract function getTemplatePath();
 
     /**
      * Compile and generate the file
@@ -68,6 +46,27 @@ abstract class GeneratorCommand extends Command {
             $this->error("The file, {$filePathToGenerate}, already exists! I don't want to overwrite it.");
         }
     }
+
+	/**
+	 * The path where the file will be created
+	 *
+	 * @return mixed
+	 */
+	protected abstract function getFileGenerationPath();
+
+	/**
+	 * Get the path to the generator template
+	 *
+	 * @return mixed
+	 */
+	protected abstract function getTemplatePath();
+
+	/**
+	 * Fetch the template data
+	 *
+	 * @return array
+	 */
+	protected abstract function getTemplateData();
 
     /**
      * Get a directory path either through a

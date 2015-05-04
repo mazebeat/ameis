@@ -14,8 +14,8 @@ namespace Predis;
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptedCommand;
 use Predis\Connection\AggregatedConnectionInterface;
-use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ConnectionFactoryInterface;
+use Predis\Connection\ConnectionInterface;
 use Predis\Monitor\MonitorContext;
 use Predis\Option\ClientOptions;
 use Predis\Option\ClientOptionsInterface;
@@ -112,22 +112,6 @@ class Client implements ClientInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getProfile()
-    {
-        return $this->profile;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
      * Returns the connection factory object used by the client.
      *
      * @return ConnectionFactoryInterface
@@ -155,6 +139,21 @@ class Client implements ClientInterface
     }
 
     /**
+     * Retrieves a single connection out of an aggregated connections instance.
+     *
+     * @param  string                               $connectionId Index or alias of the single connection.
+     * @return Connection\SingleConnectionInterface
+     */
+    public function getConnectionById($connectionId)
+    {
+        if (!$this->connection instanceof AggregatedConnectionInterface) {
+            throw new NotSupportedException('Retrieving connections by ID is supported only when using aggregated connections');
+        }
+
+        return $this->connection->getConnectionById($connectionId);
+    }
+
+    /**
      * Opens the connection to the server.
      */
     public function connect()
@@ -163,11 +162,61 @@ class Client implements ClientInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function createCommand($commandID, $arguments = array())
+    {
+        return $this->profile->createCommand($commandID, $arguments);
+    }
+
+    /**
      * Disconnects from the server.
      */
     public function disconnect()
     {
         $this->connection->disconnect();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeCommand(CommandInterface $command)
+    {
+        $response = $this->connection->executeCommand($command);
+
+        if ($response instanceof ResponseObjectInterface) {
+            if ($response instanceof ResponseErrorInterface) {
+                $response = $this->onResponseError($command, $response);
+            }
+
+            return $response;
+        }
+
+        return $command->parseResponse($response);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getProfile()
+    {
+        return $this->profile;
     }
 
     /**
@@ -192,29 +241,6 @@ class Client implements ClientInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getConnection()
-    {
-        return $this->connection;
-    }
-
-    /**
-     * Retrieves a single connection out of an aggregated connections instance.
-     *
-     * @param  string                               $connectionId Index or alias of the single connection.
-     * @return Connection\SingleConnectionInterface
-     */
-    public function getConnectionById($connectionId)
-    {
-        if (!$this->connection instanceof AggregatedConnectionInterface) {
-            throw new NotSupportedException('Retrieving connections by ID is supported only when using aggregated connections');
-        }
-
-        return $this->connection->getConnectionById($connectionId);
-    }
-
-    /**
      * Creates a Redis command with the specified arguments and sends a request
      * to the server.
      *
@@ -231,58 +257,15 @@ class Client implements ClientInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function createCommand($commandID, $arguments = array())
-    {
-        return $this->profile->createCommand($commandID, $arguments);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function executeCommand(CommandInterface $command)
-    {
-        $response = $this->connection->executeCommand($command);
-
-        if ($response instanceof ResponseObjectInterface) {
-            if ($response instanceof ResponseErrorInterface) {
-                $response = $this->onResponseError($command, $response);
-            }
-
-            return $response;
-        }
-
-        return $command->parseResponse($response);
-    }
-
-    /**
-     * Handles -ERR responses returned by Redis.
+     * Creates a new pipeline context and returns it, or returns the results of
+     * a pipeline executed inside the optionally provided callable object.
      *
-     * @param  CommandInterface       $command  The command that generated the error.
-     * @param  ResponseErrorInterface $response The error response instance.
-     * @return mixed
+     * @param  mixed                 ... Options for the context, a callable object, or both.
+     * @return PipelineContext|array
      */
-    protected function onResponseError(CommandInterface $command, ResponseErrorInterface $response)
+    public function pipeline(/* arguments */)
     {
-        if ($command instanceof ScriptedCommand && $response->getErrorType() === 'NOSCRIPT') {
-            $eval = $this->createCommand('eval');
-            $eval->setRawArguments($command->getEvalArguments());
-
-            $response = $this->executeCommand($eval);
-
-            if (!$response instanceof ResponseObjectInterface) {
-                $response = $command->parseResponse($response);
-            }
-
-            return $response;
-        }
-
-        if ($this->options->exceptions) {
-            throw new ServerException($response->getMessage());
-        }
-
-        return $response;
+        return $this->sharedInitializer(func_get_args(), 'initPipeline');
     }
 
     /**
@@ -316,15 +299,99 @@ class Client implements ClientInterface
     }
 
     /**
-     * Creates a new pipeline context and returns it, or returns the results of
-     * a pipeline executed inside the optionally provided callable object.
+     * Creates a new transaction context and returns it, or returns the results of
+     * a transaction executed inside the optionally provided callable object.
      *
-     * @param  mixed                 ... Options for the context, a callable object, or both.
-     * @return PipelineContext|array
+     * @deprecated You should start using the new Client::transaction() method
+     *             as it will replace Client::multiExec() in the next major
+     *             version of the library.
+     *
+     * @param  mixed                  ... Options for the context, a callable object, or both.
+     * @return MultiExecContext|array
      */
-    public function pipeline(/* arguments */)
+    public function multiExec(/* arguments */)
     {
-        return $this->sharedInitializer(func_get_args(), 'initPipeline');
+        return $this->sharedInitializer(func_get_args(), 'initMultiExec');
+    }
+
+    /**
+     * Creates a new transaction context and returns it, or returns the results of
+     * a transaction executed inside the optionally provided callable object.
+     *
+     * @param  mixed                  ... Options for the context, a callable object, or both.
+     * @return MultiExecContext|array
+     */
+    public function transaction(/* arguments */)
+    {
+        return $this->sharedInitializer(func_get_args(), 'initMultiExec');
+    }
+
+    /**
+     * Creates a new Publish / Subscribe context and returns it, or executes it
+     * inside the optionally provided callable object.
+     *
+     * @deprecated This method will change in the next major release to support
+     *             the new PUBSUB command introduced in Redis 2.8. Please use
+     *             Client::pubSubLoop() to create Predis\PubSub\PubSubContext
+     *             instances from now on.
+     *
+     * @param  mixed               ... Options for the context, a callable object, or both.
+     * @return PubSubContext|array
+     */
+    public function pubSub(/* arguments */)
+    {
+        return call_user_func_array(array($this, 'pubSubLoop'), func_get_args());
+    }
+
+    /**
+     * Creates a new Publish / Subscribe context and returns it, or executes it
+     * inside the optionally provided callable object.
+     *
+     * @param  mixed               ... Options for the context, a callable object, or both.
+     * @return PubSubContext|array
+     */
+    public function pubSubLoop(/* arguments */)
+    {
+        return $this->sharedInitializer(func_get_args(), 'initPubSub');
+    }
+
+    /**
+     * Returns a new monitor context.
+     *
+     * @return MonitorContext
+     */
+    public function monitor()
+    {
+        return new MonitorContext($this);
+    }
+
+    /**
+     * Handles -ERR responses returned by Redis.
+     *
+     * @param  CommandInterface       $command  The command that generated the error.
+     * @param  ResponseErrorInterface $response The error response instance.
+     * @return mixed
+     */
+    protected function onResponseError(CommandInterface $command, ResponseErrorInterface $response)
+    {
+        if ($command instanceof ScriptedCommand && $response->getErrorType() === 'NOSCRIPT') {
+            $eval = $this->createCommand('eval');
+            $eval->setRawArguments($command->getEvalArguments());
+
+            $response = $this->executeCommand($eval);
+
+            if (!$response instanceof ResponseObjectInterface) {
+                $response = $command->parseResponse($response);
+            }
+
+            return $response;
+        }
+
+        if ($this->options->exceptions) {
+            throw new ServerException($response->getMessage());
+        }
+
+        return $response;
     }
 
     /**
@@ -361,34 +428,6 @@ class Client implements ClientInterface
     }
 
     /**
-     * Creates a new transaction context and returns it, or returns the results of
-     * a transaction executed inside the optionally provided callable object.
-     *
-     * @deprecated You should start using the new Client::transaction() method
-     *             as it will replace Client::multiExec() in the next major
-     *             version of the library.
-     *
-     * @param  mixed                  ... Options for the context, a callable object, or both.
-     * @return MultiExecContext|array
-     */
-    public function multiExec(/* arguments */)
-    {
-        return $this->sharedInitializer(func_get_args(), 'initMultiExec');
-    }
-
-    /**
-     * Creates a new transaction context and returns it, or returns the results of
-     * a transaction executed inside the optionally provided callable object.
-     *
-     * @param  mixed                  ... Options for the context, a callable object, or both.
-     * @return MultiExecContext|array
-     */
-    public function transaction(/* arguments */)
-    {
-        return $this->sharedInitializer(func_get_args(), 'initMultiExec');
-    }
-
-    /**
      * Transaction context initializer.
      *
      * @param  array                  $options  Options for the context.
@@ -400,35 +439,6 @@ class Client implements ClientInterface
         $transaction = new MultiExecContext($this, $options ?: array());
 
         return isset($callable) ? $transaction->execute($callable) : $transaction;
-    }
-
-    /**
-     * Creates a new Publish / Subscribe context and returns it, or executes it
-     * inside the optionally provided callable object.
-     *
-     * @deprecated This method will change in the next major release to support
-     *             the new PUBSUB command introduced in Redis 2.8. Please use
-     *             Client::pubSubLoop() to create Predis\PubSub\PubSubContext
-     *             instances from now on.
-     *
-     * @param  mixed               ... Options for the context, a callable object, or both.
-     * @return PubSubContext|array
-     */
-    public function pubSub(/* arguments */)
-    {
-        return call_user_func_array(array($this, 'pubSubLoop'), func_get_args());
-    }
-
-    /**
-     * Creates a new Publish / Subscribe context and returns it, or executes it
-     * inside the optionally provided callable object.
-     *
-     * @param  mixed               ... Options for the context, a callable object, or both.
-     * @return PubSubContext|array
-     */
-    public function pubSubLoop(/* arguments */)
-    {
-        return $this->sharedInitializer(func_get_args(), 'initPubSub');
     }
 
     /**
@@ -451,15 +461,5 @@ class Client implements ClientInterface
                 $pubsub->closeContext();
             }
         }
-    }
-
-    /**
-     * Returns a new monitor context.
-     *
-     * @return MonitorContext
-     */
-    public function monitor()
-    {
-        return new MonitorContext($this);
     }
 }

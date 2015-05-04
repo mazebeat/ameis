@@ -40,6 +40,16 @@ class Swift_CharacterReader_UsAsciiReader implements Swift_CharacterReader
     }
 
     /**
+     * Returns the number of bytes which should be read to start each character.
+     *
+     * @return int
+     */
+    public function getInitialByteSize()
+    {
+        return 1;
+    }
+
+    /**
      * Returns mapType
      *
      * @return int     mapType
@@ -70,15 +80,5 @@ class Swift_CharacterReader_UsAsciiReader implements Swift_CharacterReader
         } else {
             return -1;
         }
-    }
-
-    /**
-     * Returns the number of bytes which should be read to start each character.
-     *
-     * @return int
-     */
-    public function getInitialByteSize()
-    {
-        return 1;
     }
 }

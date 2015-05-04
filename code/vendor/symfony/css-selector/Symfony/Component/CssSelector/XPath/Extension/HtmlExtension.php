@@ -42,6 +42,27 @@ class HtmlExtension extends AbstractExtension
     /**
      * {@inheritdoc}
      */
+	public function getFunctionTranslators()
+	{
+		return array(
+			'lang' => array(
+				$this,
+				'translateLang'
+			),
+		);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getName()
+	{
+		return 'html';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
     public function getPseudoClassTranslators()
     {
         return array(
@@ -53,16 +74,6 @@ class HtmlExtension extends AbstractExtension
             'invalid' => array($this, 'translateInvalid'),
             'hover' => array($this, 'translateHover'),
             'visited' => array($this, 'translateVisited'),
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFunctionTranslators()
-    {
-        return array(
-            'lang' => array($this, 'translateLang'),
         );
     }
 
@@ -226,13 +237,5 @@ class HtmlExtension extends AbstractExtension
     public function translateVisited(XPathExpr $xpath)
     {
         return $xpath->addCondition('0');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'html';
     }
 }

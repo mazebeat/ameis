@@ -33,26 +33,6 @@ class KeyPrefixProcessor implements CommandProcessorInterface
     }
 
     /**
-     * Sets a prefix that is applied to all the keys.
-     *
-     * @param string $prefix Prefix for the keys.
-     */
-    public function setPrefix($prefix)
-    {
-        $this->prefix = $prefix;
-    }
-
-    /**
-     * Gets the current prefix.
-     *
-     * @return string
-     */
-    public function getPrefix()
-    {
-        return $this->prefix;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function process(CommandInterface $command)
@@ -68,5 +48,25 @@ class KeyPrefixProcessor implements CommandProcessorInterface
     public function __toString()
     {
         return $this->getPrefix();
+    }
+
+    /**
+     * Gets the current prefix.
+     *
+     * @return string
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
+    }
+
+    /**
+     * Sets a prefix that is applied to all the keys.
+     *
+     * @param string $prefix Prefix for the keys.
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = $prefix;
     }
 }

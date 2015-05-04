@@ -42,6 +42,14 @@ class AttributeMatchingExtension extends AbstractExtension
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'attribute-matching';
+    }
+
+    /**
      * @param XPathExpr $xpath
      * @param string    $attribute
      * @param string    $value
@@ -161,13 +169,5 @@ class AttributeMatchingExtension extends AbstractExtension
             $attribute,
             Translator::getXpathLiteral($value)
         ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'attribute-matching';
     }
 }

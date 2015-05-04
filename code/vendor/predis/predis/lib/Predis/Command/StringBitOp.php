@@ -20,9 +20,9 @@ class StringBitOp extends AbstractCommand implements PrefixableCommandInterface
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'BITOP';
+        PrefixHelpers::skipFirst($this, $prefix);
     }
 
     /**
@@ -42,8 +42,8 @@ class StringBitOp extends AbstractCommand implements PrefixableCommandInterface
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function getId()
     {
-        PrefixHelpers::skipFirst($this, $prefix);
+        return 'BITOP';
     }
 }

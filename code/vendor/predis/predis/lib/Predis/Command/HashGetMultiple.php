@@ -20,16 +20,16 @@ class HashGetMultiple extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
+	protected function filterArguments(Array $arguments)
     {
-        return 'HMGET';
+	    return self::normalizeVariadic($arguments);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+	public function getId()
     {
-        return self::normalizeVariadic($arguments);
+	    return 'HMGET';
     }
 }

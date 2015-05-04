@@ -11,11 +11,11 @@
 
 namespace Symfony\Component\Security\Core\Authentication\Token;
 
-use Symfony\Component\Security\Core\Role\RoleInterface;
 use Symfony\Component\Security\Core\Role\Role;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Role\RoleInterface;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Base class for Token instances.
@@ -53,21 +53,73 @@ abstract class AbstractToken implements TokenInterface
     /**
      * {@inheritdoc}
      */
-    public function getRoles()
+    public function __toString()
     {
-        return $this->roles;
+        $class = get_class($this);
+        $class = substr($class, strrpos($class, '\\')+1);
+
+        $roles = array();
+        foreach ($this->roles as $role) {
+            $roles[] = $role->getRole();
+        }
+
+        return sprintf('%s(user="%s", authenticated=%s, roles="%s")', $class, $this->getUsername(), json_encode($this->authenticated), implode(', ', $roles));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getUsername()
+    public function eraseCredentials()
     {
-        if ($this->user instanceof UserInterface) {
-            return $this->user->getUsername();
+        if ($this->getUser() instanceof UserInterface) {
+            $this->getUser()->eraseCredentials();
+        }
+    }
+
+    /**
+     * Returns an attribute value.
+     *
+     * @param string $name The attribute name
+     *
+     * @return mixed The attribute value
+     *
+     * @throws \InvalidArgumentException When attribute doesn't exist for this token
+     */
+    public function getAttribute($name)
+    {
+        if (!array_key_exists($name, $this->attributes)) {
+            throw new \InvalidArgumentException(sprintf('This token has no "%s" attribute.', $name));
         }
 
-        return (string) $this->user;
+        return $this->attributes[$name];
+    }
+
+    /**
+     * Returns the token attributes.
+     *
+     * @return array The token attributes
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * Sets the token attributes.
+     *
+     * @param array $attributes The token attributes
+     */
+    public function setAttributes(array $attributes)
+    {
+        $this->attributes = $attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRoles()
+    {
+        return $this->roles;
     }
 
     /**
@@ -118,6 +170,30 @@ abstract class AbstractToken implements TokenInterface
     /**
      * {@inheritdoc}
      */
+    public function getUsername()
+    {
+        if ($this->user instanceof UserInterface) {
+            return $this->user->getUsername();
+        }
+
+        return (string) $this->user;
+    }
+
+    /**
+     * Returns true if the attribute exists.
+     *
+     * @param string $name The attribute name
+     *
+     * @return bool true if the attribute exists, false otherwise
+     */
+    public function hasAttribute($name)
+    {
+        return array_key_exists($name, $this->attributes);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isAuthenticated()
     {
         return $this->authenticated;
@@ -129,16 +205,6 @@ abstract class AbstractToken implements TokenInterface
     public function setAuthenticated($authenticated)
     {
         $this->authenticated = (bool) $authenticated;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function eraseCredentials()
-    {
-        if ($this->getUser() instanceof UserInterface) {
-            $this->getUser()->eraseCredentials();
-        }
     }
 
     /**
@@ -157,64 +223,6 @@ abstract class AbstractToken implements TokenInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function unserialize($serialized)
-    {
-        list($this->user, $this->authenticated, $this->roles, $this->attributes) = unserialize($serialized);
-    }
-
-    /**
-     * Returns the token attributes.
-     *
-     * @return array The token attributes
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * Sets the token attributes.
-     *
-     * @param array $attributes The token attributes
-     */
-    public function setAttributes(array $attributes)
-    {
-        $this->attributes = $attributes;
-    }
-
-    /**
-     * Returns true if the attribute exists.
-     *
-     * @param string $name The attribute name
-     *
-     * @return bool true if the attribute exists, false otherwise
-     */
-    public function hasAttribute($name)
-    {
-        return array_key_exists($name, $this->attributes);
-    }
-
-    /**
-     * Returns an attribute value.
-     *
-     * @param string $name The attribute name
-     *
-     * @return mixed The attribute value
-     *
-     * @throws \InvalidArgumentException When attribute doesn't exist for this token
-     */
-    public function getAttribute($name)
-    {
-        if (!array_key_exists($name, $this->attributes)) {
-            throw new \InvalidArgumentException(sprintf('This token has no "%s" attribute.', $name));
-        }
-
-        return $this->attributes[$name];
-    }
-
-    /**
      * Sets an attribute.
      *
      * @param string $name  The attribute name
@@ -228,17 +236,9 @@ abstract class AbstractToken implements TokenInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function unserialize($serialized)
     {
-        $class = get_class($this);
-        $class = substr($class, strrpos($class, '\\')+1);
-
-        $roles = array();
-        foreach ($this->roles as $role) {
-            $roles[] = $role->getRole();
-        }
-
-        return sprintf('%s(user="%s", authenticated=%s, roles="%s")', $class, $this->getUsername(), json_encode($this->authenticated), implode(', ', $roles));
+        list($this->user, $this->authenticated, $this->roles, $this->attributes) = unserialize($serialized);
     }
 
     private function hasUserChanged(UserInterface $user)

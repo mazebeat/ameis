@@ -41,13 +41,31 @@ class ProcessorChain implements CommandProcessorChainInterface, \ArrayAccess
     }
 
     /**
+     * Returns the number of command processors in the chain.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->processors);
+    }
+
+    /**
+     * Returns an iterator over the list of command processor in the chain.
+     *
+     * @return \ArrayIterator
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->processors);
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function remove(CommandProcessorInterface $processor)
+    public function getProcessors()
     {
-        if (false !== $index = array_search($processor, $this->processors, true)) {
-            unset($this[$index]);
-        }
+        return $this->processors;
     }
 
     /**
@@ -63,29 +81,11 @@ class ProcessorChain implements CommandProcessorChainInterface, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function getProcessors()
+    public function remove(CommandProcessorInterface $processor)
     {
-        return $this->processors;
-    }
-
-    /**
-     * Returns an iterator over the list of command processor in the chain.
-     *
-     * @return \ArrayIterator
-     */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->processors);
-    }
-
-    /**
-     * Returns the number of command processors in the chain.
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return count($this->processors);
+        if (false !== $index = array_search($processor, $this->processors, true)) {
+            unset($this[$index]);
+        }
     }
 
     /**

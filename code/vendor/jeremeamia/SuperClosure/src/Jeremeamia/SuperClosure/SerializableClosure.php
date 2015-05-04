@@ -35,18 +35,6 @@ class SerializableClosure implements \Serializable
     }
 
     /**
-     * @return \ReflectionFunction
-     */
-    public function getReflection()
-    {
-        if (!$this->reflection) {
-            $this->reflection = new \ReflectionFunction($this->closure);
-        }
-
-        return $this->reflection;
-    }
-
-    /**
      * @return \Closure
      */
     public function getClosure()
@@ -62,6 +50,18 @@ class SerializableClosure implements \Serializable
     public function __invoke()
     {
         return $this->getReflection()->invokeArgs(func_get_args());
+    }
+
+    /**
+     * @return \ReflectionFunction
+     */
+    public function getReflection()
+    {
+        if (!$this->reflection) {
+            $this->reflection = new \ReflectionFunction($this->closure);
+        }
+
+        return $this->reflection;
     }
 
     /**

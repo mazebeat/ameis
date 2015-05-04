@@ -10,10 +10,10 @@
 
 namespace Barryvdh\LaravelIdeHelper;
 
-use Illuminate\Support\ServiceProvider;
+use Barryvdh\LaravelIdeHelper\Console\GeneratorCommand;
 use Barryvdh\LaravelIdeHelper\Console\MetaCommand;
 use Barryvdh\LaravelIdeHelper\Console\ModelsCommand;
-use Barryvdh\LaravelIdeHelper\Console\GeneratorCommand;
+use Illuminate\Support\ServiceProvider;
 
 class IdeHelperServiceProvider extends ServiceProvider
 {
@@ -35,44 +35,6 @@ class IdeHelperServiceProvider extends ServiceProvider
         $this->package('barryvdh/laravel-ide-helper', 'laravel-ide-helper', __DIR__);
     }
 
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app['command.ide-helper.generate'] = $this->app->share(
-            function ($app) {
-                return new GeneratorCommand($app['config'], $app['files'], $app['view']);
-            }
-        );
-
-        $this->app['command.ide-helper.models'] = $this->app->share(
-            function () {
-                return new ModelsCommand();
-            }
-        );
-        
-        $this->app['command.ide-helper.meta'] = $this->app->share(
-          function ($app) {
-              return new MetaCommand($app['files'], $app['view']);
-          }
-        );
-
-        $this->commands('command.ide-helper.generate', 'command.ide-helper.models', 'command.ide-helper.meta');
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return array('command.ide-helper.generate', 'command.ide-helper.models');
-    }
-    
     /**
      * Register the package's component namespaces.
      *
@@ -103,6 +65,41 @@ class IdeHelperServiceProvider extends ServiceProvider
         }
 
         $this->app['view']->addNamespace($namespace, $path.'/views');
+    }
+
+	/**
+	 * Get the services provided by the provider.
+	 *
+	 * @return array
+	 */
+	public function provides()
+	{
+		return array(
+			'command.ide-helper.generate',
+			'command.ide-helper.models'
+		);
+	}
+
+	/**
+	 * Register the service provider.
+	 *
+	 * @return void
+	 */
+	public function register()
+	{
+		$this->app['command.ide-helper.generate'] = $this->app->share(function ($app) {
+			return new GeneratorCommand($app['config'], $app['files'], $app['view']);
+		});
+
+		$this->app['command.ide-helper.models'] = $this->app->share(function () {
+			return new ModelsCommand();
+		});
+
+		$this->app['command.ide-helper.meta'] = $this->app->share(function ($app) {
+			return new MetaCommand($app['files'], $app['view']);
+		});
+
+		$this->commands('command.ide-helper.generate', 'command.ide-helper.models', 'command.ide-helper.meta');
     }
 
 }

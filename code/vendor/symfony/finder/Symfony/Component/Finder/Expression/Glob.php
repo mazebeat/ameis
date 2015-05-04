@@ -32,17 +32,11 @@ class Glob implements ValueInterface
     /**
      * {@inheritdoc}
      */
-    public function render()
+    public function append($expr)
     {
-        return $this->pattern;
-    }
+        $this->pattern .= $expr;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function renderPattern()
-    {
-        return $this->pattern;
+        return $this;
     }
 
     /**
@@ -74,11 +68,17 @@ class Glob implements ValueInterface
     /**
      * {@inheritdoc}
      */
-    public function append($expr)
+    public function render()
     {
-        $this->pattern .= $expr;
+        return $this->pattern;
+    }
 
-        return $this;
+    /**
+     * {@inheritdoc}
+     */
+    public function renderPattern()
+    {
+        return $this->pattern;
     }
 
     /**

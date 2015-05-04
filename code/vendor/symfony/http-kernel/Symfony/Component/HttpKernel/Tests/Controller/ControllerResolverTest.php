@@ -11,11 +11,15 @@
 
 namespace Symfony\Component\HttpKernel\Tests\Controller;
 
-use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 
 class ControllerResolverTest extends \PHPUnit_Framework_TestCase
 {
+    protected static function controllerMethod4()
+    {
+    }
+
     public function testGetControllerWithoutControllerParameter()
     {
         $logger = $this->getMock('Psr\Log\LoggerInterface');
@@ -219,10 +223,6 @@ class ControllerResolverTest extends \PHPUnit_Framework_TestCase
     }
 
     protected function controllerMethod3($foo, $bar = null, $foobar)
-    {
-    }
-
-    protected static function controllerMethod4()
     {
     }
 

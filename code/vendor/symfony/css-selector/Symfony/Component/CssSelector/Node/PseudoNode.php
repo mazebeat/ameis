@@ -60,16 +60,16 @@ class PseudoNode extends AbstractNode
     /**
      * {@inheritdoc}
      */
-    public function getSpecificity()
+    public function __toString()
     {
-        return $this->selector->getSpecificity()->plus(new Specificity(0, 1, 0));
+        return sprintf('%s[%s:%s]', $this->getNodeName(), $this->selector, $this->identifier);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function getSpecificity()
     {
-        return sprintf('%s[%s:%s]', $this->getNodeName(), $this->selector, $this->identifier);
+        return $this->selector->getSpecificity()->plus(new Specificity(0, 1, 0));
     }
 }

@@ -19,39 +19,46 @@ namespace Symfony\Component\HttpKernel\Profiler;
 class SqliteProfilerStorage extends PdoProfilerStorage
 {
     /**
-     * @throws \RuntimeException When neither of SQLite3 or PDO_SQLite extension is enabled
+     * {@inheritdoc}
      */
-    protected function initDb()
+    protected function buildCriteria($ip, $url, $start, $end, $limit, $method)
     {
-        if (null === $this->db || $this->db instanceof \SQLite3) {
-            if (0 !== strpos($this->dsn, 'sqlite')) {
-                throw new \RuntimeException(sprintf('Please check your configuration. You are trying to use Sqlite with an invalid dsn "%s". The expected format is "sqlite:/path/to/the/db/file".', $this->dsn));
-            }
-            if (class_exists('SQLite3')) {
-                $db = new \SQLite3(substr($this->dsn, 7, strlen($this->dsn)), \SQLITE3_OPEN_READWRITE | \SQLITE3_OPEN_CREATE);
-                if (method_exists($db, 'busyTimeout')) {
-                    // busyTimeout only exists for PHP >= 5.3.3
-                    $db->busyTimeout(1000);
-                }
-            } elseif (class_exists('PDO') && in_array('sqlite', \PDO::getAvailableDrivers(), true)) {
-                $db = new \PDO($this->dsn);
-            } else {
-                throw new \RuntimeException('You need to enable either the SQLite3 or PDO_SQLite extension for the profiler to run properly.');
-            }
+        $criteria = array();
+        $args = array();
 
-            $db->exec('PRAGMA temp_store=MEMORY; PRAGMA journal_mode=MEMORY;');
-            $db->exec('CREATE TABLE IF NOT EXISTS sf_profiler_data (token STRING, data STRING, ip STRING, method STRING, url STRING, time INTEGER, parent STRING, created_at INTEGER)');
-            $db->exec('CREATE INDEX IF NOT EXISTS data_created_at ON sf_profiler_data (created_at)');
-            $db->exec('CREATE INDEX IF NOT EXISTS data_ip ON sf_profiler_data (ip)');
-            $db->exec('CREATE INDEX IF NOT EXISTS data_method ON sf_profiler_data (method)');
-            $db->exec('CREATE INDEX IF NOT EXISTS data_url ON sf_profiler_data (url)');
-            $db->exec('CREATE INDEX IF NOT EXISTS data_parent ON sf_profiler_data (parent)');
-            $db->exec('CREATE UNIQUE INDEX IF NOT EXISTS data_token ON sf_profiler_data (token)');
-
-            $this->db = $db;
+        if ($ip = preg_replace('/[^\d\.]/', '', $ip)) {
+            $criteria[] = 'ip LIKE :ip';
+            $args[':ip'] = '%'.$ip.'%';
         }
 
-        return $this->db;
+        if ($url) {
+            $criteria[] = 'url LIKE :url ESCAPE "\"';
+            $args[':url'] = '%'.addcslashes($url, '%_\\').'%';
+        }
+
+        if ($method) {
+            $criteria[] = 'method = :method';
+            $args[':method'] = $method;
+        }
+
+        if (!empty($start)) {
+            $criteria[] = 'time >= :start';
+            $args[':start'] = $start;
+        }
+
+        if (!empty($end)) {
+            $criteria[] = 'time <= :end';
+            $args[':end'] = $end;
+        }
+
+        return array($criteria, $args);
+    }
+
+    protected function close($db)
+    {
+        if ($db instanceof \SQLite3) {
+            $db->close();
+        }
     }
 
     protected function exec($db, $query, array $args = array())
@@ -95,45 +102,38 @@ class SqliteProfilerStorage extends PdoProfilerStorage
     }
 
     /**
-     * {@inheritdoc}
+     * @throws \RuntimeException When neither of SQLite3 or PDO_SQLite extension is enabled
      */
-    protected function buildCriteria($ip, $url, $start, $end, $limit, $method)
+    protected function initDb()
     {
-        $criteria = array();
-        $args = array();
+        if (null === $this->db || $this->db instanceof \SQLite3) {
+            if (0 !== strpos($this->dsn, 'sqlite')) {
+                throw new \RuntimeException(sprintf('Please check your configuration. You are trying to use Sqlite with an invalid dsn "%s". The expected format is "sqlite:/path/to/the/db/file".', $this->dsn));
+            }
+            if (class_exists('SQLite3')) {
+                $db = new \SQLite3(substr($this->dsn, 7, strlen($this->dsn)), \SQLITE3_OPEN_READWRITE | \SQLITE3_OPEN_CREATE);
+                if (method_exists($db, 'busyTimeout')) {
+                    // busyTimeout only exists for PHP >= 5.3.3
+                    $db->busyTimeout(1000);
+                }
+            } elseif (class_exists('PDO') && in_array('sqlite', \PDO::getAvailableDrivers(), true)) {
+                $db = new \PDO($this->dsn);
+            } else {
+                throw new \RuntimeException('You need to enable either the SQLite3 or PDO_SQLite extension for the profiler to run properly.');
+            }
 
-        if ($ip = preg_replace('/[^\d\.]/', '', $ip)) {
-            $criteria[] = 'ip LIKE :ip';
-            $args[':ip'] = '%'.$ip.'%';
+            $db->exec('PRAGMA temp_store=MEMORY; PRAGMA journal_mode=MEMORY;');
+            $db->exec('CREATE TABLE IF NOT EXISTS sf_profiler_data (token STRING, data STRING, ip STRING, method STRING, url STRING, time INTEGER, parent STRING, created_at INTEGER)');
+            $db->exec('CREATE INDEX IF NOT EXISTS data_created_at ON sf_profiler_data (created_at)');
+            $db->exec('CREATE INDEX IF NOT EXISTS data_ip ON sf_profiler_data (ip)');
+            $db->exec('CREATE INDEX IF NOT EXISTS data_method ON sf_profiler_data (method)');
+            $db->exec('CREATE INDEX IF NOT EXISTS data_url ON sf_profiler_data (url)');
+            $db->exec('CREATE INDEX IF NOT EXISTS data_parent ON sf_profiler_data (parent)');
+            $db->exec('CREATE UNIQUE INDEX IF NOT EXISTS data_token ON sf_profiler_data (token)');
+
+            $this->db = $db;
         }
 
-        if ($url) {
-            $criteria[] = 'url LIKE :url ESCAPE "\"';
-            $args[':url'] = '%'.addcslashes($url, '%_\\').'%';
-        }
-
-        if ($method) {
-            $criteria[] = 'method = :method';
-            $args[':method'] = $method;
-        }
-
-        if (!empty($start)) {
-            $criteria[] = 'time >= :start';
-            $args[':start'] = $start;
-        }
-
-        if (!empty($end)) {
-            $criteria[] = 'time <= :end';
-            $args[':end'] = $end;
-        }
-
-        return array($criteria, $args);
-    }
-
-    protected function close($db)
-    {
-        if ($db instanceof \SQLite3) {
-            $db->close();
-        }
+        return $this->db;
     }
 }

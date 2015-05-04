@@ -41,28 +41,13 @@ class Swift_Mime_Headers_OpenDKIMHeader implements Swift_Mime_Header
     }
 
     /**
-     * Get the type of Header that this instance represents.
+     * Get the value of this header prepared for rendering.
      *
-     * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
-     * @see TYPE_DATE, TYPE_ID, TYPE_PATH
-     *
-     * @return int
+     * @return string
      */
-    public function getFieldType()
+	public function getFieldBody()
     {
-        return self::TYPE_TEXT;
-    }
-
-    /**
-     * Set the model for the field body.
-     *
-     * This method takes a string for the field value.
-     *
-     * @param string $model
-     */
-    public function setFieldBodyModel($model)
-    {
-        $this->setValue($model);
+	    return $this->_value;
     }
 
     /**
@@ -78,33 +63,44 @@ class Swift_Mime_Headers_OpenDKIMHeader implements Swift_Mime_Header
     }
 
     /**
-     * Get the (unencoded) value of this header.
-     *
-     * @return string
+     * Set the Header FieldName
+     * @see Swift_Mime_Header::getFieldName()
      */
-    public function getValue()
+	public function getFieldName()
+	{
+		return $this->_fieldName;
+	}
+
+	/**
+	 * Get the type of Header that this instance represents.
+     *
+	 * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
+	 * @see TYPE_DATE, TYPE_ID, TYPE_PATH
+	 *
+	 * @return int
+     */
+	public function getFieldType()
     {
-        return $this->_value;
+	    return self::TYPE_TEXT;
     }
 
     /**
-     * Set the (unencoded) value of this header.
-     *
-     * @param string $value
+     * Ignored
      */
-    public function setValue($value)
+	public function setCharset($charset)
     {
-        $this->_value = $value;
     }
 
     /**
-     * Get the value of this header prepared for rendering.
+     * Set the model for the field body.
      *
-     * @return string
+     * This method takes a string for the field value.
+     *
+     * @param string $model
      */
-    public function getFieldBody()
+	public function setFieldBodyModel($model)
     {
-        return $this->_value;
+	    $this->setValue($model);
     }
 
     /**
@@ -118,18 +114,22 @@ class Swift_Mime_Headers_OpenDKIMHeader implements Swift_Mime_Header
     }
 
     /**
-     * Set the Header FieldName
-	 * @see Swift_Mime_Header::getFieldName()
-	 */
-    public function getFieldName()
+     * Get the (unencoded) value of this header.
+     *
+     * @return string
+     */
+	public function getValue()
     {
-        return $this->_fieldName;
+	    return $this->_value;
     }
 
     /**
-     * Ignored
+     * Set the (unencoded) value of this header.
+     *
+     * @param string $value
      */
-    public function setCharset($charset)
+	public function setValue($value)
     {
+	    $this->_value = $value;
     }
 }

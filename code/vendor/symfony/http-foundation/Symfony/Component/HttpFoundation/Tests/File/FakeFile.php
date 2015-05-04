@@ -23,9 +23,9 @@ class FakeFile extends OrigFile
         parent::__construct($path, false);
     }
 
-    public function isReadable()
+    public function getMTime()
     {
-        return true;
+        return time();
     }
 
     public function getRealpath()
@@ -38,8 +38,8 @@ class FakeFile extends OrigFile
         return 42;
     }
 
-    public function getMTime()
+    public function isReadable()
     {
-        return time();
+        return true;
     }
 }

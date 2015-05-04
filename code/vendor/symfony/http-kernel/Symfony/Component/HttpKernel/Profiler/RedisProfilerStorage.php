@@ -194,6 +194,49 @@ class RedisProfilerStorage implements ProfilerStorageInterface
     }
 
     /**
+     * Gets the name of the index.
+     *
+     * @return string
+     */
+    private function getIndexName()
+    {
+        $name = 'index';
+
+        if ($this->isItemNameValid($name)) {
+            return $name;
+        }
+
+        return false;
+    }
+
+    private function isItemNameValid($name)
+    {
+        $length = strlen($name);
+
+        if ($length > 2147483648) {
+            throw new \RuntimeException(sprintf('The Redis item key "%s" is too long (%s bytes). Allowed maximum size is 2^31 bytes.', $name, $length));
+        }
+
+        return true;
+    }
+
+    /**
+     * Retrieves an item from the Redis server.
+     *
+     * @param string $key
+     * @param int    $serializer
+     *
+     * @return mixed
+     */
+    private function getValue($key, $serializer = self::REDIS_SERIALIZER_NONE)
+    {
+        $redis = $this->getRedis();
+        $redis->setOption(self::REDIS_OPT_SERIALIZER, $serializer);
+
+        return $redis->get($key);
+    }
+
+    /**
      * Internal convenience method that returns the instance of Redis.
      *
      * @return \Redis
@@ -242,6 +285,36 @@ class RedisProfilerStorage implements ProfilerStorageInterface
         $this->redis = $redis;
     }
 
+    /**
+     * Gets the item name.
+     *
+     * @param string $token
+     *
+     * @return string
+     */
+    private function getItemName($token)
+    {
+        $name = $token;
+
+        if ($this->isItemNameValid($name)) {
+            return $name;
+        }
+
+        return false;
+    }
+
+    /**
+     * Removes the specified keys.
+     *
+     * @param array $keys
+     *
+     * @return bool
+     */
+    private function delete(array $keys)
+    {
+        return (bool) $this->getRedis()->delete($keys);
+    }
+
     private function createProfileFromData($token, $data, $parent = null)
     {
         $profile = new Profile($token);
@@ -272,67 +345,6 @@ class RedisProfilerStorage implements ProfilerStorageInterface
         }
 
         return $profile;
-    }
-
-    /**
-     * Gets the item name.
-     *
-     * @param string $token
-     *
-     * @return string
-     */
-    private function getItemName($token)
-    {
-        $name = $token;
-
-        if ($this->isItemNameValid($name)) {
-            return $name;
-        }
-
-        return false;
-    }
-
-    /**
-     * Gets the name of the index.
-     *
-     * @return string
-     */
-    private function getIndexName()
-    {
-        $name = 'index';
-
-        if ($this->isItemNameValid($name)) {
-            return $name;
-        }
-
-        return false;
-    }
-
-    private function isItemNameValid($name)
-    {
-        $length = strlen($name);
-
-        if ($length > 2147483648) {
-            throw new \RuntimeException(sprintf('The Redis item key "%s" is too long (%s bytes). Allowed maximum size is 2^31 bytes.', $name, $length));
-        }
-
-        return true;
-    }
-
-    /**
-     * Retrieves an item from the Redis server.
-     *
-     * @param string $key
-     * @param int    $serializer
-     *
-     * @return mixed
-     */
-    private function getValue($key, $serializer = self::REDIS_SERIALIZER_NONE)
-    {
-        $redis = $this->getRedis();
-        $redis->setOption(self::REDIS_OPT_SERIALIZER, $serializer);
-
-        return $redis->get($key);
     }
 
     /**
@@ -374,17 +386,5 @@ class RedisProfilerStorage implements ProfilerStorageInterface
         }
 
         return $redis->setex($key, $expiration, $value);
-    }
-
-    /**
-     * Removes the specified keys.
-     *
-     * @param array $keys
-     *
-     * @return bool
-     */
-    private function delete(array $keys)
-    {
-        return (bool) $this->getRedis()->delete($keys);
     }
 }

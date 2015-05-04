@@ -60,6 +60,22 @@ class HashRing implements DistributionStrategyInterface, HashGeneratorInterface
     /**
      * {@inheritdoc}
      */
+    public function get($key)
+    {
+        return $this->ring[$this->getNodeKey($key)];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHashGenerator()
+    {
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function remove($node)
     {
         // A node is removed by resetting the ring so that it's recreated from
@@ -88,29 +104,32 @@ class HashRing implements DistributionStrategyInterface, HashGeneratorInterface
     }
 
     /**
-     * Returns the initialization status of the distributor.
+     * Calculates the corrisponding key of a node distributed in the hashring.
      *
-     * @return bool
-     */
-    private function isInitialized()
-    {
-        return isset($this->ringKeys);
-    }
-
-    /**
-     * Calculates the total weight of all the nodes in the distributor.
-     *
+     * @param  int $key Computed hash of a key.
      * @return int
      */
-    private function computeTotalWeight()
+    private function getNodeKey($key)
     {
-        $totalWeight = 0;
+        $this->initialize();
+        $ringKeys = $this->ringKeys;
+        $upper = $this->ringKeysCount - 1;
+        $lower = 0;
 
-        foreach ($this->nodes as $node) {
-            $totalWeight += $node['weight'];
+        while ($lower <= $upper) {
+            $index = ($lower + $upper) >> 1;
+            $item  = $ringKeys[$index];
+
+            if ($item > $key) {
+                $upper = $index - 1;
+            } elseif ($item < $key) {
+                $lower = $index + 1;
+            } else {
+                return $item;
+            }
         }
 
-        return $totalWeight;
+        return $ringKeys[$this->wrapAroundStrategy($upper, $lower, $this->ringKeysCount)];
     }
 
     /**
@@ -138,6 +157,32 @@ class HashRing implements DistributionStrategyInterface, HashGeneratorInterface
         ksort($this->ring, SORT_NUMERIC);
         $this->ringKeys = array_keys($this->ring);
         $this->ringKeysCount = count($this->ringKeys);
+    }
+
+    /**
+     * Returns the initialization status of the distributor.
+     *
+     * @return bool
+     */
+    private function isInitialized()
+    {
+        return isset($this->ringKeys);
+    }
+
+    /**
+     * Calculates the total weight of all the nodes in the distributor.
+     *
+     * @return int
+     */
+    private function computeTotalWeight()
+    {
+        $totalWeight = 0;
+
+        foreach ($this->nodes as $node) {
+            $totalWeight += $node['weight'];
+        }
+
+        return $totalWeight;
     }
 
     /**
@@ -174,54 +219,6 @@ class HashRing implements DistributionStrategyInterface, HashGeneratorInterface
     }
 
     /**
-     * Calculates the hash for the specified value.
-     *
-     * @param  string $value Input value.
-     * @return int
-     */
-    public function hash($value)
-    {
-        return crc32($value);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get($key)
-    {
-        return $this->ring[$this->getNodeKey($key)];
-    }
-
-    /**
-     * Calculates the corrisponding key of a node distributed in the hashring.
-     *
-     * @param  int $key Computed hash of a key.
-     * @return int
-     */
-    private function getNodeKey($key)
-    {
-        $this->initialize();
-        $ringKeys = $this->ringKeys;
-        $upper = $this->ringKeysCount - 1;
-        $lower = 0;
-
-        while ($lower <= $upper) {
-            $index = ($lower + $upper) >> 1;
-            $item  = $ringKeys[$index];
-
-            if ($item > $key) {
-                $upper = $index - 1;
-            } elseif ($item < $key) {
-                $lower = $index + 1;
-            } else {
-                return $item;
-            }
-        }
-
-        return $ringKeys[$this->wrapAroundStrategy($upper, $lower, $this->ringKeysCount)];
-    }
-
-    /**
      * Implements a strategy to deal with wrap-around errors during binary searches.
      *
      * @param  int $upper
@@ -237,10 +234,13 @@ class HashRing implements DistributionStrategyInterface, HashGeneratorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Calculates the hash for the specified value.
+     *
+     * @param  string $value Input value.
+     * @return int
      */
-    public function getHashGenerator()
+    public function hash($value)
     {
-        return $this;
+        return crc32($value);
     }
 }

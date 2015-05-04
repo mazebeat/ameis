@@ -23,6 +23,28 @@ use Predis\Connection\RedisCluster;
 class ClientCluster extends AbstractOption
 {
     /**
+     * {@inheritdoc}
+     */
+    public function filter(ClientOptionsInterface $options, $value)
+    {
+        if (is_callable($value)) {
+            return $this->checkInstance(call_user_func($value, $options, $this));
+        }
+
+        $initializer = $this->getInitializer($options, $value);
+
+        return $this->checkInstance($initializer());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefault(ClientOptionsInterface $options)
+    {
+        return new PredisCluster();
+    }
+
+    /**
      * Checks if the specified value is a valid instance of ClusterConnectionInterface.
      *
      * @param  ClusterConnectionInterface $cluster Instance of a connection cluster.
@@ -35,20 +57,6 @@ class ClientCluster extends AbstractOption
         }
 
         return $cluster;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function filter(ClientOptionsInterface $options, $value)
-    {
-        if (is_callable($value)) {
-            return $this->checkInstance(call_user_func($value, $options, $this));
-        }
-
-        $initializer = $this->getInitializer($options, $value);
-
-        return $this->checkInstance($initializer());
     }
 
     /**
@@ -84,13 +92,5 @@ class ClientCluster extends AbstractOption
                     return new $fqnOrType();
                 };
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefault(ClientOptionsInterface $options)
-    {
-        return new PredisCluster();
     }
 }

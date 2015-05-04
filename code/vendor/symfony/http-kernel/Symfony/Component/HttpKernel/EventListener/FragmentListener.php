@@ -11,12 +11,12 @@
 
 namespace Symfony\Component\HttpKernel\EventListener;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\UriSigner;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Handles content fragments represented by special URIs.
@@ -44,6 +44,13 @@ class FragmentListener implements EventSubscriberInterface
     {
         $this->signer = $signer;
         $this->fragmentPath = $fragmentPath;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            KernelEvents::REQUEST => array(array('onKernelRequest', 48)),
+        );
     }
 
     /**
@@ -95,12 +102,5 @@ class FragmentListener implements EventSubscriberInterface
     protected function getLocalIpAddresses()
     {
         return array('127.0.0.1', 'fe80::1', '::1');
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return array(
-            KernelEvents::REQUEST => array(array('onKernelRequest', 48)),
-        );
     }
 }

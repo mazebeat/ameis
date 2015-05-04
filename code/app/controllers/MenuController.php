@@ -14,6 +14,7 @@ class MenuController extends BaseController
 
 	public function getIndex()
 	{
+		return View::make('blank');
 	}
 
 	public function getOrdentrabajo()
@@ -91,5 +92,15 @@ class MenuController extends BaseController
 		return View::make('medidas');
 
 	}
+
+//	public function postCotizaciones()
+//	{
+//		$inputs = Input::all();
+//		$rules  = array();
+//
+//		if ($this->validateInputs($rules)) {
+//			dd($inputs);
+//		}
+//	}
 
 }

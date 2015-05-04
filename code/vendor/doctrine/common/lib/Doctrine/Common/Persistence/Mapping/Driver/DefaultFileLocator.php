@@ -51,7 +51,7 @@ class DefaultFileLocator implements FileLocator
      * documents and operates in the specified operating mode.
      *
      * @param string|array $paths         One or multiple paths where mapping documents can be found.
-     * @param string|null  $fileExtension The file extension of mapping documents.
+     * @param string|null  $fileExtension The file extension of mapping documents, usually prefixed with a dot.
      */
     public function __construct($paths, $fileExtension = null)
     {
@@ -72,35 +72,20 @@ class DefaultFileLocator implements FileLocator
     }
 
     /**
-     * Retrieves the defined metadata lookup paths.
-     *
-     * @return array
+     * {@inheritDoc}
      */
-    public function getPaths()
+    public function fileExists($className)
     {
-        return $this->paths;
-    }
+        $fileName = str_replace('\\', '.', $className) . $this->fileExtension;
 
-    /**
-     * Gets the file extension used to look for mapping files under.
-     *
-     * @return string|null
-     */
-    public function getFileExtension()
-    {
-        return $this->fileExtension;
-    }
+        // Check whether file exists
+        foreach ((array) $this->paths as $path) {
+            if (is_file($path . DIRECTORY_SEPARATOR . $fileName)) {
+                return true;
+            }
+        }
 
-    /**
-     * Sets the file extension used to look for mapping files under.
-     *
-     * @param string|null $fileExtension The file extension to set.
-     *
-     * @return void
-     */
-    public function setFileExtension($fileExtension)
-    {
-        $this->fileExtension = $fileExtension;
+        return false;
     }
 
     /**
@@ -155,19 +140,34 @@ class DefaultFileLocator implements FileLocator
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the file extension used to look for mapping files under.
+     *
+     * @return string|null
      */
-    public function fileExists($className)
+    public function getFileExtension()
     {
-        $fileName = str_replace('\\', '.', $className) . $this->fileExtension;
+        return $this->fileExtension;
+    }
 
-        // Check whether file exists
-        foreach ((array) $this->paths as $path) {
-            if (is_file($path . DIRECTORY_SEPARATOR . $fileName)) {
-                return true;
-            }
-        }
+    /**
+     * Sets the file extension used to look for mapping files under.
+     *
+     * @param string|null $fileExtension The file extension to set.
+     *
+     * @return void
+     */
+    public function setFileExtension($fileExtension)
+    {
+        $this->fileExtension = $fileExtension;
+    }
 
-        return false;
+    /**
+     * Retrieves the defined metadata lookup paths.
+     *
+     * @return array
+     */
+    public function getPaths()
+    {
+        return $this->paths;
     }
 }

@@ -11,13 +11,13 @@
 
 namespace Symfony\Component\Finder\Adapter;
 
-use Symfony\Component\Finder\Exception\AccessDeniedException;
-use Symfony\Component\Finder\Iterator;
-use Symfony\Component\Finder\Shell\Shell;
-use Symfony\Component\Finder\Expression\Expression;
-use Symfony\Component\Finder\Shell\Command;
-use Symfony\Component\Finder\Comparator\NumberComparator;
 use Symfony\Component\Finder\Comparator\DateComparator;
+use Symfony\Component\Finder\Comparator\NumberComparator;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
+use Symfony\Component\Finder\Expression\Expression;
+use Symfony\Component\Finder\Iterator;
+use Symfony\Component\Finder\Shell\Command;
+use Symfony\Component\Finder\Shell\Shell;
 
 /**
  * Shell engine implementation using GNU find command.
@@ -37,6 +37,14 @@ abstract class AbstractFindAdapter extends AbstractAdapter
     public function __construct()
     {
         $this->shell = new Shell();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function canBeUsed()
+    {
+        return $this->shell->testCommand('find');
     }
 
     /**
@@ -119,14 +127,6 @@ abstract class AbstractFindAdapter extends AbstractAdapter
         }
 
         return $iterator;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeUsed()
-    {
-        return $this->shell->testCommand('find');
     }
 
     /**
@@ -303,6 +303,13 @@ abstract class AbstractFindAdapter extends AbstractAdapter
 
     /**
      * @param Command $command
+     * @param array   $contains
+     * @param bool    $not
+     */
+    abstract protected function buildContentFiltering(Command $command, array $contains, $not = false);
+
+    /**
+     * @param Command $command
      * @param string  $sort
      *
      * @throws \InvalidArgumentException
@@ -317,11 +324,4 @@ abstract class AbstractFindAdapter extends AbstractAdapter
      * @param string  $sort
      */
     abstract protected function buildFormatSorting(Command $command, $sort);
-
-    /**
-     * @param Command $command
-     * @param array   $contains
-     * @param bool    $not
-     */
-    abstract protected function buildContentFiltering(Command $command, array $contains, $not = false);
 }

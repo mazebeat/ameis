@@ -94,28 +94,6 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
     /* -- Changing parameters of the stream -- */
 
     /**
-     * Set the character set used in this CharacterStream.
-     *
-     * @param string $charset
-     */
-    public function setCharacterSet($charset)
-    {
-        $this->_charset = $charset;
-        $this->_charReader = null;
-        $this->_mapType = 0;
-    }
-
-    /**
-     * Set the CharacterReaderFactory for multi charset support.
-     *
-     * @param Swift_CharacterReaderFactory $factory
-     */
-    public function setCharacterReaderFactory(Swift_CharacterReaderFactory $factory)
-    {
-        $this->_charReaderFactory = $factory;
-    }
-
-    /**
      * @see Swift_CharacterStream::flushContents()
      */
     public function flushContents()
@@ -236,6 +214,28 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
         }
 
         return false;
+    }
+
+    /**
+     * Set the CharacterReaderFactory for multi charset support.
+     *
+     * @param Swift_CharacterReaderFactory $factory
+     */
+    public function setCharacterReaderFactory(Swift_CharacterReaderFactory $factory)
+    {
+        $this->_charReaderFactory = $factory;
+    }
+
+    /**
+     * Set the character set used in this CharacterStream.
+     *
+     * @param string $charset
+     */
+    public function setCharacterSet($charset)
+    {
+        $this->_charset = $charset;
+        $this->_charReader = null;
+        $this->_mapType = 0;
     }
 
     /**

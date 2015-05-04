@@ -20,14 +20,6 @@ class ZSetAdd extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return 'ZADD';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
@@ -42,5 +34,13 @@ class ZSetAdd extends PrefixableCommand
         }
 
         return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ZADD';
     }
 }

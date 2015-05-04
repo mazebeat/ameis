@@ -46,9 +46,8 @@ final class User implements AdvancedUserInterface
     /**
      * {@inheritdoc}
      */
-    public function getRoles()
+    public function eraseCredentials()
     {
-        return $this->roles;
     }
 
     /**
@@ -57,6 +56,14 @@ final class User implements AdvancedUserInterface
     public function getPassword()
     {
         return $this->password;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRoles()
+    {
+        return $this->roles;
     }
 
     /**
@@ -104,12 +111,5 @@ final class User implements AdvancedUserInterface
     public function isEnabled()
     {
         return $this->enabled;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function eraseCredentials()
-    {
     }
 }

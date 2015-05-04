@@ -52,6 +52,18 @@ class CustomOption implements OptionInterface
     /**
      * {@inheritdoc}
      */
+    public function __invoke(ClientOptionsInterface $options, $value)
+    {
+        if (isset($value)) {
+            return $this->filter($options, $value);
+        }
+
+        return $this->getDefault($options);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function filter(ClientOptionsInterface $options, $value)
     {
         if (isset($value)) {
@@ -73,17 +85,5 @@ class CustomOption implements OptionInterface
         }
 
         return call_user_func($this->default, $options);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __invoke(ClientOptionsInterface $options, $value)
-    {
-        if (isset($value)) {
-            return $this->filter($options, $value);
-        }
-
-        return $this->getDefault($options);
     }
 }

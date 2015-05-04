@@ -3,12 +3,12 @@
 use Illuminate\Support\ServiceProvider;
 use Way\Generators\Commands\ControllerGeneratorCommand;
 use Way\Generators\Commands\ModelGeneratorCommand;
-use Way\Generators\Commands\ResourceGeneratorCommand;
-use Way\Generators\Commands\SeederGeneratorCommand;
-use Way\Generators\Commands\PublishTemplatesCommand;
-use Way\Generators\Commands\ScaffoldGeneratorCommand;
-use Way\Generators\Commands\ViewGeneratorCommand;
 use Way\Generators\Commands\PivotGeneratorCommand;
+use Way\Generators\Commands\PublishTemplatesCommand;
+use Way\Generators\Commands\ResourceGeneratorCommand;
+use Way\Generators\Commands\ScaffoldGeneratorCommand;
+use Way\Generators\Commands\SeederGeneratorCommand;
+use Way\Generators\Commands\ViewGeneratorCommand;
 
 class GeneratorsServiceProvider extends ServiceProvider {
 
@@ -27,6 +27,16 @@ class GeneratorsServiceProvider extends ServiceProvider {
     {
         $this->package('way/generators');
     }
+
+	/**
+	 * Get the services provided by the provider.
+	 *
+	 * @return array
+	 */
+	public function provides()
+	{
+		return array();
+	}
 
 	/**
 	 * Register the commands
@@ -49,6 +59,32 @@ class GeneratorsServiceProvider extends ServiceProvider {
             $this->{"register$command"}();
         }
 	}
+
+    /**
+     * register command for publish templates
+     */
+    public function registerpublisher()
+    {
+        $this->app['generate.publish-templates'] = $this->app->share(function($app)
+        {
+            return new publishtemplatescommand;
+        });
+
+        $this->commands('generate.publish-templates');
+    }
+
+    /**
+     * register scaffold command
+     */
+    public function registerScaffold()
+    {
+        $this->app['generate.scaffold'] = $this->app->share(function($app)
+        {
+            return new ScaffoldGeneratorCommand;
+        });
+
+        $this->commands('generate.scaffold');
+    }
 
     /**
      * Register the model generator
@@ -150,43 +186,5 @@ class GeneratorsServiceProvider extends ServiceProvider {
 
         $this->commands('generate.resource');
     }
-
-    /**
-     * register command for publish templates
-     */
-    public function registerpublisher()
-    {
-        $this->app['generate.publish-templates'] = $this->app->share(function($app)
-        {
-            return new publishtemplatescommand;
-        });
-
-        $this->commands('generate.publish-templates');
-    }
-
-    /**
-     * register scaffold command
-     */
-    public function registerScaffold()
-    {
-        $this->app['generate.scaffold'] = $this->app->share(function($app)
-        {
-            return new ScaffoldGeneratorCommand;
-        });
-
-        $this->commands('generate.scaffold');
-    }
-
-
-
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return array();
-	}
 
 }

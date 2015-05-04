@@ -20,14 +20,6 @@ class HashSetMultiple extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return 'HMSET';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
@@ -43,5 +35,13 @@ class HashSetMultiple extends PrefixableCommand
         }
 
         return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'HMSET';
     }
 }

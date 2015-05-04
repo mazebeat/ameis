@@ -12,11 +12,11 @@
 namespace Predis\Connection;
 
 use Predis\Cluster\CommandHashStrategyInterface;
-use Predis\NotSupportedException;
-use Predis\Cluster\PredisClusterHashStrategy;
 use Predis\Cluster\Distribution\DistributionStrategyInterface;
 use Predis\Cluster\Distribution\HashRing;
+use Predis\Cluster\PredisClusterHashStrategy;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 
 /**
  * Abstraction for a cluster of aggregated connections to various Redis servers
@@ -46,15 +46,18 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     /**
      * {@inheritdoc}
      */
-    public function isConnected()
+    public function add(SingleConnectionInterface $connection)
     {
-        foreach ($this->pool as $connection) {
-            if ($connection->isConnected()) {
-                return true;
-            }
+        $parameters = $connection->getParameters();
+
+        if (isset($parameters->alias)) {
+            $this->pool[$parameters->alias] = $connection;
+        } else {
+            $this->pool[] = $connection;
         }
 
-        return false;
+        $weight = isset($parameters->weight) ? $parameters->weight : null;
+        $this->distributor->add($connection, $weight);
     }
 
     /**
@@ -80,48 +83,9 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     /**
      * {@inheritdoc}
      */
-    public function add(SingleConnectionInterface $connection)
+    public function executeCommand(CommandInterface $command)
     {
-        $parameters = $connection->getParameters();
-
-        if (isset($parameters->alias)) {
-            $this->pool[$parameters->alias] = $connection;
-        } else {
-            $this->pool[] = $connection;
-        }
-
-        $weight = isset($parameters->weight) ? $parameters->weight : null;
-        $this->distributor->add($connection, $weight);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function remove(SingleConnectionInterface $connection)
-    {
-        if (($id = array_search($connection, $this->pool, true)) !== false) {
-            unset($this->pool[$id]);
-            $this->distributor->remove($connection);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Removes a connection instance using its alias or index.
-     *
-     * @param  string $connectionId Alias or index of a connection.
-     * @return bool   Returns true if the connection was in the pool.
-     */
-    public function removeById($connectionId)
-    {
-        if ($connection = $this->getConnectionById($connectionId)) {
-            return $this->remove($connection);
-        }
-
-        return false;
+        return $this->getConnection($command)->executeCommand($command);
     }
 
     /**
@@ -146,6 +110,66 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     public function getConnectionById($connectionId)
     {
         return isset($this->pool[$connectionId]) ? $this->pool[$connectionId] : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isConnected()
+    {
+        foreach ($this->pool as $connection) {
+            if ($connection->isConnected()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function readResponse(CommandInterface $command)
+    {
+        return $this->getConnection($command)->readResponse($command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove(SingleConnectionInterface $connection)
+    {
+        if (($id = array_search($connection, $this->pool, true)) !== false) {
+            unset($this->pool[$id]);
+            $this->distributor->remove($connection);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function writeCommand(CommandInterface $command)
+    {
+        $this->getConnection($command)->writeCommand($command);
+    }
+
+    /**
+     * Removes a connection instance using its alias or index.
+     *
+     * @param  string $connectionId Alias or index of a connection.
+     * @return bool   Returns true if the connection was in the pool.
+     */
+    public function removeById($connectionId)
+    {
+        if ($connection = $this->getConnectionById($connectionId)) {
+            return $this->remove($connection);
+        }
+
+        return false;
     }
 
     /**
@@ -187,30 +211,6 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     public function getIterator()
     {
         return new \ArrayIterator($this->pool);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function writeCommand(CommandInterface $command)
-    {
-        $this->getConnection($command)->writeCommand($command);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function readResponse(CommandInterface $command)
-    {
-        return $this->getConnection($command)->readResponse($command);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function executeCommand(CommandInterface $command)
-    {
-        return $this->getConnection($command)->executeCommand($command);
     }
 
     /**

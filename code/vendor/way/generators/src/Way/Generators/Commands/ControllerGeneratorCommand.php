@@ -1,6 +1,5 @@
 <?php namespace Way\Generators\Commands;
 
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ControllerGeneratorCommand extends GeneratorCommand {
@@ -18,6 +17,18 @@ class ControllerGeneratorCommand extends GeneratorCommand {
      * @var string
      */
     protected $description = 'Generate a controller';
+
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['controllerName', InputArgument::REQUIRED, 'The name of the desired controller.']
+        ];
+    }
 
     /**
      * The path where the file will be created
@@ -61,18 +72,6 @@ class ControllerGeneratorCommand extends GeneratorCommand {
     protected function getTemplatePath()
     {
         return $this->getPathByOptionOrConfig('templatePath', 'controller_template_path');
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['controllerName', InputArgument::REQUIRED, 'The name of the desired controller.']
-        ];
     }
 
 }

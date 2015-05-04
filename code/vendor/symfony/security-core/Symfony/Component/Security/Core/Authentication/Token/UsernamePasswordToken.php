@@ -49,26 +49,6 @@ class UsernamePasswordToken extends AbstractToken
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setAuthenticated($isAuthenticated)
-    {
-        if ($isAuthenticated) {
-            throw new \LogicException('Cannot set this token to trusted after instantiation.');
-        }
-
-        parent::setAuthenticated(false);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCredentials()
-    {
-        return $this->credentials;
-    }
-
-    /**
      * Returns the provider key.
      *
      * @return string The provider key
@@ -91,9 +71,29 @@ class UsernamePasswordToken extends AbstractToken
     /**
      * {@inheritdoc}
      */
+	public function getCredentials()
+	{
+		return $this->credentials;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
     public function serialize()
     {
         return serialize(array($this->credentials, $this->providerKey, parent::serialize()));
+    }
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setAuthenticated($isAuthenticated)
+	{
+		if ($isAuthenticated) {
+			throw new \LogicException('Cannot set this token to trusted after instantiation.');
+		}
+
+		parent::setAuthenticated(false);
     }
 
     /**

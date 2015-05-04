@@ -1,8 +1,8 @@
 <?php namespace Way\Generators\Commands;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class ResourceGeneratorCommand extends Command {
 
@@ -46,50 +46,6 @@ class ResourceGeneratorCommand extends Command {
     }
 
     /**
-     * Get the name for the model
-     *
-     * @param $resource
-     * @return string
-     */
-    protected function getModelName($resource)
-    {
-        return ucwords(str_singular(camel_case($resource)));
-    }
-
-    /**
-     * Get the name for the controller
-     *
-     * @param $resource
-     * @return string
-     */
-    protected function getControllerName($resource)
-    {
-        return ucwords(str_plural(camel_case($resource))) . 'Controller';
-    }
-
-    /**
-     * Get the DB table name
-     *
-     * @param $resource
-     * @return string
-     */
-    protected function getTableName($resource)
-    {
-        return str_plural($resource);
-    }
-
-    /**
-     * Get the name for the migration
-     *
-     * @param $resource
-     * @return string
-     */
-    protected function getMigrationName($resource)
-    {
-        return "create_" . str_plural($resource) . "_table";
-    }
-
-    /**
      * Call model generator if user confirms
      *
      * @param $resource
@@ -102,6 +58,17 @@ class ResourceGeneratorCommand extends Command {
         {
             $this->call('generate:model', compact('modelName'));
         }
+    }
+
+    /**
+     * Get the name for the model
+     *
+     * @param $resource
+     * @return string
+     */
+    protected function getModelName($resource)
+    {
+        return ucwords(str_singular(camel_case($resource)));
     }
 
     /**
@@ -126,6 +93,17 @@ class ResourceGeneratorCommand extends Command {
     }
 
     /**
+     * Get the DB table name
+     *
+     * @param $resource
+     * @return string
+     */
+    protected function getTableName($resource)
+    {
+        return str_plural($resource);
+    }
+
+    /**
      * Call controller generator if user confirms
      *
      * @param $resource
@@ -138,6 +116,17 @@ class ResourceGeneratorCommand extends Command {
         {
             $this->call('generate:controller', compact('controllerName'));
         }
+    }
+
+    /**
+     * Get the name for the controller
+     *
+     * @param $resource
+     * @return string
+     */
+    protected function getControllerName($resource)
+    {
+        return ucwords(str_plural(camel_case($resource))) . 'Controller';
     }
 
     /**
@@ -156,6 +145,17 @@ class ResourceGeneratorCommand extends Command {
                 '--fields' => $this->option('fields')
             ]);
         }
+    }
+
+    /**
+     * Get the name for the migration
+     *
+     * @param $resource
+     * @return string
+     */
+    protected function getMigrationName($resource)
+    {
+        return "create_" . str_plural($resource) . "_table";
     }
 
     /**

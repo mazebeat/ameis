@@ -32,23 +32,6 @@ class ClientOptions implements ClientOptionsInterface
     }
 
     /**
-     * Ensures that the default options are initialized.
-     *
-     * @return array
-     */
-    protected function getDefaultOptions()
-    {
-        return array(
-            'profile' => new ClientProfile(),
-            'connections' => new ClientConnectionFactory(),
-            'cluster' => new ClientCluster(),
-            'replication' => new ClientReplication(),
-            'prefix' => new ClientPrefix(),
-            'exceptions' => new ClientExceptions(),
-        );
-    }
-
-    /**
      * Initializes client options handlers.
      *
      * @param  array $options List of client options values.
@@ -70,6 +53,23 @@ class ClientOptions implements ClientOptionsInterface
         }
 
         return $handlers;
+    }
+
+    /**
+     * Ensures that the default options are initialized.
+     *
+     * @return array
+     */
+    protected function getDefaultOptions()
+    {
+        return array(
+            'profile' => new ClientProfile(),
+            'connections' => new ClientConnectionFactory(),
+            'cluster' => new ClientCluster(),
+            'replication' => new ClientReplication(),
+            'prefix' => new ClientPrefix(),
+            'exceptions' => new ClientExceptions(),
+        );
     }
 
     /**

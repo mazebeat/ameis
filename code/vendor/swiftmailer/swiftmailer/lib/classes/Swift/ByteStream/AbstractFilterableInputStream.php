@@ -38,18 +38,6 @@ abstract class Swift_ByteStream_AbstractFilterableInputStream implements Swift_I
     private $_mirrors = array();
 
     /**
-     * Commit the given bytes to the storage medium immediately.
-     *
-     * @param string $bytes
-     */
-    abstract protected function _commit($bytes);
-
-    /**
-     * Flush any buffers/content with immediate effect.
-     */
-    abstract protected function _flush();
-
-    /**
      * Add a StreamFilter to this InputByteStream.
      *
      * @param Swift_StreamFilter $filter
@@ -71,25 +59,16 @@ abstract class Swift_ByteStream_AbstractFilterableInputStream implements Swift_I
     }
 
     /**
-     * Writes $bytes to the end of the stream.
+     * Attach $is to this stream.
      *
-     * @param string $bytes
+     * The stream acts as an observer, receiving all data that is written.
+     * All {@link write()} and {@link flushBuffers()} operations will be mirrored.
      *
-     * @return int
-     *
-     * @throws Swift_IoException
+     * @param Swift_InputByteStream $is
      */
-    public function write($bytes)
+    public function bind(Swift_InputByteStream $is)
     {
-        $this->_writeBuffer .= $bytes;
-        foreach ($this->_filters as $filter) {
-            if ($filter->shouldBuffer($this->_writeBuffer)) {
-                return;
-            }
-        }
-        $this->_doWrite($this->_writeBuffer);
-
-        return ++$this->_sequence;
+        $this->_mirrors[] = $is;
     }
 
     /**
@@ -104,16 +83,21 @@ abstract class Swift_ByteStream_AbstractFilterableInputStream implements Swift_I
     }
 
     /**
-     * Attach $is to this stream.
+     * Flush the contents of the stream (empty it) and set the internal pointer
+     * to the beginning.
      *
-     * The stream acts as an observer, receiving all data that is written.
-     * All {@link write()} and {@link flushBuffers()} operations will be mirrored.
-     *
-     * @param Swift_InputByteStream $is
+     * @throws Swift_IoException
      */
-    public function bind(Swift_InputByteStream $is)
+    public function flushBuffers()
     {
-        $this->_mirrors[] = $is;
+        if ($this->_writeBuffer !== '') {
+            $this->_doWrite($this->_writeBuffer);
+        }
+        $this->_flush();
+
+        foreach ($this->_mirrors as $stream) {
+            $stream->flushBuffers();
+        }
     }
 
     /**
@@ -138,31 +122,25 @@ abstract class Swift_ByteStream_AbstractFilterableInputStream implements Swift_I
     }
 
     /**
-     * Flush the contents of the stream (empty it) and set the internal pointer
-     * to the beginning.
+     * Writes $bytes to the end of the stream.
+     *
+     * @param string $bytes
+     *
+     * @return int
      *
      * @throws Swift_IoException
      */
-    public function flushBuffers()
+    public function write($bytes)
     {
-        if ($this->_writeBuffer !== '') {
-            $this->_doWrite($this->_writeBuffer);
-        }
-        $this->_flush();
-
-        foreach ($this->_mirrors as $stream) {
-            $stream->flushBuffers();
-        }
-    }
-
-    /** Run $bytes through all filters */
-    private function _filter($bytes)
-    {
+        $this->_writeBuffer .= $bytes;
         foreach ($this->_filters as $filter) {
-            $bytes = $filter->filter($bytes);
+            if ($filter->shouldBuffer($this->_writeBuffer)) {
+                return;
+            }
         }
+        $this->_doWrite($this->_writeBuffer);
 
-        return $bytes;
+        return ++$this->_sequence;
     }
 
     /** Just write the bytes to the stream */
@@ -176,4 +154,26 @@ abstract class Swift_ByteStream_AbstractFilterableInputStream implements Swift_I
 
         $this->_writeBuffer = '';
     }
+
+    /**
+     * Commit the given bytes to the storage medium immediately.
+     *
+     * @param string $bytes
+     */
+    abstract protected function _commit($bytes);
+
+    /** Run $bytes through all filters */
+    private function _filter($bytes)
+    {
+        foreach ($this->_filters as $filter) {
+            $bytes = $filter->filter($bytes);
+        }
+
+        return $bytes;
+    }
+
+    /**
+     * Flush any buffers/content with immediate effect.
+     */
+    abstract protected function _flush();
 }

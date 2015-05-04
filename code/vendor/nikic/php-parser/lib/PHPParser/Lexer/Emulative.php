@@ -40,6 +40,69 @@ class PHPParser_Lexer_Emulative extends PHPParser_Lexer
         }
     }
 
+    public function encodeNowdocCallback(array $matches) {
+        return '~__EMU__NOWDOC__'
+                . bin2hex($matches[1]) . 'x' . bin2hex($matches[3]) . 'x' . bin2hex($matches[4])
+                . '__~';
+    }
+
+    /*
+     * Replaces new features in the code by ~__EMU__{NAME}__{DATA}__~ sequences.
+     * ~LABEL~ is never valid PHP code, that's why we can (to some degree) safely
+     * use it here.
+     * Later when preprocessing the tokens these sequences will either be replaced
+     * by real tokens or replaced with their original content (e.g. if they occured
+     * inside a string, i.e. a place where they don't have a special meaning).
+     */
+
+    public function restoreContentCallback(array $matches) {
+        if ('BINARY' === $matches[1]) {
+            return $matches[2];
+        } elseif ('NS' === $matches[1]) {
+            return '\\';
+        } elseif ('NOWDOC' === $matches[1]) {
+            list($start, $content, $end) = explode('x', $matches[2]);
+            return pack('H*', $start) . pack('H*', $content) . pack('H*', $end);
+        } else {
+            return $matches[0];
+        }
+    }
+
+    /*
+     * As nowdocs can have arbitrary content but LABELs can only contain a certain
+     * range of characters, the nowdoc content is encoded as hex and separated by
+     * 'x' tokens. So the result of the encoding will look like this:
+     * ~__EMU__NOWDOC__{HEX(START_TOKEN)}x{HEX(CONTENT)}x{HEX(END_TOKEN)}~
+     */
+
+    public function getNextToken(&$value = null, &$startAttributes = null, &$endAttributes = null) {
+        $token = parent::getNextToken($value, $startAttributes, $endAttributes);
+
+        // replace new keywords by their respective tokens. This is not done
+        // if we currently are in an object access (e.g. in $obj->namespace
+        // "namespace" stays a T_STRING tokens and isn't converted to T_NAMESPACE)
+        if (PHPParser_Parser::T_STRING === $token && !$this->inObjectAccess) {
+            if (isset($this->newKeywords[strtolower($value)])) {
+                return $this->newKeywords[strtolower($value)];
+            }
+        // backslashes are replaced by T_NS_SEPARATOR tokens
+        } elseif (92 === $token) { // ord('\\')
+            return PHPParser_Parser::T_NS_SEPARATOR;
+        // keep track of whether we currently are in an object access (after ->)
+        } elseif (PHPParser_Parser::T_OBJECT_OPERATOR === $token) {
+            $this->inObjectAccess = true;
+        } else {
+            $this->inObjectAccess = false;
+        }
+
+        return $token;
+    }
+
+    /*
+     * Replaces the ~__EMU__...~ sequences with real tokens or their original
+     * value.
+     */
+
     public function startLexing($code) {
         $this->inObjectAccess = false;
 
@@ -54,13 +117,10 @@ class PHPParser_Lexer_Emulative extends PHPParser_Lexer
     }
 
     /*
-     * Replaces new features in the code by ~__EMU__{NAME}__{DATA}__~ sequences.
-     * ~LABEL~ is never valid PHP code, that's why we can (to some degree) safely
-     * use it here.
-     * Later when preprocessing the tokens these sequences will either be replaced
-     * by real tokens or replaced with their original content (e.g. if they occured
-     * inside a string, i.e. a place where they don't have a special meaning).
+     * This method is a callback for restoring EMU sequences in
+     * multichar tokens (like strings) to their original value.
      */
+
     protected function preprocessCode($code) {
         // binary notation (0b010101101001...)
         $code = preg_replace('(\b0b[01]+\b)', '~__EMU__BINARY__$0__~', $code);
@@ -87,22 +147,6 @@ class PHPParser_Lexer_Emulative extends PHPParser_Lexer
         return $code;
     }
 
-    /*
-     * As nowdocs can have arbitrary content but LABELs can only contain a certain
-     * range of characters, the nowdoc content is encoded as hex and separated by
-     * 'x' tokens. So the result of the encoding will look like this:
-     * ~__EMU__NOWDOC__{HEX(START_TOKEN)}x{HEX(CONTENT)}x{HEX(END_TOKEN)}~
-     */
-    public function encodeNowdocCallback(array $matches) {
-        return '~__EMU__NOWDOC__'
-                . bin2hex($matches[1]) . 'x' . bin2hex($matches[3]) . 'x' . bin2hex($matches[4])
-                . '__~';
-    }
-
-    /*
-     * Replaces the ~__EMU__...~ sequences with real tokens or their original
-     * value.
-     */
     protected function postprocessTokens() {
         // we need to manually iterate and manage a count because we'll change
         // the tokens array on the way
@@ -156,45 +200,5 @@ class PHPParser_Lexer_Emulative extends PHPParser_Lexer
                 );
             }
         }
-    }
-
-    /*
-     * This method is a callback for restoring EMU sequences in
-     * multichar tokens (like strings) to their original value.
-     */
-    public function restoreContentCallback(array $matches) {
-        if ('BINARY' === $matches[1]) {
-            return $matches[2];
-        } elseif ('NS' === $matches[1]) {
-            return '\\';
-        } elseif ('NOWDOC' === $matches[1]) {
-            list($start, $content, $end) = explode('x', $matches[2]);
-            return pack('H*', $start) . pack('H*', $content) . pack('H*', $end);
-        } else {
-            return $matches[0];
-        }
-    }
-
-    public function getNextToken(&$value = null, &$startAttributes = null, &$endAttributes = null) {
-        $token = parent::getNextToken($value, $startAttributes, $endAttributes);
-
-        // replace new keywords by their respective tokens. This is not done
-        // if we currently are in an object access (e.g. in $obj->namespace
-        // "namespace" stays a T_STRING tokens and isn't converted to T_NAMESPACE)
-        if (PHPParser_Parser::T_STRING === $token && !$this->inObjectAccess) {
-            if (isset($this->newKeywords[strtolower($value)])) {
-                return $this->newKeywords[strtolower($value)];
-            }
-        // backslashes are replaced by T_NS_SEPARATOR tokens
-        } elseif (92 === $token) { // ord('\\')
-            return PHPParser_Parser::T_NS_SEPARATOR;
-        // keep track of whether we currently are in an object access (after ->)
-        } elseif (PHPParser_Parser::T_OBJECT_OPERATOR === $token) {
-            $this->inObjectAccess = true;
-        } else {
-            $this->inObjectAccess = false;
-        }
-
-        return $token;
     }
 }

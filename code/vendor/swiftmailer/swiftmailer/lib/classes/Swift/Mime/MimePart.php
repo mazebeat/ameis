@@ -46,38 +46,6 @@ class Swift_Mime_MimePart extends Swift_Mime_SimpleMimeEntity
     }
 
     /**
-     * Set the body of this entity, either as a string, or as an instance of
-     * {@link Swift_OutputByteStream}.
-     *
-     * @param mixed  $body
-     * @param string $contentType optional
-     * @param string $charset     optional
-     *
-     * @return Swift_Mime_MimePart
-     */
-    public function setBody($body, $contentType = null, $charset = null)
-    {
-        if (isset($charset)) {
-            $this->setCharset($charset);
-        }
-        $body = $this->_convertString($body);
-
-        parent::setBody($body, $contentType);
-
-        return $this;
-    }
-
-    /**
-     * Get the character set of this entity.
-     *
-     * @return string
-     */
-    public function getCharset()
-    {
-        return $this->_getHeaderParameter('Content-Type', 'charset');
-    }
-
-    /**
      * Set the character set of this entity.
      *
      * @param string $charset
@@ -107,21 +75,6 @@ class Swift_Mime_MimePart extends Swift_Mime_SimpleMimeEntity
     }
 
     /**
-     * Set the format of this entity (flowed or fixed).
-     *
-     * @param string $format
-     *
-     * @return Swift_Mime_MimePart
-     */
-    public function setFormat($format)
-    {
-        $this->_setHeaderParameter('Content-Type', 'format', $format);
-        $this->_userFormat = $format;
-
-        return $this;
-    }
-
-    /**
      * Test if delsp is being used for this entity.
      *
      * @return bool
@@ -131,44 +84,6 @@ class Swift_Mime_MimePart extends Swift_Mime_SimpleMimeEntity
         return ($this->_getHeaderParameter('Content-Type', 'delsp') == 'yes')
             ? true
             : false;
-    }
-
-    /**
-     * Turn delsp on or off for this entity.
-     *
-     * @param bool    $delsp
-     *
-     * @return Swift_Mime_MimePart
-     */
-    public function setDelSp($delsp = true)
-    {
-        $this->_setHeaderParameter('Content-Type', 'delsp', $delsp ? 'yes' : null);
-        $this->_userDelSp = $delsp;
-
-        return $this;
-    }
-
-    /**
-     * Get the nesting level of this entity.
-     *
-     * @see LEVEL_TOP, LEVEL_ALTERNATIVE, LEVEL_MIXED, LEVEL_RELATED
-     *
-     * @return int
-     */
-    public function getNestingLevel()
-    {
-        return $this->_nestingLevel;
-    }
-
-    /**
-     * Receive notification that the charset has changed on this document, or a
-     * parent document.
-     *
-     * @param string $charset
-     */
-    public function charsetChanged($charset)
-    {
-        $this->setCharset($charset);
     }
 
     /** Fix the content-type and encoding of this entity */
@@ -186,10 +101,55 @@ class Swift_Mime_MimePart extends Swift_Mime_SimpleMimeEntity
         }
     }
 
+    /**
+     * Receive notification that the charset has changed on this document, or a
+     * parent document.
+     *
+     * @param string $charset
+     */
+    public function charsetChanged($charset)
+    {
+        $this->setCharset($charset);
+    }
+
+    /**
+     * Get the nesting level of this entity.
+     *
+     * @see LEVEL_TOP, LEVEL_ALTERNATIVE, LEVEL_MIXED, LEVEL_RELATED
+     *
+     * @return int
+     */
+    public function getNestingLevel()
+    {
+        return $this->_nestingLevel;
+    }
+
     /** Set the nesting level of this entity */
     protected function _setNestingLevel($level)
     {
         $this->_nestingLevel = $level;
+    }
+
+    /**
+     * Set the body of this entity, either as a string, or as an instance of
+     * {@link Swift_OutputByteStream}.
+     *
+     * @param mixed  $body
+     * @param string $contentType optional
+     * @param string $charset     optional
+     *
+     * @return Swift_Mime_MimePart
+     */
+    public function setBody($body, $contentType = null, $charset = null)
+    {
+        if (isset($charset)) {
+            $this->setCharset($charset);
+        }
+        $body = $this->_convertString($body);
+
+        parent::setBody($body, $contentType);
+
+        return $this;
     }
 
     /** Encode charset when charset is not utf-8 */
@@ -210,5 +170,45 @@ class Swift_Mime_MimePart extends Swift_Mime_SimpleMimeEntity
         }
 
         return $string;
+    }
+
+    /**
+     * Get the character set of this entity.
+     *
+     * @return string
+     */
+    public function getCharset()
+    {
+        return $this->_getHeaderParameter('Content-Type', 'charset');
+    }
+
+    /**
+     * Set the format of this entity (flowed or fixed).
+     *
+     * @param string $format
+     *
+     * @return Swift_Mime_MimePart
+     */
+    public function setFormat($format)
+    {
+        $this->_setHeaderParameter('Content-Type', 'format', $format);
+        $this->_userFormat = $format;
+
+        return $this;
+    }
+
+    /**
+     * Turn delsp on or off for this entity.
+     *
+     * @param bool    $delsp
+     *
+     * @return Swift_Mime_MimePart
+     */
+    public function setDelSp($delsp = true)
+    {
+        $this->_setHeaderParameter('Content-Type', 'delsp', $delsp ? 'yes' : null);
+        $this->_userDelSp = $delsp;
+
+        return $this;
     }
 }

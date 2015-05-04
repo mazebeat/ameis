@@ -73,19 +73,17 @@ class Swift_Signers_DomainKeySigner implements Swift_Signers_HeaderSigner
 
     // work variables
     /**
-     * Headers used to generate hash
-     *
-     * @var array
-     */
-    private $_signedHeaders = array();
-
-    /**
      * Stores the signature header
      *
      * @var Swift_Mime_Headers_ParameterizedHeader
      */
     protected $_domainKeyHeader;
-
+    /**
+     * Headers used to generate hash
+     *
+     * @var array
+     */
+    private $_signedHeaders = array();
     /**
      * Hash Handler
      *
@@ -135,114 +133,6 @@ class Swift_Signers_DomainKeySigner implements Swift_Signers_HeaderSigner
     public static function newInstance($privateKey, $domainName, $selector)
     {
         return new static($privateKey, $domainName, $selector);
-    }
-
-    /**
-     * Resets internal states
-     *
-     * @return Swift_Signers_DomainKeysSigner
-     */
-    public function reset()
-    {
-        $this->_hash = null;
-        $this->_hashHandler = null;
-        $this->_bodyCanonIgnoreStart = 2;
-        $this->_bodyCanonEmptyCounter = 0;
-        $this->_bodyCanonLastChar = null;
-        $this->_bodyCanonSpace = false;
-
-        return $this;
-    }
-
-    /**
-     * Writes $bytes to the end of the stream.
-     *
-     * Writing may not happen immediately if the stream chooses to buffer.  If
-     * you want to write these bytes with immediate effect, call {@link commit()}
-     * after calling write().
-     *
-     * This method returns the sequence ID of the write (i.e. 1 for first, 2 for
-     * second, etc etc).
-     *
-     * @param string $bytes
-     * @return int
-     * @throws Swift_IoException
-     * @return Swift_Signers_DomainKeysSigner
-     */
-    public function write($bytes)
-    {
-        $this->_canonicalizeBody($bytes);
-        foreach ($this->_bound as $is) {
-            $is->write($bytes);
-        }
-
-        return $this;
-    }
-
-    /**
-     * For any bytes that are currently buffered inside the stream, force them
-     * off the buffer.
-     *
-     * @throws Swift_IoException
-     * @return Swift_Signers_DomainKeysSigner
-     */
-    public function commit()
-    {
-        // Nothing to do
-        return $this;
-    }
-
-    /**
-     * Attach $is to this stream.
-     * The stream acts as an observer, receiving all data that is written.
-     * All {@link write()} and {@link flushBuffers()} operations will be mirrored.
-     *
-     * @param Swift_InputByteStream $is
-     * @return Swift_Signers_DomainKeysSigner
-     */
-    public function bind(Swift_InputByteStream $is)
-    {
-        // Don't have to mirror anything
-        $this->_bound[] = $is;
-
-        return $this;
-    }
-
-    /**
-     * Remove an already bound stream.
-     * If $is is not bound, no errors will be raised.
-     * If the stream currently has any buffered data it will be written to $is
-     * before unbinding occurs.
-     *
-     * @param Swift_InputByteStream $is
-     * @return Swift_Signers_DomainKeysSigner
-     */
-    public function unbind(Swift_InputByteStream $is)
-    {
-        // Don't have to mirror anything
-        foreach ($this->_bound as $k => $stream) {
-            if ($stream === $is) {
-                unset($this->_bound[$k]);
-
-                return;
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Flush the contents of the stream (empty it) and set the internal pointer
-     * to the beginning.
-     *
-     * @throws Swift_IoException
-     * @return Swift_Signers_DomainKeysSigner
-     */
-    public function flushBuffers()
-    {
-        $this->reset();
-
-        return $this;
     }
 
     /**
@@ -302,11 +192,52 @@ class Swift_Signers_DomainKeySigner implements Swift_Signers_HeaderSigner
     }
 
     /**
-     * Start Body
+     * Add the signature to the given Headers
      *
+     * @param Swift_Mime_HeaderSet $headers
+     * @return Swift_Signers_DomainKeySigner
      */
-    public function startBody()
+    public function addSignature(Swift_Mime_HeaderSet $headers)
     {
+        // Prepare the DomainKey-Signature Header
+        $params = array('a' => $this->_hashAlgorithm, 'b' => chunk_split(base64_encode($this->_getEncryptedHash()), 73, " "), 'c' => $this->_canon, 'd' => $this->_domainName, 'h' => implode(': ', $this->_signedHeaders), 'q' => 'dns', 's' => $this->_selector);
+        $string = '';
+        foreach ($params as $k => $v) {
+            $string .= $k.'='.$v.'; ';
+        }
+        $string = trim($string);
+        $headers->addTextHeader('DomainKey-Signature', $string);
+
+        return $this;
+    }
+
+    /**
+     * Attach $is to this stream.
+     * The stream acts as an observer, receiving all data that is written.
+     * All {@link write()} and {@link flushBuffers()} operations will be mirrored.
+     *
+     * @param Swift_InputByteStream $is
+     * @return Swift_Signers_DomainKeysSigner
+     */
+    public function bind(Swift_InputByteStream $is)
+    {
+        // Don't have to mirror anything
+        $this->_bound[] = $is;
+
+        return $this;
+    }
+
+    /**
+     * For any bytes that are currently buffered inside the stream, force them
+     * off the buffer.
+     *
+     * @throws Swift_IoException
+     * @return Swift_Signers_DomainKeysSigner
+     */
+    public function commit()
+    {
+        // Nothing to do
+        return $this;
     }
 
     /**
@@ -316,6 +247,20 @@ class Swift_Signers_DomainKeySigner implements Swift_Signers_HeaderSigner
     public function endBody()
     {
         $this->_endOfBody();
+    }
+
+    /**
+     * Flush the contents of the stream (empty it) and set the internal pointer
+     * to the beginning.
+     *
+     * @throws Swift_IoException
+     * @return Swift_Signers_DomainKeysSigner
+     */
+    public function flushBuffers()
+    {
+        $this->reset();
+
+        return $this;
     }
 
     /**
@@ -341,6 +286,23 @@ class Swift_Signers_DomainKeySigner implements Swift_Signers_HeaderSigner
     public function ignoreHeader($header_name)
     {
         $this->_ignoredHeaders[strtolower($header_name)] = true;
+
+        return $this;
+    }
+
+    /**
+     * Resets internal states
+     *
+     * @return Swift_Signers_DomainKeysSigner
+     */
+    public function reset()
+    {
+        $this->_hash = null;
+        $this->_hashHandler = null;
+        $this->_bodyCanonIgnoreStart = 2;
+        $this->_bodyCanonEmptyCounter = 0;
+        $this->_bodyCanonLastChar = null;
+        $this->_bodyCanonSpace = false;
 
         return $this;
     }
@@ -377,47 +339,62 @@ class Swift_Signers_DomainKeySigner implements Swift_Signers_HeaderSigner
     }
 
     /**
-     * Add the signature to the given Headers
+     * Start Body
      *
-     * @param Swift_Mime_HeaderSet $headers
-     * @return Swift_Signers_DomainKeySigner
      */
-    public function addSignature(Swift_Mime_HeaderSet $headers)
+    public function startBody()
     {
-        // Prepare the DomainKey-Signature Header
-        $params = array('a' => $this->_hashAlgorithm, 'b' => chunk_split(base64_encode($this->_getEncryptedHash()), 73, " "), 'c' => $this->_canon, 'd' => $this->_domainName, 'h' => implode(': ', $this->_signedHeaders), 'q' => 'dns', 's' => $this->_selector);
-        $string = '';
-        foreach ($params as $k => $v) {
-            $string .= $k.'='.$v.'; ';
+    }
+
+    /**
+     * Remove an already bound stream.
+     * If $is is not bound, no errors will be raised.
+     * If the stream currently has any buffered data it will be written to $is
+     * before unbinding occurs.
+     *
+     * @param Swift_InputByteStream $is
+     * @return Swift_Signers_DomainKeysSigner
+     */
+    public function unbind(Swift_InputByteStream $is)
+    {
+        // Don't have to mirror anything
+        foreach ($this->_bound as $k => $stream) {
+            if ($stream === $is) {
+                unset($this->_bound[$k]);
+
+                return;
+            }
         }
-        $string = trim($string);
-        $headers->addTextHeader('DomainKey-Signature', $string);
+
+        return $this;
+    }
+
+    /**
+     * Writes $bytes to the end of the stream.
+     *
+     * Writing may not happen immediately if the stream chooses to buffer.  If
+     * you want to write these bytes with immediate effect, call {@link commit()}
+     * after calling write().
+     *
+     * This method returns the sequence ID of the write (i.e. 1 for first, 2 for
+     * second, etc etc).
+     *
+     * @param string $bytes
+     * @return int
+     * @throws Swift_IoException
+     * @return Swift_Signers_DomainKeysSigner
+     */
+    public function write($bytes)
+    {
+        $this->_canonicalizeBody($bytes);
+        foreach ($this->_bound as $is) {
+            $is->write($bytes);
+        }
 
         return $this;
     }
 
     /* Private helpers */
-
-    protected function _addHeader($header)
-    {
-        switch ($this->_canon) {
-            case 'nofws' :
-                // Prepare Header and cascade
-                $exploded = explode(':', $header, 2);
-                $name = strtolower(trim($exploded[0]));
-                $value = str_replace("\r\n", "", $exploded[1]);
-                $value = preg_replace("/[ \t][ \t]+/", " ", $value);
-                $header = $name.":".trim($value)."\r\n";
-            case 'simple' :
-                // Nothing to do
-        }
-        $this->_addToHash($header);
-    }
-
-    protected function _endOfHeaders()
-    {
-        $this->_bodyCanonEmptyCounter = 1;
-    }
 
     protected function _canonicalizeBody($string)
     {
@@ -468,18 +445,18 @@ class Swift_Signers_DomainKeySigner implements Swift_Signers_HeaderSigner
         $this->_addToHash($canon);
     }
 
+    private function _addToHash($string)
+    {
+        $this->_canonData .= $string;
+        hash_update($this->_hashHandler, $string);
+    }
+
     protected function _endOfBody()
     {
         if (strlen($this->_bodyCanonLine) > 0) {
             $this->_addToHash("\r\n");
         }
         $this->_hash = hash_final($this->_hashHandler, true);
-    }
-
-    private function _addToHash($string)
-    {
-        $this->_canonData .= $string;
-        hash_update($this->_hashHandler, $string);
     }
 
     private function _startHash()
@@ -491,6 +468,27 @@ class Swift_Signers_DomainKeySigner implements Swift_Signers_HeaderSigner
                 break;
         }
         $this->_canonLine = '';
+    }
+
+    protected function _addHeader($header)
+    {
+        switch ($this->_canon) {
+            case 'nofws' :
+                // Prepare Header and cascade
+                $exploded = explode(':', $header, 2);
+                $name = strtolower(trim($exploded[0]));
+                $value = str_replace("\r\n", "", $exploded[1]);
+                $value = preg_replace("/[ \t][ \t]+/", " ", $value);
+                $header = $name.":".trim($value)."\r\n";
+            case 'simple' :
+                // Nothing to do
+        }
+        $this->_addToHash($header);
+    }
+
+    protected function _endOfHeaders()
+    {
+        $this->_bodyCanonEmptyCounter = 1;
     }
 
     /**

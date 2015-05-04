@@ -87,34 +87,34 @@ class MockArraySessionStorage implements SessionStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function start()
+    public function clear()
     {
-        if ($this->started) {
-            return true;
+        // clear out the bags
+        foreach ($this->bags as $bag) {
+            $bag->clear();
         }
 
-        if (empty($this->id)) {
-            $this->id = $this->generateId();
-        }
+        // clear out the session
+        $this->data = array();
 
+        // reconnect the bags to the session
         $this->loadSession();
-
-        return true;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function regenerate($destroy = false, $lifetime = null)
+    public function getBag($name)
     {
+        if (!isset($this->bags[$name])) {
+            throw new \InvalidArgumentException(sprintf('The SessionBagInterface %s is not registered.', $name));
+        }
+
         if (!$this->started) {
             $this->start();
         }
 
-        $this->metadataBag->stampNew($lifetime);
-        $this->id = $this->generateId();
-
-        return true;
+        return $this->bags[$name];
     }
 
     /**
@@ -138,6 +138,30 @@ class MockArraySessionStorage implements SessionStorageInterface
     }
 
     /**
+     * Gets the MetadataBag.
+     *
+     * @return MetadataBag
+     */
+    public function getMetadataBag()
+    {
+        return $this->metadataBag;
+    }
+
+    /**
+     * Sets the MetadataBag.
+     *
+     * @param MetadataBag $bag
+     */
+    public function setMetadataBag(MetadataBag $bag = null)
+    {
+        if (null === $bag) {
+            $bag = new MetadataBag();
+        }
+
+        $this->metadataBag = $bag;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getName()
@@ -156,31 +180,24 @@ class MockArraySessionStorage implements SessionStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function save()
+    public function isStarted()
     {
-        if (!$this->started || $this->closed) {
-            throw new \RuntimeException("Trying to save a session that was not started yet or was already closed");
-        }
-        // nothing to do since we don't persist the session data
-        $this->closed = false;
-        $this->started = false;
+        return $this->started;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function clear()
+    public function regenerate($destroy = false, $lifetime = null)
     {
-        // clear out the bags
-        foreach ($this->bags as $bag) {
-            $bag->clear();
+        if (!$this->started) {
+            $this->start();
         }
 
-        // clear out the session
-        $this->data = array();
+        $this->metadataBag->stampNew($lifetime);
+        $this->id = $this->generateId();
 
-        // reconnect the bags to the session
-        $this->loadSession();
+        return true;
     }
 
     /**
@@ -194,49 +211,32 @@ class MockArraySessionStorage implements SessionStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function getBag($name)
+    public function save()
     {
-        if (!isset($this->bags[$name])) {
-            throw new \InvalidArgumentException(sprintf('The SessionBagInterface %s is not registered.', $name));
+        if (!$this->started || $this->closed) {
+            throw new \RuntimeException("Trying to save a session that was not started yet or was already closed");
         }
-
-        if (!$this->started) {
-            $this->start();
-        }
-
-        return $this->bags[$name];
+        // nothing to do since we don't persist the session data
+        $this->closed = false;
+        $this->started = false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function isStarted()
+    public function start()
     {
-        return $this->started;
-    }
-
-    /**
-     * Sets the MetadataBag.
-     *
-     * @param MetadataBag $bag
-     */
-    public function setMetadataBag(MetadataBag $bag = null)
-    {
-        if (null === $bag) {
-            $bag = new MetadataBag();
+        if ($this->started) {
+            return true;
         }
 
-        $this->metadataBag = $bag;
-    }
+        if (empty($this->id)) {
+            $this->id = $this->generateId();
+        }
 
-    /**
-     * Gets the MetadataBag.
-     *
-     * @return MetadataBag
-     */
-    public function getMetadataBag()
-    {
-        return $this->metadataBag;
+        $this->loadSession();
+
+        return true;
     }
 
     /**

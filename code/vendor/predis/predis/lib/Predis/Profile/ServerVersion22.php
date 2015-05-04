@@ -21,14 +21,6 @@ class ServerVersion22 extends ServerProfile
     /**
      * {@inheritdoc}
      */
-    public function getVersion()
-    {
-        return '2.2';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSupportedCommands()
     {
         return array(
@@ -198,5 +190,13 @@ class ServerVersion22 extends ServerProfile
             'object'                    => 'Predis\Command\ServerObject',
             'slowlog'                   => 'Predis\Command\ServerSlowlog',
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion()
+    {
+        return '2.2';
     }
 }

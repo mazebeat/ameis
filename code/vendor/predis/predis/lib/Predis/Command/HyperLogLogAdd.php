@@ -20,17 +20,17 @@ class HyperLogLogAdd extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    protected function filterArguments(array $arguments)
     {
-        return 'PFADD';
+        return self::normalizeVariadic($arguments);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function getId()
     {
-        return self::normalizeVariadic($arguments);
+        return 'PFADD';
     }
 
     /**

@@ -20,9 +20,9 @@ class PubSubUnsubscribe extends AbstractCommand implements PrefixableCommandInte
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'UNSUBSCRIBE';
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**
@@ -36,8 +36,8 @@ class PubSubUnsubscribe extends AbstractCommand implements PrefixableCommandInte
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function getId()
     {
-        PrefixHelpers::all($this, $prefix);
+        return 'UNSUBSCRIBE';
     }
 }

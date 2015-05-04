@@ -12,11 +12,11 @@
 namespace Symfony\Component\HttpKernel;
 
 use Symfony\Component\BrowserKit\Client as BaseClient;
+use Symfony\Component\BrowserKit\Cookie as DomCookie;
+use Symfony\Component\BrowserKit\CookieJar;
+use Symfony\Component\BrowserKit\History;
 use Symfony\Component\BrowserKit\Request as DomRequest;
 use Symfony\Component\BrowserKit\Response as DomResponse;
-use Symfony\Component\BrowserKit\Cookie as DomCookie;
-use Symfony\Component\BrowserKit\History;
-use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,6 +50,68 @@ class Client extends BaseClient
     }
 
     /**
+     * Makes a request.
+     *
+     * @param Request $request A Request instance
+     *
+     * @return Response A Response instance
+     */
+    protected function doRequest($request)
+    {
+        $response = $this->kernel->handle($request);
+
+        if ($this->kernel instanceof TerminableInterface) {
+            $this->kernel->terminate($request, $response);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Converts the BrowserKit request to a HttpKernel request.
+     *
+     * @param DomRequest $request A DomRequest instance
+     *
+     * @return Request A Request instance
+     */
+    protected function filterRequest(DomRequest $request)
+    {
+        $httpRequest = Request::create($request->getUri(), $request->getMethod(), $request->getParameters(), $request->getCookies(), $request->getFiles(), $request->getServer(), $request->getContent());
+
+        foreach ($this->filterFiles($httpRequest->files->all()) as $key => $value) {
+            $httpRequest->files->set($key, $value);
+        }
+
+        return $httpRequest;
+    }
+
+    /**
+     * Converts the HttpKernel response to a BrowserKit response.
+     *
+     * @param Response $response A Response instance
+     *
+     * @return DomResponse A DomResponse instance
+     */
+    protected function filterResponse($response)
+    {
+        $headers = $response->headers->all();
+        if ($response->headers->getCookies()) {
+            $cookies = array();
+            foreach ($response->headers->getCookies() as $cookie) {
+                $cookies[] = new DomCookie($cookie->getName(), $cookie->getValue(), $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly());
+            }
+            $headers['Set-Cookie'] = $cookies;
+        }
+
+        // this is needed to support StreamedResponse
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_clean();
+
+        return new DomResponse($content, $response->getStatusCode(), $headers);
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @return Request|null A Request instance
@@ -67,24 +129,6 @@ class Client extends BaseClient
     public function getResponse()
     {
         return parent::getResponse();
-    }
-
-    /**
-     * Makes a request.
-     *
-     * @param Request $request A Request instance
-     *
-     * @return Response A Response instance
-     */
-    protected function doRequest($request)
-    {
-        $response = $this->kernel->handle($request);
-
-        if ($this->kernel instanceof TerminableInterface) {
-            $this->kernel->terminate($request, $response);
-        }
-
-        return $response;
     }
 
     /**
@@ -136,24 +180,6 @@ EOF;
     }
 
     /**
-     * Converts the BrowserKit request to a HttpKernel request.
-     *
-     * @param DomRequest $request A DomRequest instance
-     *
-     * @return Request A Request instance
-     */
-    protected function filterRequest(DomRequest $request)
-    {
-        $httpRequest = Request::create($request->getUri(), $request->getMethod(), $request->getParameters(), $request->getCookies(), $request->getFiles(), $request->getServer(), $request->getContent());
-
-        foreach ($this->filterFiles($httpRequest->files->all()) as $key => $value) {
-            $httpRequest->files->set($key, $value);
-        }
-
-        return $httpRequest;
-    }
-
-    /**
      * Filters an array of files.
      *
      * This method created test instances of UploadedFile so that the move()
@@ -198,31 +224,5 @@ EOF;
         }
 
         return $filtered;
-    }
-
-    /**
-     * Converts the HttpKernel response to a BrowserKit response.
-     *
-     * @param Response $response A Response instance
-     *
-     * @return DomResponse A DomResponse instance
-     */
-    protected function filterResponse($response)
-    {
-        $headers = $response->headers->all();
-        if ($response->headers->getCookies()) {
-            $cookies = array();
-            foreach ($response->headers->getCookies() as $cookie) {
-                $cookies[] = new DomCookie($cookie->getName(), $cookie->getValue(), $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly());
-            }
-            $headers['Set-Cookie'] = $cookies;
-        }
-
-        // this is needed to support StreamedResponse
-        ob_start();
-        $response->sendContent();
-        $content = ob_get_clean();
-
-        return new DomResponse($content, $response->getStatusCode(), $headers);
     }
 }

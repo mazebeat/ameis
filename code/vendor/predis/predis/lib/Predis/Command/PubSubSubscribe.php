@@ -20,9 +20,9 @@ class PubSubSubscribe extends AbstractCommand implements PrefixableCommandInterf
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'SUBSCRIBE';
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**
@@ -36,8 +36,8 @@ class PubSubSubscribe extends AbstractCommand implements PrefixableCommandInterf
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function getId()
     {
-        PrefixHelpers::all($this, $prefix);
+        return 'SUBSCRIBE';
     }
 }

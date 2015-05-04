@@ -11,10 +11,9 @@
 namespace Barryvdh\VendorCleanup;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
+use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Finder\Finder;
-use Illuminate\Filesystem\Filesystem;
 
 class VendorCleanupCommand extends Command
 {

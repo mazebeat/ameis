@@ -28,16 +28,16 @@ class SetMove extends AbstractCommand implements PrefixableCommandInterface
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function parseResponse($data)
     {
-        PrefixHelpers::skipLast($this, $prefix);
+        return (bool) $data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function parseResponse($data)
+    public function prefixKeys($prefix)
     {
-        return (bool) $data;
+        PrefixHelpers::skipLast($this, $prefix);
     }
 }

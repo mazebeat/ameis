@@ -71,14 +71,6 @@ class MongoDbSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function open($savePath, $sessionName)
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function close()
     {
         return true;
@@ -121,17 +113,8 @@ class MongoDbSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function write($sessionId, $data)
+    public function open($savePath, $sessionName)
     {
-        $this->getCollection()->update(
-            array($this->options['id_field'] => $sessionId),
-            array('$set' => array(
-                $this->options['data_field'] => new \MongoBinData($data, \MongoBinData::BYTE_ARRAY),
-                $this->options['time_field'] => new \MongoDate(),
-            )),
-            array('upsert' => true, 'multiple' => false)
-        );
-
         return true;
     }
 
@@ -145,6 +128,23 @@ class MongoDbSessionHandler implements \SessionHandlerInterface
         ));
 
         return null === $dbData ? '' : $dbData[$this->options['data_field']]->bin;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function write($sessionId, $data)
+    {
+        $this->getCollection()->update(
+            array($this->options['id_field'] => $sessionId),
+            array('$set' => array(
+                $this->options['data_field'] => new \MongoBinData($data, \MongoBinData::BYTE_ARRAY),
+                $this->options['time_field'] => new \MongoDate(),
+            )),
+            array('upsert' => true, 'multiple' => false)
+        );
+
+        return true;
     }
 
     /**

@@ -10,16 +10,20 @@
 | and give it the Closure to execute when that URI is requested.
 |
 */
-use Carbon\Carbon;
 
-Route::group(array('after' => 'auth'), function () {
-	Route::get('/', function(){
-		return View::make('blank');
-	});
-	Route::post('login', 'HomeController@doLogin');
-	Route::get('logout', 'HomeController@logout');
+//Route::group(array('after' => 'auth'), function () {
+
+Route::get('/', function () {
+	return View::make('index');
 });
+Route::post('/', 'UsuarioController@postLogin');
+Route::get('logout', 'HomeController@logout');
+//});
 
 //Route::group(array('before' => 'auth'), function () {
-	Route::controller('menu', 'MenuController');
+Route::controller('menu', 'MenuController');
+Route::get('admin', function(){
+	return View::make('blank');
+});
 //});
+

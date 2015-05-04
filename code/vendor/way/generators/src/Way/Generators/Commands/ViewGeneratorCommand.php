@@ -1,7 +1,6 @@
 <?php namespace Way\Generators\Commands;
 
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ViewGeneratorCommand extends GeneratorCommand {
@@ -37,6 +36,18 @@ class ViewGeneratorCommand extends GeneratorCommand {
     }
 
     /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['viewName', InputArgument::REQUIRED, 'The name of the desired view']
+        ];
+    }
+
+    /**
      * The path where the file will be created
      *
      * @return mixed
@@ -69,18 +80,6 @@ class ViewGeneratorCommand extends GeneratorCommand {
     protected function getTemplatePath()
     {
         return $this->getPathByOptionOrConfig('templatePath', 'view_template_path');
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['viewName', InputArgument::REQUIRED, 'The name of the desired view']
-        ];
     }
 
 }

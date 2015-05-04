@@ -30,9 +30,6 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
     /** Source Ip */
     protected $_sourceIp;
 
-    /** Return an array of params for the Buffer */
-    abstract protected function _getBufferParams();
-
     /**
      * Creates a new EsmtpTransport using the given I/O buffer.
      *
@@ -44,6 +41,28 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         $this->_eventDispatcher = $dispatcher;
         $this->_buffer = $buf;
         $this->_lookupHostname();
+    }
+
+    /** Try to determine the hostname of the server this is run on */
+    private function _lookupHostname()
+    {
+        if (!empty($_SERVER['SERVER_NAME'])
+            && $this->_isFqdn($_SERVER['SERVER_NAME'])) {
+            $this->_domain = $_SERVER['SERVER_NAME'];
+        } elseif (!empty($_SERVER['SERVER_ADDR'])) {
+            $this->_domain = sprintf('[%s]', $_SERVER['SERVER_ADDR']);
+        }
+    }
+
+    /** Determine is the $hostname is a fully-qualified name */
+    private function _isFqdn($hostname)
+    {
+        // We could do a really thorough check, but there's really no point
+        if (false !== $dotPos = strpos($hostname, '.')) {
+            return ($dotPos > 0) && ($dotPos != strlen($hostname) - 1);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -77,16 +96,6 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
     }
 
     /**
-     * Sets the source IP.
-     *
-     * @param string $source
-     */
-    public function setSourceIp($source)
-    {
-        $this->_sourceIp = $source;
-    }
-
-    /**
      * Returns the IP used to connect to the destination
      *
      * @return string
@@ -97,32 +106,13 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
     }
 
     /**
-     * Start the SMTP connection.
+     * Sets the source IP.
+     *
+     * @param string $source
      */
-    public function start()
+    public function setSourceIp($source)
     {
-        if (!$this->_started) {
-            if ($evt = $this->_eventDispatcher->createTransportChangeEvent($this)) {
-                $this->_eventDispatcher->dispatchEvent($evt, 'beforeTransportStarted');
-                if ($evt->bubbleCancelled()) {
-                    return;
-                }
-            }
-
-            try {
-                $this->_buffer->initialize($this->_getBufferParams());
-            } catch (Swift_TransportException $e) {
-                $this->_throwException($e);
-            }
-            $this->_readGreeting();
-            $this->_doHeloCommand();
-
-            if ($evt) {
-                $this->_eventDispatcher->dispatchEvent($evt, 'transportStarted');
-            }
-
-            $this->_started = true;
-        }
+        $this->_sourceIp = $source;
     }
 
     /**
@@ -133,6 +123,16 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
     public function isStarted()
     {
         return $this->_started;
+    }
+
+    /**
+     * Register a plugin.
+     *
+     * @param Swift_Events_EventListener $plugin
+     */
+    public function registerPlugin(Swift_Events_EventListener $plugin)
+    {
+        $this->_eventDispatcher->bindEventListener($plugin);
     }
 
     /**
@@ -200,6 +200,35 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
     }
 
     /**
+     * Start the SMTP connection.
+     */
+    public function start()
+    {
+        if (!$this->_started) {
+            if ($evt = $this->_eventDispatcher->createTransportChangeEvent($this)) {
+                $this->_eventDispatcher->dispatchEvent($evt, 'beforeTransportStarted');
+                if ($evt->bubbleCancelled()) {
+                    return;
+                }
+            }
+
+            try {
+                $this->_buffer->initialize($this->_getBufferParams());
+            } catch (Swift_TransportException $e) {
+                $this->_throwException($e);
+            }
+            $this->_readGreeting();
+            $this->_doHeloCommand();
+
+            if ($evt) {
+                $this->_eventDispatcher->dispatchEvent($evt, 'transportStarted');
+            }
+
+            $this->_started = true;
+        }
+    }
+
+    /**
      * Stop the SMTP connection.
      */
     public function stop()
@@ -230,129 +259,8 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         $this->_started = false;
     }
 
-    /**
-     * Register a plugin.
-     *
-     * @param Swift_Events_EventListener $plugin
-     */
-    public function registerPlugin(Swift_Events_EventListener $plugin)
-    {
-        $this->_eventDispatcher->bindEventListener($plugin);
-    }
-
-    /**
-     * Reset the current mail transaction.
-     */
-    public function reset()
-    {
-        $this->executeCommand("RSET\r\n", array(250));
-    }
-
-    /**
-     * Get the IoBuffer where read/writes are occurring.
-     *
-     * @return Swift_Transport_IoBuffer
-     */
-    public function getBuffer()
-    {
-        return $this->_buffer;
-    }
-
-    /**
-     * Run a command against the buffer, expecting the given response codes.
-     *
-     * If no response codes are given, the response will not be validated.
-     * If codes are given, an exception will be thrown on an invalid response.
-     *
-     * @param string   $command
-     * @param int[]    $codes
-     * @param string[] $failures An array of failures by-reference
-     *
-     * @return string
-     */
-    public function executeCommand($command, $codes = array(), &$failures = null)
-    {
-        $failures = (array) $failures;
-        $seq = $this->_buffer->write($command);
-        $response = $this->_getFullResponse($seq);
-        if ($evt = $this->_eventDispatcher->createCommandEvent($this, $command, $codes)) {
-            $this->_eventDispatcher->dispatchEvent($evt, 'commandSent');
-        }
-        $this->_assertResponseCode($response, $codes);
-
-        return $response;
-    }
-
-    /** Read the opening SMTP greeting */
-    protected function _readGreeting()
-    {
-        $this->_assertResponseCode($this->_getFullResponse(0), array(220));
-    }
-
-    /** Send the HELO welcome */
-    protected function _doHeloCommand()
-    {
-        $this->executeCommand(
-            sprintf("HELO %s\r\n", $this->_domain), array(250)
-            );
-    }
-
-    /** Send the MAIL FROM command */
-    protected function _doMailFromCommand($address)
-    {
-        $this->executeCommand(
-            sprintf("MAIL FROM:<%s>\r\n", $address), array(250)
-            );
-    }
-
-    /** Send the RCPT TO command */
-    protected function _doRcptToCommand($address)
-    {
-        $this->executeCommand(
-            sprintf("RCPT TO:<%s>\r\n", $address), array(250, 251, 252)
-            );
-    }
-
-    /** Send the DATA command */
-    protected function _doDataCommand()
-    {
-        $this->executeCommand("DATA\r\n", array(354));
-    }
-
-    /** Stream the contents of the message over the buffer */
-    protected function _streamMessage(Swift_Mime_Message $message)
-    {
-        $this->_buffer->setWriteTranslations(array("\r\n." => "\r\n.."));
-        try {
-            $message->toByteStream($this->_buffer);
-            $this->_buffer->flushBuffers();
-        } catch (Swift_TransportException $e) {
-            $this->_throwException($e);
-        }
-        $this->_buffer->setWriteTranslations(array());
-        $this->executeCommand("\r\n.\r\n", array(250));
-    }
-
-    /** Determine the best-use reverse path for this message */
-    protected function _getReversePath(Swift_Mime_Message $message)
-    {
-        $return = $message->getReturnPath();
-        $sender = $message->getSender();
-        $from = $message->getFrom();
-        $path = null;
-        if (!empty($return)) {
-            $path = $return;
-        } elseif (!empty($sender)) {
-            // Don't use array_keys
-            reset($sender); // Reset Pointer to first pos
-            $path = key($sender); // Get key
-        } elseif (!empty($from)) {
-            reset($from); // Reset Pointer to first pos
-            $path = key($from); // Get key
-        }
-
-        return $path;
-    }
+    /** Return an array of params for the Buffer */
+    abstract protected function _getBufferParams();
 
     /** Throw a TransportException, first sending it to any listeners */
     protected function _throwException(Swift_TransportException $e)
@@ -365,6 +273,12 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         } else {
             throw $e;
         }
+    }
+
+    /** Read the opening SMTP greeting */
+    protected function _readGreeting()
+    {
+        $this->_assertResponseCode($this->_getFullResponse(0), array(220));
     }
 
     /** Throws an Exception if a response code is incorrect */
@@ -409,6 +323,71 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         return $response;
     }
 
+    /** Send the HELO welcome */
+    protected function _doHeloCommand()
+    {
+        $this->executeCommand(
+            sprintf("HELO %s\r\n", $this->_domain), array(250)
+            );
+    }
+
+    /**
+     * Run a command against the buffer, expecting the given response codes.
+     *
+     * If no response codes are given, the response will not be validated.
+     * If codes are given, an exception will be thrown on an invalid response.
+     *
+     * @param string   $command
+     * @param int[]    $codes
+     * @param string[] $failures An array of failures by-reference
+     *
+     * @return string
+     */
+    public function executeCommand($command, $codes = array(), &$failures = null)
+    {
+        $failures = (array) $failures;
+        $seq = $this->_buffer->write($command);
+        $response = $this->_getFullResponse($seq);
+        if ($evt = $this->_eventDispatcher->createCommandEvent($this, $command, $codes)) {
+            $this->_eventDispatcher->dispatchEvent($evt, 'commandSent');
+        }
+        $this->_assertResponseCode($response, $codes);
+
+        return $response;
+    }
+
+    /** Determine the best-use reverse path for this message */
+    protected function _getReversePath(Swift_Mime_Message $message)
+    {
+        $return = $message->getReturnPath();
+        $sender = $message->getSender();
+        $from = $message->getFrom();
+        $path = null;
+        if (!empty($return)) {
+            $path = $return;
+        } elseif (!empty($sender)) {
+            // Don't use array_keys
+            reset($sender); // Reset Pointer to first pos
+            $path = key($sender); // Get key
+        } elseif (!empty($from)) {
+            reset($from); // Reset Pointer to first pos
+            $path = key($from); // Get key
+        }
+
+        return $path;
+    }
+
+    /** Send a message to the given To: recipients */
+    private function _sendTo(Swift_Mime_Message $message, $reversePath, array $to, array &$failedRecipients)
+    {
+        if (empty($to)) {
+            return 0;
+        }
+
+        return $this->_doMailTransaction($message, $reversePath, array_keys($to),
+            $failedRecipients);
+    }
+
     /** Send an email to the given recipients from the given reverse path */
     private function _doMailTransaction($message, $reversePath, array $recipients, array &$failedRecipients)
     {
@@ -433,15 +412,48 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         return $sent;
     }
 
-    /** Send a message to the given To: recipients */
-    private function _sendTo(Swift_Mime_Message $message, $reversePath, array $to, array &$failedRecipients)
+    /** Send the MAIL FROM command */
+    protected function _doMailFromCommand($address)
     {
-        if (empty($to)) {
-            return 0;
-        }
+        $this->executeCommand(
+            sprintf("MAIL FROM:<%s>\r\n", $address), array(250)
+            );
+    }
 
-        return $this->_doMailTransaction($message, $reversePath, array_keys($to),
-            $failedRecipients);
+    /** Send the RCPT TO command */
+    protected function _doRcptToCommand($address)
+    {
+        $this->executeCommand(
+            sprintf("RCPT TO:<%s>\r\n", $address), array(250, 251, 252)
+            );
+    }
+
+    /** Send the DATA command */
+    protected function _doDataCommand()
+    {
+        $this->executeCommand("DATA\r\n", array(354));
+    }
+
+    /** Stream the contents of the message over the buffer */
+    protected function _streamMessage(Swift_Mime_Message $message)
+    {
+        $this->_buffer->setWriteTranslations(array("\r\n." => "\r\n.."));
+        try {
+            $message->toByteStream($this->_buffer);
+            $this->_buffer->flushBuffers();
+        } catch (Swift_TransportException $e) {
+            $this->_throwException($e);
+        }
+        $this->_buffer->setWriteTranslations(array());
+        $this->executeCommand("\r\n.\r\n", array(250));
+    }
+
+    /**
+     * Reset the current mail transaction.
+     */
+    public function reset()
+    {
+        $this->executeCommand("RSET\r\n", array(250));
     }
 
     /** Send a message to all Bcc: recipients */
@@ -458,26 +470,14 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         return $sent;
     }
 
-    /** Try to determine the hostname of the server this is run on */
-    private function _lookupHostname()
+    /**
+     * Get the IoBuffer where read/writes are occurring.
+     *
+     * @return Swift_Transport_IoBuffer
+     */
+    public function getBuffer()
     {
-        if (!empty($_SERVER['SERVER_NAME'])
-            && $this->_isFqdn($_SERVER['SERVER_NAME'])) {
-            $this->_domain = $_SERVER['SERVER_NAME'];
-        } elseif (!empty($_SERVER['SERVER_ADDR'])) {
-            $this->_domain = sprintf('[%s]', $_SERVER['SERVER_ADDR']);
-        }
-    }
-
-    /** Determine is the $hostname is a fully-qualified name */
-    private function _isFqdn($hostname)
-    {
-        // We could do a really thorough check, but there's really no point
-        if (false !== $dotPos = strpos($hostname, '.')) {
-            return ($dotPos > 0) && ($dotPos != strlen($hostname) - 1);
-        } else {
-            return false;
-        }
+        return $this->_buffer;
     }
 
     /**

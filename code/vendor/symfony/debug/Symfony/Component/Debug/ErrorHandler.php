@@ -11,15 +11,15 @@
 
 namespace Symfony\Component\Debug;
 
-use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Debug\Exception\ContextErrorException;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 use Symfony\Component\Debug\Exception\OutOfMemoryException;
-use Symfony\Component\Debug\FatalErrorHandler\UndefinedFunctionFatalErrorHandler;
-use Symfony\Component\Debug\FatalErrorHandler\UndefinedMethodFatalErrorHandler;
 use Symfony\Component\Debug\FatalErrorHandler\ClassNotFoundFatalErrorHandler;
 use Symfony\Component\Debug\FatalErrorHandler\FatalErrorHandlerInterface;
+use Symfony\Component\Debug\FatalErrorHandler\UndefinedFunctionFatalErrorHandler;
+use Symfony\Component\Debug\FatalErrorHandler\UndefinedMethodFatalErrorHandler;
 
 /**
  * ErrorHandler.
@@ -31,7 +31,12 @@ use Symfony\Component\Debug\FatalErrorHandler\FatalErrorHandlerInterface;
 class ErrorHandler
 {
     const TYPE_DEPRECATION = -100;
-
+    /**
+     * @var LoggerInterface[] Loggers for channels
+     */
+    private static $loggers = array();
+    private static $stackedErrors = array();
+    private static $stackedErrorLevels = array();
     private $levels = array(
         E_WARNING => 'Warning',
         E_NOTICE => 'Notice',
@@ -47,21 +52,9 @@ class ErrorHandler
         E_COMPILE_ERROR => 'Compile Error',
         E_PARSE => 'Parse Error',
     );
-
     private $level;
-
     private $reservedMemory;
-
     private $displayErrors;
-
-    /**
-     * @var LoggerInterface[] Loggers for channels
-     */
-    private static $loggers = array();
-
-    private static $stackedErrors = array();
-
-    private static $stackedErrorLevels = array();
 
     /**
      * Registers the error handler.
@@ -114,6 +107,22 @@ class ErrorHandler
     public static function setLogger(LoggerInterface $logger, $channel = 'deprecation')
     {
         self::$loggers[$channel] = $logger;
+    }
+
+    /**
+     * Configure the error handler for delayed handling.
+     * Ensures also that non-catchable fatal errors are never silenced.
+     *
+     * As shown by http://bugs.php.net/42098 and http://bugs.php.net/60724
+     * PHP has a compile stage where it behaves unusually. To workaround it,
+     * we plug an error handler that only stacks errors for later.
+     *
+     * The most important feature of this is to prevent
+     * autoloading until unstackErrors() is called.
+     */
+    public static function stackErrors()
+    {
+        self::$stackedErrorLevels[] = error_reporting(error_reporting() | E_PARSE | E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR);
     }
 
     /**
@@ -202,52 +211,6 @@ class ErrorHandler
         return false;
     }
 
-    /**
-     * Configure the error handler for delayed handling.
-     * Ensures also that non-catchable fatal errors are never silenced.
-     *
-     * As shown by http://bugs.php.net/42098 and http://bugs.php.net/60724
-     * PHP has a compile stage where it behaves unusually. To workaround it,
-     * we plug an error handler that only stacks errors for later.
-     *
-     * The most important feature of this is to prevent
-     * autoloading until unstackErrors() is called.
-     */
-    public static function stackErrors()
-    {
-        self::$stackedErrorLevels[] = error_reporting(error_reporting() | E_PARSE | E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR);
-    }
-
-    /**
-     * Unstacks stacked errors and forwards to the regular handler
-     */
-    public static function unstackErrors()
-    {
-        $level = array_pop(self::$stackedErrorLevels);
-
-        if (null !== $level) {
-            $e = error_reporting($level);
-            if ($e !== ($level | E_PARSE | E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR)) {
-                // If the user changed the error level, do not overwrite it
-                error_reporting($e);
-            }
-        }
-
-        if (empty(self::$stackedErrorLevels)) {
-            $errors = self::$stackedErrors;
-            self::$stackedErrors = array();
-
-            $errorHandler = set_error_handler('var_dump');
-            restore_error_handler();
-
-            if ($errorHandler) {
-                foreach ($errors as $e) {
-                    call_user_func_array($errorHandler, $e);
-                }
-            }
-        }
-    }
-
     public function handleFatal()
     {
         $this->reservedMemory = '';
@@ -296,19 +259,33 @@ class ErrorHandler
     }
 
     /**
-     * Gets the fatal error handlers.
-     *
-     * Override this method if you want to define more fatal error handlers.
-     *
-     * @return FatalErrorHandlerInterface[] An array of FatalErrorHandlerInterface
+     * Unstacks stacked errors and forwards to the regular handler
      */
-    protected function getFatalErrorHandlers()
+    public static function unstackErrors()
     {
-        return array(
-            new UndefinedFunctionFatalErrorHandler(),
-            new UndefinedMethodFatalErrorHandler(),
-            new ClassNotFoundFatalErrorHandler(),
-        );
+        $level = array_pop(self::$stackedErrorLevels);
+
+        if (null !== $level) {
+            $e = error_reporting($level);
+            if ($e !== ($level | E_PARSE | E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR)) {
+                // If the user changed the error level, do not overwrite it
+                error_reporting($e);
+            }
+        }
+
+        if (empty(self::$stackedErrorLevels)) {
+            $errors = self::$stackedErrors;
+            self::$stackedErrors = array();
+
+            $errorHandler = set_error_handler('var_dump');
+            restore_error_handler();
+
+            if ($errorHandler) {
+                foreach ($errors as $e) {
+                    call_user_func_array($errorHandler, $e);
+                }
+            }
+        }
     }
 
     private function handleFatalError($exceptionHandler, array $error)
@@ -338,6 +315,22 @@ class ErrorHandler
             // The handler failed. Let PHP handle that now.
             throw $exception;
         }
+    }
+
+    /**
+     * Gets the fatal error handlers.
+     *
+     * Override this method if you want to define more fatal error handlers.
+     *
+     * @return FatalErrorHandlerInterface[] An array of FatalErrorHandlerInterface
+     */
+    protected function getFatalErrorHandlers()
+    {
+        return array(
+            new UndefinedFunctionFatalErrorHandler(),
+            new UndefinedMethodFatalErrorHandler(),
+            new ClassNotFoundFatalErrorHandler(),
+        );
     }
 }
 

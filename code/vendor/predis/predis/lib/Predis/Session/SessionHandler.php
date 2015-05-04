@@ -11,8 +11,8 @@
 
 namespace Predis\Session;
 
-use SessionHandlerInterface;
 use Predis\ClientInterface;
+use SessionHandlerInterface;
 
 /**
  * Session handler class that relies on Predis\Client to store PHP's sessions
@@ -61,15 +61,6 @@ class SessionHandler implements SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function open($save_path, $session_id)
-    {
-        // NOOP
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function close()
     {
         // NOOP
@@ -79,7 +70,26 @@ class SessionHandler implements SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
+    public function destroy($session_id)
+    {
+        $this->client->del($session_id);
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function gc($maxlifetime)
+    {
+        // NOOP
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function open($save_path, $session_id)
     {
         // NOOP
         return true;
@@ -96,22 +106,13 @@ class SessionHandler implements SessionHandlerInterface
 
         return '';
     }
+
     /**
      * {@inheritdoc}
      */
     public function write($session_id, $session_data)
     {
         $this->client->setex($session_id, $this->ttl, $session_data);
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function destroy($session_id)
-    {
-        $this->client->del($session_id);
 
         return true;
     }

@@ -52,18 +52,6 @@ class RememberMeToken extends AbstractToken
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setAuthenticated($authenticated)
-    {
-        if ($authenticated) {
-            throw new \LogicException('You cannot set this token to authenticated after creation.');
-        }
-
-        parent::setAuthenticated(false);
-    }
-
-    /**
      * Returns the provider key.
      *
      * @return string The provider key
@@ -101,6 +89,18 @@ class RememberMeToken extends AbstractToken
             $this->providerKey,
             parent::serialize(),
         ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setAuthenticated($authenticated)
+    {
+        if ($authenticated) {
+            throw new \LogicException('You cannot set this token to authenticated after creation.');
+        }
+
+        parent::setAuthenticated(false);
     }
 
     /**

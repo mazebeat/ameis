@@ -11,12 +11,12 @@
 
 namespace Symfony\Component\HttpKernel\Bundle;
 
+use Symfony\Component\Console\Application;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\Finder\Finder;
 
 /**
  * An implementation of BundleInterface that adds a few conventions
@@ -36,13 +36,6 @@ abstract class Bundle extends ContainerAware implements BundleInterface
      * Boots the Bundle.
      */
     public function boot()
-    {
-    }
-
-    /**
-     * Shutdowns the Bundle.
-     */
-    public function shutdown()
     {
     }
 
@@ -101,6 +94,25 @@ abstract class Bundle extends ContainerAware implements BundleInterface
     }
 
     /**
+     * Returns the bundle name (the class short name).
+     *
+     * @return string The Bundle name
+     *
+     * @api
+     */
+    final public function getName()
+    {
+        if (null !== $this->name) {
+            return $this->name;
+        }
+
+        $name = get_class($this);
+        $pos = strrpos($name, '\\');
+
+        return $this->name = false === $pos ? $name : substr($name, $pos + 1);
+    }
+
+    /**
      * Gets the Bundle namespace.
      *
      * @return string The Bundle namespace
@@ -112,6 +124,17 @@ abstract class Bundle extends ContainerAware implements BundleInterface
         $class = get_class($this);
 
         return substr($class, 0, strrpos($class, '\\'));
+    }
+
+    /**
+     * Returns the bundle parent name.
+     *
+     * @return string The Bundle parent name it overrides or null if no parent
+     *
+     * @api
+     */
+    public function getParent()
+    {
     }
 
     /**
@@ -132,33 +155,10 @@ abstract class Bundle extends ContainerAware implements BundleInterface
     }
 
     /**
-     * Returns the bundle parent name.
-     *
-     * @return string The Bundle parent name it overrides or null if no parent
-     *
-     * @api
+     * Shutdowns the Bundle.
      */
-    public function getParent()
+    public function shutdown()
     {
-    }
-
-    /**
-     * Returns the bundle name (the class short name).
-     *
-     * @return string The Bundle name
-     *
-     * @api
-     */
-    final public function getName()
-    {
-        if (null !== $this->name) {
-            return $this->name;
-        }
-
-        $name = get_class($this);
-        $pos = strrpos($name, '\\');
-
-        return $this->name = false === $pos ? $name : substr($name, $pos + 1);
     }
 
     /**

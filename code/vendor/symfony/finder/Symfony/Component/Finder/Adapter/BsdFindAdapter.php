@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\Finder\Adapter;
 
-use Symfony\Component\Finder\Shell\Shell;
-use Symfony\Component\Finder\Shell\Command;
-use Symfony\Component\Finder\Iterator\SortableIterator;
 use Symfony\Component\Finder\Expression\Expression;
+use Symfony\Component\Finder\Iterator\SortableIterator;
+use Symfony\Component\Finder\Shell\Command;
+use Symfony\Component\Finder\Shell\Shell;
 
 /**
  * Shell engine implementation using BSD find command.
@@ -26,17 +26,31 @@ class BsdFindAdapter extends AbstractFindAdapter
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    protected function buildContentFiltering(Command $command, array $contains, $not = false)
     {
-        return 'bsd_find';
+        foreach ($contains as $contain) {
+            $expr = Expression::create($contain);
+
+            // todo: avoid forking process for each $pattern by using multiple -e options
+            $command
+                ->add('| grep -v \'^$\'')
+                ->add('| xargs -I{} grep -I')
+                ->add($expr->isCaseSensitive() ? null : '-i')
+                ->add($not ? '-L' : '-l')
+                ->add('-Ee')->arg($expr->renderPattern())
+                ->add('{}')
+            ;
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function canBeUsed()
+    protected function buildFindCommand(Command $command, $dir)
     {
-        return in_array($this->shell->getType(), array(Shell::TYPE_BSD, Shell::TYPE_DARWIN)) && parent::canBeUsed();
+        parent::buildFindCommand($command, $dir)->addAtIndex('-E', 1);
+
+        return $command;
     }
 
     /**
@@ -74,30 +88,16 @@ class BsdFindAdapter extends AbstractFindAdapter
     /**
      * {@inheritdoc}
      */
-    protected function buildFindCommand(Command $command, $dir)
+    protected function canBeUsed()
     {
-        parent::buildFindCommand($command, $dir)->addAtIndex('-E', 1);
-
-        return $command;
+        return in_array($this->shell->getType(), array(Shell::TYPE_BSD, Shell::TYPE_DARWIN)) && parent::canBeUsed();
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function buildContentFiltering(Command $command, array $contains, $not = false)
+    public function getName()
     {
-        foreach ($contains as $contain) {
-            $expr = Expression::create($contain);
-
-            // todo: avoid forking process for each $pattern by using multiple -e options
-            $command
-                ->add('| grep -v \'^$\'')
-                ->add('| xargs -I{} grep -I')
-                ->add($expr->isCaseSensitive() ? null : '-i')
-                ->add($not ? '-L' : '-l')
-                ->add('-Ee')->arg($expr->renderPattern())
-                ->add('{}')
-            ;
-        }
+        return 'bsd_find';
     }
 }

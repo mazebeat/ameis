@@ -13,7 +13,7 @@ return array(
 	|
 	*/
 
-	'debug'           => false,
+	'debug'           => true,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -52,7 +52,7 @@ return array(
 	|
 	*/
 
-	'locale'          => 'en',
+	'locale'          => 'es',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -127,7 +127,7 @@ return array(
 		'Barryvdh\VendorCleanup\VendorCleanupServiceProvider',
 		'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider',
 		'Barryvdh\Queue\AsyncServiceProvider',
-		),
+	),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -194,8 +194,8 @@ return array(
 		'URL'               => 'Illuminate\Support\Facades\URL',
 		'Validator'         => 'Illuminate\Support\Facades\Validator',
 		'View'              => 'Illuminate\Support\Facades\View',
-		'Debugbar' => 'Barryvdh\Debugbar\Facade',
+		'Debugbar'          => 'Barryvdh\Debugbar\Facade',
 
-		),
+	),
 
 );

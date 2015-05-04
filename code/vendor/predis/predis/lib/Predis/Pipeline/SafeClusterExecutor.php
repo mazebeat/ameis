@@ -11,9 +11,9 @@
 
 namespace Predis\Pipeline;
 
-use SplQueue;
 use Predis\CommunicationException;
 use Predis\Connection\ConnectionInterface;
+use SplQueue;
 
 /**
  * Implements a pipeline executor strategy for connection clusters that does

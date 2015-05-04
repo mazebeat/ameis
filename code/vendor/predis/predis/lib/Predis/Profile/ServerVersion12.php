@@ -21,14 +21,6 @@ class ServerVersion12 extends ServerProfile
     /**
      * {@inheritdoc}
      */
-    public function getVersion()
-    {
-        return '1.2';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSupportedCommands()
     {
         return array(
@@ -121,5 +113,13 @@ class ServerVersion12 extends ServerProfile
             'shutdown'                  => 'Predis\Command\ServerShutdown',
             'bgrewriteaof'              => 'Predis\Command\ServerBackgroundRewriteAOF',
         );
+    }
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getVersion()
+	{
+		return '1.2';
     }
 }

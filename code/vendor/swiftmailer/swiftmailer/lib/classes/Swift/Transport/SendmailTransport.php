@@ -43,16 +43,6 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
     }
 
     /**
-     * Start the standalone SMTP session if running in -bs mode.
-     */
-    public function start()
-    {
-        if (false !== strpos($this->getCommand(), ' -bs')) {
-            parent::start();
-        }
-    }
-
-    /**
      * Set the command to invoke.
      *
      * If using -t mode you are strongly advised to include -oi or -i in the flags.
@@ -73,14 +63,10 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
         return $this;
     }
 
-    /**
-     * Get the sendmail command which will be invoked.
-     *
-     * @return string
-     */
-    public function getCommand()
+    /** Get the params to initialize the buffer */
+    protected function _getBufferParams()
     {
-        return $this->_params['command'];
+        return $this->_params;
     }
 
     /**
@@ -151,9 +137,23 @@ class Swift_Transport_SendmailTransport extends Swift_Transport_AbstractSmtpTran
         return $count;
     }
 
-    /** Get the params to initialize the buffer */
-    protected function _getBufferParams()
+    /**
+     * Start the standalone SMTP session if running in -bs mode.
+     */
+    public function start()
     {
-        return $this->_params;
+        if (false !== strpos($this->getCommand(), ' -bs')) {
+            parent::start();
+        }
+    }
+
+    /**
+     * Get the sendmail command which will be invoked.
+     *
+     * @return string
+     */
+    public function getCommand()
+    {
+        return $this->_params['command'];
     }
 }

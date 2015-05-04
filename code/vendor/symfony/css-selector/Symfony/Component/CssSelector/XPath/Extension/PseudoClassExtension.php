@@ -25,23 +25,6 @@ use Symfony\Component\CssSelector\XPath\XPathExpr;
 class PseudoClassExtension extends AbstractExtension
 {
     /**
-     * {@inheritdoc}
-     */
-    public function getPseudoClassTranslators()
-    {
-        return array(
-            'root' => array($this, 'translateRoot'),
-            'first-child' => array($this, 'translateFirstChild'),
-            'last-child' => array($this, 'translateLastChild'),
-            'first-of-type' => array($this, 'translateFirstOfType'),
-            'last-of-type' => array($this, 'translateLastOfType'),
-            'only-child' => array($this, 'translateOnlyChild'),
-            'only-of-type' => array($this, 'translateOnlyOfType'),
-            'empty' => array($this, 'translateEmpty'),
-        );
-    }
-
-    /**
      * @param XPathExpr $xpath
      *
      * @return XPathExpr
@@ -158,5 +141,22 @@ class PseudoClassExtension extends AbstractExtension
     public function getName()
     {
         return 'pseudo-class';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPseudoClassTranslators()
+    {
+        return array(
+            'root' => array($this, 'translateRoot'),
+            'first-child' => array($this, 'translateFirstChild'),
+            'last-child' => array($this, 'translateLastChild'),
+            'first-of-type' => array($this, 'translateFirstOfType'),
+            'last-of-type' => array($this, 'translateLastOfType'),
+            'only-child' => array($this, 'translateOnlyChild'),
+            'only-of-type' => array($this, 'translateOnlyOfType'),
+            'empty' => array($this, 'translateEmpty'),
+        );
     }
 }

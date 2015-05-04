@@ -17,16 +17,10 @@
 class Swift_Mime_ContentEncoder_RawContentEncoder implements Swift_Mime_ContentEncoder
 {
     /**
-     * Encode a given string to produce an encoded string.
-     *
-     * @param  string $string
-     * @param  int    $firstLineOffset ignored
-     * @param  int    $maxLineLength   ignored
-     * @return string
+     * Not used.
      */
-    public function encodeString($string, $firstLineOffset = 0, $maxLineLength = 0)
+    public function charsetChanged($charset)
     {
-        return $string;
     }
 
     /**
@@ -45,6 +39,19 @@ class Swift_Mime_ContentEncoder_RawContentEncoder implements Swift_Mime_ContentE
     }
 
     /**
+     * Encode a given string to produce an encoded string.
+     *
+     * @param  string $string
+     * @param  int    $firstLineOffset ignored
+     * @param  int    $maxLineLength   ignored
+     * @return string
+     */
+    public function encodeString($string, $firstLineOffset = 0, $maxLineLength = 0)
+    {
+        return $string;
+    }
+
+    /**
      * Get the name of this encoding scheme.
      *
      * @return string
@@ -52,12 +59,5 @@ class Swift_Mime_ContentEncoder_RawContentEncoder implements Swift_Mime_ContentE
     public function getName()
     {
         return 'raw';
-    }
-
-    /**
-     * Not used.
-     */
-    public function charsetChanged($charset)
-    {
     }
 }

@@ -47,16 +47,6 @@ class AnonymousToken extends AbstractToken
     }
 
     /**
-     * Returns the key.
-     *
-     * @return string The Key
-     */
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function serialize()
@@ -71,5 +61,15 @@ class AnonymousToken extends AbstractToken
     {
         list($this->key, $parentStr) = unserialize($serialized);
         parent::unserialize($parentStr);
+    }
+
+    /**
+     * Returns the key.
+     *
+     * @return string The Key
+     */
+    public function getKey()
+    {
+        return $this->key;
     }
 }

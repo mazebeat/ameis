@@ -1,9 +1,8 @@
 <?php namespace Way\Generators\Commands;
 
+use File;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-use File, Config;
 
 class PublishTemplatesCommand extends Command {
 

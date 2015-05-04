@@ -20,14 +20,6 @@ class KeyScan extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return 'SCAN';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
@@ -36,6 +28,26 @@ class KeyScan extends AbstractCommand
         }
 
         return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'SCAN';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (is_array($data)) {
+            $data[0] = (int) $data[0];
+        }
+
+        return $data;
     }
 
     /**
@@ -60,17 +72,5 @@ class KeyScan extends AbstractCommand
         }
 
         return $normalized;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        if (is_array($data)) {
-            $data[0] = (int) $data[0];
-        }
-
-        return $data;
     }
 }

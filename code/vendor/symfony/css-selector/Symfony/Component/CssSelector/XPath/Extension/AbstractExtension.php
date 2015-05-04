@@ -24,7 +24,7 @@ abstract class AbstractExtension implements ExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function getNodeTranslators()
+    public function getAttributeMatchingTranslators()
     {
         return array();
     }
@@ -48,7 +48,7 @@ abstract class AbstractExtension implements ExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function getPseudoClassTranslators()
+    public function getNodeTranslators()
     {
         return array();
     }
@@ -56,7 +56,7 @@ abstract class AbstractExtension implements ExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function getAttributeMatchingTranslators()
+    public function getPseudoClassTranslators()
     {
         return array();
     }

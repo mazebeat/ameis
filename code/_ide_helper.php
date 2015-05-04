@@ -1,7 +1,7 @@
 <?php
 /**
  * An helper file for Laravel 4, to provide autocomplete information to your IDE
- * Generated for Laravel 4.2.17 on 2015-04-02.
+ * Generated for Laravel 4.2.17 on 2015-05-04.
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
@@ -5393,10 +5393,23 @@ namespace {
     class Input extends \Illuminate\Support\Facades\Input{
         
         /**
+         * Retrieve an input item from the request.
+         *
+         * @param string $key
+         * @param mixed  $default
+         * @return string
+         * @static
+         */
+	    public static function input($key = null, $default = null)
+	    {
+		    return \Illuminate\Http\Request::input($key, $default);
+	    }
+
+	    /**
          * Return the Request instance.
          *
-         * @return $this 
-         * @static 
+	     * @return $this
+	     * @static
          */
         public static function instance(){
             return \Illuminate\Http\Request::instance();
@@ -5405,8 +5418,8 @@ namespace {
         /**
          * Get the request method.
          *
-         * @return string 
-         * @static 
+         * @return string
+         * @static
          */
         public static function method(){
             return \Illuminate\Http\Request::method();
@@ -5415,8 +5428,8 @@ namespace {
         /**
          * Get the root URL for the application.
          *
-         * @return string 
-         * @static 
+         * @return string
+         * @static
          */
         public static function root(){
             return \Illuminate\Http\Request::root();
@@ -5425,8 +5438,8 @@ namespace {
         /**
          * Get the URL (no query string) for the request.
          *
-         * @return string 
-         * @static 
+         * @return string
+         * @static
          */
         public static function url(){
             return \Illuminate\Http\Request::url();
@@ -5435,8 +5448,8 @@ namespace {
         /**
          * Get the full URL for the request.
          *
-         * @return string 
-         * @static 
+         * @return string
+         * @static
          */
         public static function fullUrl(){
             return \Illuminate\Http\Request::fullUrl();
@@ -5445,8 +5458,8 @@ namespace {
         /**
          * Get the current path info for the request.
          *
-         * @return string 
-         * @static 
+         * @return string
+         * @static
          */
         public static function path(){
             return \Illuminate\Http\Request::path();
@@ -5455,8 +5468,8 @@ namespace {
         /**
          * Get the current encoded path info for the request.
          *
-         * @return string 
-         * @static 
+         * @return string
+         * @static
          */
         public static function decodedPath(){
             return \Illuminate\Http\Request::decodedPath();
@@ -5467,8 +5480,9 @@ namespace {
          *
          * @param string $index
          * @param mixed $default
-         * @return string 
-         * @static 
+         *
+         * @return string
+         * @static
          */
         public static function segment($index, $default = null){
             return \Illuminate\Http\Request::segment($index, $default);
@@ -5477,8 +5491,8 @@ namespace {
         /**
          * Get all of the segments for the request path.
          *
-         * @return array 
-         * @static 
+         * @return array
+         * @static
          */
         public static function segments(){
             return \Illuminate\Http\Request::segments();
@@ -5488,8 +5502,9 @@ namespace {
          * Determine if the current request URI matches a pattern.
          *
          * @param mixed  string
-         * @return bool 
-         * @static 
+         *
+         * @return bool
+         * @static
          */
         public static function is(){
             return \Illuminate\Http\Request::is();
@@ -5498,8 +5513,8 @@ namespace {
         /**
          * Determine if the request is the result of an AJAX call.
          *
-         * @return bool 
-         * @static 
+         * @return bool
+         * @static
          */
         public static function ajax(){
             return \Illuminate\Http\Request::ajax();
@@ -5508,8 +5523,8 @@ namespace {
         /**
          * Determine if the request is over HTTPS.
          *
-         * @return bool 
-         * @static 
+         * @return bool
+         * @static
          */
         public static function secure(){
             return \Illuminate\Http\Request::secure();
@@ -5518,8 +5533,8 @@ namespace {
         /**
          * Returns the client IP address.
          *
-         * @return string 
-         * @static 
+         * @return string
+         * @static
          */
         public static function ip(){
             return \Illuminate\Http\Request::ip();
@@ -5528,8 +5543,8 @@ namespace {
         /**
          * Returns the client IP addresses.
          *
-         * @return array 
-         * @static 
+         * @return array
+         * @static
          */
         public static function ips(){
             return \Illuminate\Http\Request::ips();
@@ -5539,8 +5554,9 @@ namespace {
          * Determine if the request contains a given input item key.
          *
          * @param string|array $key
-         * @return bool 
-         * @static 
+         *
+         * @return bool
+         * @static
          */
         public static function exists($key){
             return \Illuminate\Http\Request::exists($key);
@@ -5550,8 +5566,9 @@ namespace {
          * Determine if the request contains a non-empty value for an input item.
          *
          * @param string|array $key
-         * @return bool 
-         * @static 
+         *
+         * @return bool
+         * @static
          */
         public static function has($key){
             return \Illuminate\Http\Request::has($key);
@@ -5560,23 +5577,11 @@ namespace {
         /**
          * Get all of the input and files for the request.
          *
-         * @return array 
-         * @static 
+         * @return array
+         * @static
          */
         public static function all(){
             return \Illuminate\Http\Request::all();
-        }
-        
-        /**
-         * Retrieve an input item from the request.
-         *
-         * @param string $key
-         * @param mixed $default
-         * @return string 
-         * @static 
-         */
-        public static function input($key = null, $default = null){
-            return \Illuminate\Http\Request::input($key, $default);
         }
         
         /**
@@ -5606,7 +5611,8 @@ namespace {
          *
          * @param string $key
          * @param mixed $default
-         * @return string 
+         *
+         * @return string|array
          * @static 
          */
         public static function query($key = null, $default = null){
@@ -8205,7 +8211,8 @@ namespace {
          *
          * @param string $key
          * @param mixed $default
-         * @return string 
+         *
+         * @return string|array
          * @static 
          */
         public static function query($key = null, $default = null){

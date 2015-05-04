@@ -1,12 +1,12 @@
 <?php namespace Way\Generators;
 
-use Way\Generators\Filesystem\Filesystem;
+use Exception;
 use Way\Generators\Compilers\TemplateCompiler;
+use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Syntax\AddToTable;
 use Way\Generators\Syntax\CreateTable;
 use Way\Generators\Syntax\DroppedTable;
 use Way\Generators\Syntax\RemoveFromTable;
-use Exception;
 
 class SchemaCreator {
 
@@ -48,6 +48,19 @@ class SchemaCreator {
     }
 
     /**
+     * @param $action
+     * @throws Exception
+     * @internal param array $migrationData
+     */
+    protected function guardAction($action)
+    {
+        if (!in_array($action, ['create', 'add', 'remove', 'delete']))
+        {
+            throw new InvalidMigrationName('Please rewrite your migration name to begin with "create", "add", "remove", or "delete."');
+        }
+    }
+
+    /**
      * Build the string for the migration file "down" method
      *
      * @param array $migrationData
@@ -69,19 +82,6 @@ class SchemaCreator {
         $method = $opposites[$migrationData['action']] . 'Factory';
 
         return $this->$method($migrationData, $fields);
-    }
-
-    /**
-     * @param $action
-     * @throws Exception
-     * @internal param array $migrationData
-     */
-    protected function guardAction($action)
-    {
-        if (!in_array($action, ['create', 'add', 'remove', 'delete']))
-        {
-            throw new InvalidMigrationName('Please rewrite your migration name to begin with "create", "add", "remove", or "delete."');
-        }
     }
 
     /**

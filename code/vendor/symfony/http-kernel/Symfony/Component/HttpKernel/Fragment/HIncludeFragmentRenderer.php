@@ -13,9 +13,9 @@ namespace Symfony\Component\HttpKernel\Fragment;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerReference;
 use Symfony\Component\HttpKernel\UriSigner;
+use Symfony\Component\Templating\EngineInterface;
 
 /**
  * Implements the Hinclude rendering strategy.
@@ -69,6 +69,14 @@ class HIncludeFragmentRenderer extends RoutableFragmentRenderer
     public function hasTemplating()
     {
         return null !== $this->templating;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'hinclude';
     }
 
     /**
@@ -152,13 +160,5 @@ class HIncludeFragmentRenderer extends RoutableFragmentRenderer
         }
 
         return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'hinclude';
     }
 }

@@ -20,17 +20,17 @@ class HyperLogLogMerge extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    protected function filterArguments(array $arguments)
     {
-        return 'PFMERGE';
+        return self::normalizeArguments($arguments);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function getId()
     {
-        return self::normalizeArguments($arguments);
+        return 'PFMERGE';
     }
 
     /**

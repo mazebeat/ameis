@@ -21,29 +21,6 @@ class MysqlProfilerStorage extends PdoProfilerStorage
     /**
      * {@inheritdoc}
      */
-    protected function initDb()
-    {
-        if (null === $this->db) {
-            if (0 !== strpos($this->dsn, 'mysql')) {
-                throw new \RuntimeException(sprintf('Please check your configuration. You are trying to use Mysql with an invalid dsn "%s". The expected format is "mysql:dbname=database_name;host=host_name".', $this->dsn));
-            }
-
-            if (!class_exists('PDO') || !in_array('mysql', \PDO::getAvailableDrivers(), true)) {
-                throw new \RuntimeException('You need to enable PDO_Mysql extension for the profiler to run properly.');
-            }
-
-            $db = new \PDO($this->dsn, $this->username, $this->password);
-            $db->exec('CREATE TABLE IF NOT EXISTS sf_profiler_data (token VARCHAR(255) PRIMARY KEY, data LONGTEXT, ip VARCHAR(64), method VARCHAR(6), url VARCHAR(255), time INTEGER UNSIGNED, parent VARCHAR(255), created_at INTEGER UNSIGNED, KEY (created_at), KEY (ip), KEY (method), KEY (url), KEY (parent))');
-
-            $this->db = $db;
-        }
-
-        return $this->db;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function buildCriteria($ip, $url, $start, $end, $limit, $method)
     {
         $criteria = array();
@@ -75,5 +52,28 @@ class MysqlProfilerStorage extends PdoProfilerStorage
         }
 
         return array($criteria, $args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function initDb()
+    {
+        if (null === $this->db) {
+            if (0 !== strpos($this->dsn, 'mysql')) {
+                throw new \RuntimeException(sprintf('Please check your configuration. You are trying to use Mysql with an invalid dsn "%s". The expected format is "mysql:dbname=database_name;host=host_name".', $this->dsn));
+            }
+
+            if (!class_exists('PDO') || !in_array('mysql', \PDO::getAvailableDrivers(), true)) {
+                throw new \RuntimeException('You need to enable PDO_Mysql extension for the profiler to run properly.');
+            }
+
+            $db = new \PDO($this->dsn, $this->username, $this->password);
+            $db->exec('CREATE TABLE IF NOT EXISTS sf_profiler_data (token VARCHAR(255) PRIMARY KEY, data LONGTEXT, ip VARCHAR(64), method VARCHAR(6), url VARCHAR(255), time INTEGER UNSIGNED, parent VARCHAR(255), created_at INTEGER UNSIGNED, KEY (created_at), KEY (ip), KEY (method), KEY (url), KEY (parent))');
+
+            $this->db = $db;
+        }
+
+        return $this->db;
     }
 }

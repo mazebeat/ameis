@@ -35,6 +35,16 @@ class MultiBulkResponseSimple extends MultiBulkResponse
     }
 
     /**
+     * Reads the next item of the multibulk reply from the server.
+     *
+     * @return mixed
+     */
+    protected function getValue()
+    {
+        return $this->connection->read();
+    }
+
+    /**
      * Handles the synchronization of the client with the Redis protocol
      * then PHP's garbage collector kicks in (e.g. then the iterator goes
      * out of the scope of a foreach).
@@ -64,16 +74,6 @@ class MultiBulkResponseSimple extends MultiBulkResponse
                 $this->next();
             }
         }
-    }
-
-    /**
-     * Reads the next item of the multibulk reply from the server.
-     *
-     * @return mixed
-     */
-    protected function getValue()
-    {
-        return $this->connection->read();
     }
 
     /**

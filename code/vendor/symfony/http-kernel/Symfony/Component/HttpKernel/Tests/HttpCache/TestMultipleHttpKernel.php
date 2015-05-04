@@ -11,12 +11,12 @@
 
 namespace Symfony\Component\HttpKernel\Tests\HttpCache;
 
-use Symfony\Component\HttpKernel\HttpKernel;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpKernel\HttpKernel;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class TestMultipleHttpKernel extends HttpKernel implements ControllerResolverInterface
 {
@@ -49,14 +49,17 @@ class TestMultipleHttpKernel extends HttpKernel implements ControllerResolverInt
         return parent::handle($request, $type, $catch);
     }
 
-    public function getController(Request $request)
+	public function getArguments(Request $request, $controller)
     {
-        return array($this, 'callController');
+	    return array($request);
     }
 
-    public function getArguments(Request $request, $controller)
+	public function getController(Request $request)
     {
-        return array($request);
+	    return array(
+		    $this,
+		    'callController'
+	    );
     }
 
     public function callController(Request $request)

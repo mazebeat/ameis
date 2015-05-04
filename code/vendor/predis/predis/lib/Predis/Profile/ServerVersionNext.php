@@ -21,16 +21,16 @@ class ServerVersionNext extends ServerVersion30
     /**
      * {@inheritdoc}
      */
-    public function getVersion()
+    public function getSupportedCommands()
     {
-        return '3.0';
+        return array_merge(parent::getSupportedCommands(), array());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSupportedCommands()
+    public function getVersion()
     {
-        return array_merge(parent::getSupportedCommands(), array());
+        return '3.0';
     }
 }

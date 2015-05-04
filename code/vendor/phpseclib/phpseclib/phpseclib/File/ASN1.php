@@ -526,6 +526,72 @@ class File_ASN1
     }
 
     /**
+     * String Shift
+     *
+     * Inspired by array_shift
+     *
+     * @param String $string
+     * @param optional Integer $index
+     * @return String
+     * @access private
+     */
+    function _string_shift(&$string, $index = 1)
+    {
+        $substr = substr($string, 0, $index);
+        $string = substr($string, $index);
+        return $substr;
+    }
+
+    /**
+     * BER-decode the time
+     *
+     * Called by _decode_ber() and in the case of implicit tags asn1map().
+     *
+     * @access private
+     * @param String $content
+     * @param Integer $tag
+     * @return String
+     */
+    function _decodeTime($content, $tag)
+    {
+        /* UTCTime:
+           http://tools.ietf.org/html/rfc5280#section-4.1.2.5.1
+           http://www.obj-sys.com/asn1tutorial/node15.html
+
+           GeneralizedTime:
+           http://tools.ietf.org/html/rfc5280#section-4.1.2.5.2
+           http://www.obj-sys.com/asn1tutorial/node14.html */
+
+        $pattern = $tag == FILE_ASN1_TYPE_UTC_TIME ?
+            '#(..)(..)(..)(..)(..)(..)(.*)#' :
+            '#(....)(..)(..)(..)(..)(..).*([Z+-].*)$#';
+
+        preg_match($pattern, $content, $matches);
+
+        list(, $year, $month, $day, $hour, $minute, $second, $timezone) = $matches;
+
+        if ($tag == FILE_ASN1_TYPE_UTC_TIME) {
+            $year = $year >= 50 ? "19$year" : "20$year";
+        }
+
+        if ($timezone == 'Z') {
+            $mktime = 'gmmktime';
+            $timezone = 0;
+        } elseif (preg_match('#([+-])(\d\d)(\d\d)#', $timezone, $matches)) {
+            $mktime = 'gmmktime';
+            $timezone = 60 * $matches[3] + 3600 * $matches[2];
+            if ($matches[1] == '-') {
+                $timezone = -$timezone;
+            }
+        } else {
+            $mktime = 'mktime';
+            $timezone = 0;
+        }
+
+        return @$mktime($hour, $minute, $second, $month, $day, $year) + $timezone;
+    }
+
+    /**
      * ASN.1 Map
      *
      * Provides an ASN.1 semantic mapping ($mapping) from a parsed BER-encoding to a human readable format.
@@ -1153,55 +1219,6 @@ class File_ASN1
     }
 
     /**
-     * BER-decode the time
-     *
-     * Called by _decode_ber() and in the case of implicit tags asn1map().
-     *
-     * @access private
-     * @param String $content
-     * @param Integer $tag
-     * @return String
-     */
-    function _decodeTime($content, $tag)
-    {
-        /* UTCTime:
-           http://tools.ietf.org/html/rfc5280#section-4.1.2.5.1
-           http://www.obj-sys.com/asn1tutorial/node15.html
-
-           GeneralizedTime:
-           http://tools.ietf.org/html/rfc5280#section-4.1.2.5.2
-           http://www.obj-sys.com/asn1tutorial/node14.html */
-
-        $pattern = $tag == FILE_ASN1_TYPE_UTC_TIME ?
-            '#(..)(..)(..)(..)(..)(..)(.*)#' :
-            '#(....)(..)(..)(..)(..)(..).*([Z+-].*)$#';
-
-        preg_match($pattern, $content, $matches);
-
-        list(, $year, $month, $day, $hour, $minute, $second, $timezone) = $matches;
-
-        if ($tag == FILE_ASN1_TYPE_UTC_TIME) {
-            $year = $year >= 50 ? "19$year" : "20$year";
-        }
-
-        if ($timezone == 'Z') {
-            $mktime = 'gmmktime';
-            $timezone = 0;
-        } elseif (preg_match('#([+-])(\d\d)(\d\d)#', $timezone, $matches)) {
-            $mktime = 'gmmktime';
-            $timezone = 60 * $matches[3] + 3600 * $matches[2];
-            if ($matches[1] == '-') {
-                $timezone = -$timezone;
-            }
-        } else {
-            $mktime = 'mktime';
-            $timezone = 0;
-        }
-
-        return @$mktime($hour, $minute, $second, $month, $day, $year) + $timezone;
-    }
-
-    /**
      * Set the time format
      *
      * Sets the time / date format for asn1map().
@@ -1238,23 +1255,6 @@ class File_ASN1
     function loadFilters($filters)
     {
         $this->filters = $filters;
-    }
-
-    /**
-     * String Shift
-     *
-     * Inspired by array_shift
-     *
-     * @param String $string
-     * @param optional Integer $index
-     * @return String
-     * @access private
-     */
-    function _string_shift(&$string, $index = 1)
-    {
-        $substr = substr($string, 0, $index);
-        $string = substr($string, $index);
-        return $substr;
     }
 
     /**

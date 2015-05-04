@@ -44,6 +44,25 @@ class FunctionExtension extends AbstractExtension
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'function';
+    }
+
+    /**
+     * @param XPathExpr    $xpath
+     * @param FunctionNode $function
+     *
+     * @return XPathExpr
+     */
+    public function translateNthLastChild(XPathExpr $xpath, FunctionNode $function)
+    {
+        return $this->translateNthChild($xpath, $function, true);
+    }
+
+    /**
      * @param XPathExpr    $xpath
      * @param FunctionNode $function
      * @param bool         $last
@@ -106,17 +125,6 @@ class FunctionExtension extends AbstractExtension
         // an means every a elements, i.e., 2n means even
         // -n means -1n
         // -1n+6 means elements 6 and previous
-    }
-
-    /**
-     * @param XPathExpr    $xpath
-     * @param FunctionNode $function
-     *
-     * @return XPathExpr
-     */
-    public function translateNthLastChild(XPathExpr $xpath, FunctionNode $function)
-    {
-        return $this->translateNthChild($xpath, $function, true);
     }
 
     /**
@@ -197,13 +205,5 @@ class FunctionExtension extends AbstractExtension
             'lang(%s)',
             Translator::getXpathLiteral($arguments[0]->getValue())
         ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'function';
     }
 }

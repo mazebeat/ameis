@@ -20,9 +20,9 @@ class StringGetMultiple extends AbstractCommand implements PrefixableCommandInte
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'MGET';
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**
@@ -36,8 +36,8 @@ class StringGetMultiple extends AbstractCommand implements PrefixableCommandInte
     /**
      * {@inheritdoc}
      */
-    public function prefixKeys($prefix)
+    public function getId()
     {
-        PrefixHelpers::all($this, $prefix);
+        return 'MGET';
     }
 }

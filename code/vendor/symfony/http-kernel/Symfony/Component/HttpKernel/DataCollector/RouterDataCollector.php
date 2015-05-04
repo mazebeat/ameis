@@ -11,9 +11,9 @@
 
 namespace Symfony\Component\HttpKernel\DataCollector;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 /**
@@ -53,6 +53,14 @@ class RouterDataCollector extends DataCollector
         unset($this->controllers[$request]);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'router';
+    }
+
     protected function guessRoute(Request $request, $controller)
     {
         return 'n/a';
@@ -90,13 +98,5 @@ class RouterDataCollector extends DataCollector
     public function getTargetRoute()
     {
         return $this->data['route'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'router';
     }
 }

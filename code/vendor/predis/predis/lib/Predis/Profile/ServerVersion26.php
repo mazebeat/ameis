@@ -21,14 +21,6 @@ class ServerVersion26 extends ServerProfile
     /**
      * {@inheritdoc}
      */
-    public function getVersion()
-    {
-        return '2.6';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSupportedCommands()
     {
         return array(
@@ -229,5 +221,13 @@ class ServerVersion26 extends ServerProfile
             /* remote server control commands */
             'time'                      => 'Predis\Command\ServerTime',
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVersion()
+    {
+        return '2.6';
     }
 }

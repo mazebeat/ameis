@@ -57,26 +57,11 @@ class RawCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function getArgument($index)
     {
-        return $this->commandID;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setArguments(array $arguments)
-    {
-        $this->arguments = $arguments;
-        unset($this->hash);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setRawArguments(array $arguments)
-    {
-        $this->setArguments($arguments);
+        if (isset($this->arguments[$index])) {
+            return $this->arguments[$index];
+        }
     }
 
     /**
@@ -90,19 +75,10 @@ class RawCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function getArgument($index)
+    public function setArguments(array $arguments)
     {
-        if (isset($this->arguments[$index])) {
-            return $this->arguments[$index];
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setHash($hash)
-    {
-        $this->hash = $hash;
+        $this->arguments = $arguments;
+        unset($this->hash);
     }
 
     /**
@@ -118,9 +94,47 @@ class RawCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return $this->commandID;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setRawArguments(array $arguments)
+    {
+        $this->setArguments($arguments);
+    }
+
+    /**
+     * Returns a partial string representation of the command with its arguments.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return array_reduce(
+            $this->getArguments(),
+            array($this, 'toStringArgumentReducer'),
+            $this->getId()
+        );
     }
 
     /**
@@ -139,19 +153,5 @@ class RawCommand implements CommandInterface
         $accumulator .= " $argument";
 
         return $accumulator;
-    }
-
-    /**
-     * Returns a partial string representation of the command with its arguments.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return array_reduce(
-            $this->getArguments(),
-            array($this, 'toStringArgumentReducer'),
-            $this->getId()
-        );
     }
 }

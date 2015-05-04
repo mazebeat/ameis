@@ -86,6 +86,14 @@ class IcuResFileDumper extends FileDumper
         return $output;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExtension()
+    {
+        return 'res';
+    }
+
     private function writePadding($data)
     {
         $padding = strlen($data) % 4;
@@ -100,13 +108,5 @@ class IcuResFileDumper extends FileDumper
         $position = (strlen($data) + 28) / 4;
 
         return $position;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getExtension()
-    {
-        return 'res';
     }
 }

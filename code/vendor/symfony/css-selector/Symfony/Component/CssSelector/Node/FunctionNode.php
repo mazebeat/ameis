@@ -77,14 +77,6 @@ class FunctionNode extends AbstractNode
     /**
      * {@inheritdoc}
      */
-    public function getSpecificity()
-    {
-        return $this->selector->getSpecificity()->plus(new Specificity(0, 1, 0));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function __toString()
     {
         $arguments = implode(', ', array_map(function (Token $token) {
@@ -92,5 +84,13 @@ class FunctionNode extends AbstractNode
         }, $this->arguments));
 
         return sprintf('%s[%s:%s(%s)]', $this->getNodeName(), $this->selector, $this->name, $arguments ? '['.$arguments.']' : '');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSpecificity()
+    {
+        return $this->selector->getSpecificity()->plus(new Specificity(0, 1, 0));
     }
 }

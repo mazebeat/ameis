@@ -74,24 +74,6 @@ class NodeExtension extends AbstractExtension
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getNodeTranslators()
-    {
-        return array(
-            'Selector' => array($this, 'translateSelector'),
-            'CombinedSelector' => array($this, 'translateCombinedSelector'),
-            'Negation' => array($this, 'translateNegation'),
-            'Function' => array($this, 'translateFunction'),
-            'Pseudo' => array($this, 'translatePseudo'),
-            'Attribute' => array($this, 'translateAttribute'),
-            'Class' => array($this, 'translateClass'),
-            'Hash' => array($this, 'translateHash'),
-            'Element' => array($this, 'translateElement'),
-        );
-    }
-
-    /**
      * @param Node\SelectorNode $node
      * @param Translator        $translator
      *
@@ -190,6 +172,18 @@ class NodeExtension extends AbstractExtension
     }
 
     /**
+     * Tests if given name is safe.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    private function isSafeName($name)
+    {
+        return 0 < preg_match('~^[a-zA-Z_][a-zA-Z0-9_.-]*$~', $name);
+    }
+
+    /**
      * @param Node\ClassNode $node
      * @param Translator     $translator
      *
@@ -258,14 +252,20 @@ class NodeExtension extends AbstractExtension
     }
 
     /**
-     * Tests if given name is safe.
-     *
-     * @param string $name
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    private function isSafeName($name)
+    public function getNodeTranslators()
     {
-        return 0 < preg_match('~^[a-zA-Z_][a-zA-Z0-9_.-]*$~', $name);
+        return array(
+            'Selector' => array($this, 'translateSelector'),
+            'CombinedSelector' => array($this, 'translateCombinedSelector'),
+            'Negation' => array($this, 'translateNegation'),
+            'Function' => array($this, 'translateFunction'),
+            'Pseudo' => array($this, 'translatePseudo'),
+            'Attribute' => array($this, 'translateAttribute'),
+            'Class' => array($this, 'translateClass'),
+            'Hash' => array($this, 'translateHash'),
+            'Element' => array($this, 'translateElement'),
+        );
     }
 }

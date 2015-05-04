@@ -42,6 +42,18 @@ class FileBag extends ParameterBag
      *
      * @api
      */
+    public function add(array $files = array())
+    {
+        foreach ($files as $key => $file) {
+            $this->set($key, $file);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     */
     public function replace(array $files = array())
     {
         $this->parameters = array();
@@ -60,18 +72,6 @@ class FileBag extends ParameterBag
         }
 
         parent::set($key, $this->convertFileInformation($value));
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @api
-     */
-    public function add(array $files = array())
-    {
-        foreach ($files as $key => $file) {
-            $this->set($key, $file);
-        }
     }
 
     /**

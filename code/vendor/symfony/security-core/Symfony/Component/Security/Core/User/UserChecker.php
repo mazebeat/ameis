@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\Security\Core\User;
 
-use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
-use Symfony\Component\Security\Core\Exception\LockedException;
-use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Core\Exception\AccountExpiredException;
+use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
+use Symfony\Component\Security\Core\Exception\DisabledException;
+use Symfony\Component\Security\Core\Exception\LockedException;
 
 /**
  * UserChecker checks the user account flags.
@@ -23,6 +23,22 @@ use Symfony\Component\Security\Core\Exception\AccountExpiredException;
  */
 class UserChecker implements UserCheckerInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function checkPostAuth(UserInterface $user)
+    {
+        if (!$user instanceof AdvancedUserInterface) {
+            return;
+        }
+
+        if (!$user->isCredentialsNonExpired()) {
+            $ex = new CredentialsExpiredException('User credentials have expired.');
+            $ex->setUser($user);
+            throw $ex;
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -46,22 +62,6 @@ class UserChecker implements UserCheckerInterface
 
         if (!$user->isAccountNonExpired()) {
             $ex = new AccountExpiredException('User account has expired.');
-            $ex->setUser($user);
-            throw $ex;
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function checkPostAuth(UserInterface $user)
-    {
-        if (!$user instanceof AdvancedUserInterface) {
-            return;
-        }
-
-        if (!$user->isCredentialsNonExpired()) {
-            $ex = new CredentialsExpiredException('User credentials have expired.');
             $ex->setUser($user);
             throw $ex;
         }

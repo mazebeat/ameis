@@ -22,111 +22,6 @@ abstract class AbstractCommand implements CommandInterface
     private $arguments = array();
 
     /**
-     * Returns a filtered array of the arguments.
-     *
-     * @param  array $arguments List of arguments.
-     * @return array
-     */
-    protected function filterArguments(Array $arguments)
-    {
-        return $arguments;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setArguments(Array $arguments)
-    {
-        $this->arguments = $this->filterArguments($arguments);
-        unset($this->hash);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setRawArguments(Array $arguments)
-    {
-        $this->arguments = $arguments;
-        unset($this->hash);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getArguments()
-    {
-        return $this->arguments;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getArgument($index)
-    {
-        if (isset($this->arguments[$index])) {
-            return $this->arguments[$index];
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setHash($hash)
-    {
-        $this->hash = $hash;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getHash()
-    {
-        if (isset($this->hash)) {
-            return $this->hash;
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return $data;
-    }
-
-    /**
-     * Helper function used to reduce a list of arguments to a string.
-     *
-     * @param  string $accumulator Temporary string.
-     * @param  string $argument    Current argument.
-     * @return string
-     */
-    protected function toStringArgumentReducer($accumulator, $argument)
-    {
-        if (strlen($argument) > 32) {
-            $argument = substr($argument, 0, 32) . '[...]';
-        }
-
-        $accumulator .= " $argument";
-
-        return $accumulator;
-    }
-
-    /**
-     * Returns a partial string representation of the command with its arguments.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return array_reduce(
-            $this->getArguments(),
-            array($this, 'toStringArgumentReducer'),
-            $this->getId()
-        );
-    }
-
-    /**
      * Normalizes the arguments array passed to a Redis command.
      *
      * @param  array $arguments Arguments for a command.
@@ -154,5 +49,110 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getArgument($index)
+    {
+        if (isset($this->arguments[$index])) {
+            return $this->arguments[$index];
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setArguments(Array $arguments)
+    {
+        $this->arguments = $this->filterArguments($arguments);
+        unset($this->hash);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHash()
+    {
+        if (isset($this->hash)) {
+            return $this->hash;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setRawArguments(Array $arguments)
+    {
+        $this->arguments = $arguments;
+        unset($this->hash);
+    }
+
+    /**
+     * Returns a filtered array of the arguments.
+     *
+     * @param  array $arguments List of arguments.
+     * @return array
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        return $arguments;
+    }
+
+    /**
+     * Returns a partial string representation of the command with its arguments.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return array_reduce(
+            $this->getArguments(),
+            array($this, 'toStringArgumentReducer'),
+            $this->getId()
+        );
+    }
+
+    /**
+     * Helper function used to reduce a list of arguments to a string.
+     *
+     * @param  string $accumulator Temporary string.
+     * @param  string $argument    Current argument.
+     * @return string
+     */
+    protected function toStringArgumentReducer($accumulator, $argument)
+    {
+        if (strlen($argument) > 32) {
+            $argument = substr($argument, 0, 32) . '[...]';
+        }
+
+        $accumulator .= " $argument";
+
+        return $accumulator;
     }
 }

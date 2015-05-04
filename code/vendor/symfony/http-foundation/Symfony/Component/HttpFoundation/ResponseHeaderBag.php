@@ -73,13 +73,36 @@ class ResponseHeaderBag extends HeaderBag
     }
 
     /**
-     * Returns the headers, with original capitalizations.
-     *
-     * @return array An array of headers
+     * {@inheritdoc}
      */
-    public function allPreserveCase()
+    public function getCacheControlDirective($key)
     {
-        return array_combine($this->headerNames, $this->headers);
+        return array_key_exists($key, $this->computedCacheControl) ? $this->computedCacheControl[$key] : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasCacheControlDirective($key)
+    {
+        return array_key_exists($key, $this->computedCacheControl);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     */
+    public function remove($key)
+    {
+        parent::remove($key);
+
+        $uniqueKey = strtr(strtolower($key), '_', '-');
+        unset($this->headerNames[$uniqueKey]);
+
+        if ('cache-control' === $uniqueKey) {
+            $this->computedCacheControl = array();
+        }
     }
 
     /**
@@ -120,77 +143,6 @@ class ResponseHeaderBag extends HeaderBag
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @api
-     */
-    public function remove($key)
-    {
-        parent::remove($key);
-
-        $uniqueKey = strtr(strtolower($key), '_', '-');
-        unset($this->headerNames[$uniqueKey]);
-
-        if ('cache-control' === $uniqueKey) {
-            $this->computedCacheControl = array();
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasCacheControlDirective($key)
-    {
-        return array_key_exists($key, $this->computedCacheControl);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCacheControlDirective($key)
-    {
-        return array_key_exists($key, $this->computedCacheControl) ? $this->computedCacheControl[$key] : null;
-    }
-
-    /**
-     * Sets a cookie.
-     *
-     * @param Cookie $cookie
-     *
-     * @api
-     */
-    public function setCookie(Cookie $cookie)
-    {
-        $this->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
-    }
-
-    /**
-     * Removes a cookie from the array, but does not unset it in the browser.
-     *
-     * @param string $name
-     * @param string $path
-     * @param string $domain
-     *
-     * @api
-     */
-    public function removeCookie($name, $path = '/', $domain = null)
-    {
-        if (null === $path) {
-            $path = '/';
-        }
-
-        unset($this->cookies[$domain][$path][$name]);
-
-        if (empty($this->cookies[$domain][$path])) {
-            unset($this->cookies[$domain][$path]);
-
-            if (empty($this->cookies[$domain])) {
-                unset($this->cookies[$domain]);
-            }
-        }
-    }
-
-    /**
      * Returns an array with all cookies.
      *
      * @param string $format
@@ -224,6 +176,42 @@ class ResponseHeaderBag extends HeaderBag
     }
 
     /**
+     * Returns the headers, with original capitalizations.
+     *
+     * @return array An array of headers
+     */
+    public function allPreserveCase()
+    {
+        return array_combine($this->headerNames, $this->headers);
+    }
+
+    /**
+     * Removes a cookie from the array, but does not unset it in the browser.
+     *
+     * @param string $name
+     * @param string $path
+     * @param string $domain
+     *
+     * @api
+     */
+    public function removeCookie($name, $path = '/', $domain = null)
+    {
+        if (null === $path) {
+            $path = '/';
+        }
+
+        unset($this->cookies[$domain][$path][$name]);
+
+        if (empty($this->cookies[$domain][$path])) {
+            unset($this->cookies[$domain][$path]);
+
+            if (empty($this->cookies[$domain])) {
+                unset($this->cookies[$domain]);
+            }
+        }
+    }
+
+    /**
      * Clears a cookie in the browser.
      *
      * @param string $name
@@ -235,6 +223,18 @@ class ResponseHeaderBag extends HeaderBag
     public function clearCookie($name, $path = '/', $domain = null)
     {
         $this->setCookie(new Cookie($name, null, 1, $path, $domain));
+    }
+
+    /**
+     * Sets a cookie.
+     *
+     * @param Cookie $cookie
+     *
+     * @api
+     */
+    public function setCookie(Cookie $cookie)
+    {
+        $this->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
     }
 
     /**

@@ -26,6 +26,17 @@ trait LoggerTrait
     }
 
     /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed  $level
+     * @param string $message
+     * @param array  $context
+     *
+     * @return null
+     */
+    abstract public function log($level, $message, array $context = array());
+
+    /**
      * Action must be taken immediately.
      *
      * Example: Entire website down, database unavailable, etc. This should
@@ -126,15 +137,4 @@ trait LoggerTrait
     {
         $this->log(LogLevel::DEBUG, $message, $context);
     }
-
-    /**
-     * Logs with an arbitrary level.
-     *
-     * @param mixed  $level
-     * @param string $message
-     * @param array  $context
-     *
-     * @return null
-     */
-    abstract public function log($level, $message, array $context = array());
 }

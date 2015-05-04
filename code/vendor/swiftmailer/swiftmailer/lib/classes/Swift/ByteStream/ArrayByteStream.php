@@ -94,28 +94,21 @@ class Swift_ByteStream_ArrayByteStream implements Swift_InputByteStream, Swift_O
     }
 
     /**
-     * Writes $bytes to the end of the stream.
+     * Move the internal read pointer to $byteOffset in the stream.
      *
-     * @param string $bytes
+     * @param int     $byteOffset
+     *
+     * @return bool
      */
-    public function write($bytes)
+    public function setReadPointer($byteOffset)
     {
-        $to_add = str_split($bytes);
-        foreach ($to_add as $value) {
-            $this->_array[] = $value;
+        if ($byteOffset > $this->_arraySize) {
+            $byteOffset = $this->_arraySize;
+        } elseif ($byteOffset < 0) {
+            $byteOffset = 0;
         }
-        $this->_arraySize = count($this->_array);
 
-        foreach ($this->_mirrors as $stream) {
-            $stream->write($bytes);
-        }
-    }
-
-    /**
-     * Not used.
-     */
-    public function commit()
-    {
+        $this->_offset = $byteOffset;
     }
 
     /**
@@ -129,6 +122,28 @@ class Swift_ByteStream_ArrayByteStream implements Swift_InputByteStream, Swift_O
     public function bind(Swift_InputByteStream $is)
     {
         $this->_mirrors[] = $is;
+    }
+
+    /**
+     * Not used.
+     */
+    public function commit()
+    {
+    }
+
+    /**
+     * Flush the contents of the stream (empty it) and set the internal pointer
+     * to the beginning.
+     */
+    public function flushBuffers()
+    {
+        $this->_offset = 0;
+        $this->_array = array();
+        $this->_arraySize = 0;
+
+        foreach ($this->_mirrors as $stream) {
+            $stream->flushBuffers();
+        }
     }
 
     /**
@@ -150,35 +165,20 @@ class Swift_ByteStream_ArrayByteStream implements Swift_InputByteStream, Swift_O
     }
 
     /**
-     * Move the internal read pointer to $byteOffset in the stream.
+     * Writes $bytes to the end of the stream.
      *
-     * @param int     $byteOffset
-     *
-     * @return bool
+     * @param string $bytes
      */
-    public function setReadPointer($byteOffset)
+    public function write($bytes)
     {
-        if ($byteOffset > $this->_arraySize) {
-            $byteOffset = $this->_arraySize;
-        } elseif ($byteOffset < 0) {
-            $byteOffset = 0;
+        $to_add = str_split($bytes);
+        foreach ($to_add as $value) {
+            $this->_array[] = $value;
         }
-
-        $this->_offset = $byteOffset;
-    }
-
-    /**
-     * Flush the contents of the stream (empty it) and set the internal pointer
-     * to the beginning.
-     */
-    public function flushBuffers()
-    {
-        $this->_offset = 0;
-        $this->_array = array();
-        $this->_arraySize = 0;
+        $this->_arraySize = count($this->_array);
 
         foreach ($this->_mirrors as $stream) {
-            $stream->flushBuffers();
+            $stream->write($bytes);
         }
     }
 }

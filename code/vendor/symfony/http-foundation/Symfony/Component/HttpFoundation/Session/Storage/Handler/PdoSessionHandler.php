@@ -89,14 +89,6 @@ class PdoSessionHandler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function open($savePath, $sessionName)
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function close()
     {
         return true;
@@ -137,6 +129,14 @@ class PdoSessionHandler implements \SessionHandlerInterface
             throw new \RuntimeException(sprintf('PDOException was thrown when trying to delete expired sessions: %s', $e->getMessage()), 0, $e);
         }
 
+	    return true;
+    }
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function open($savePath, $sessionName)
+	{
         return true;
     }
 

@@ -23,6 +23,22 @@ class PhpAdapter extends AbstractAdapter
     /**
      * {@inheritdoc}
      */
+    protected function canBeUsed()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'php';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function searchInDirectory($dir)
     {
         $flags = \RecursiveDirectoryIterator::SKIP_DOTS;
@@ -78,21 +94,5 @@ class PhpAdapter extends AbstractAdapter
         }
 
         return $iterator;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'php';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeUsed()
-    {
-        return true;
     }
 }

@@ -28,6 +28,16 @@ class AsyncServiceProvider extends ServiceProvider
     }
 
     /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array('command.queue.async');
+    }
+
+    /**
      * Register the service provider.
      *
      * @return void
@@ -35,20 +45,6 @@ class AsyncServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerAsyncCommand($this->app);
-    }
-
-    /**
-     * Register the queue listener console command.
-     *
-     * @param \Illuminate\Foundation\Application $app
-     *
-     * @return void
-     */
-    protected function registerAsyncCommand($app)
-    {
-        $app['command.queue.async'] = $app->share(function ($app) {
-             return new AsyncCommand();
-        });
     }
 
     /**
@@ -66,12 +62,16 @@ class AsyncServiceProvider extends ServiceProvider
     }
 
     /**
-     * Get the services provided by the provider.
+     * Register the queue listener console command.
      *
-     * @return array
+     * @param \Illuminate\Foundation\Application $app
+     *
+     * @return void
      */
-    public function provides()
+    protected function registerAsyncCommand($app)
     {
-        return array('command.queue.async');
+        $app['command.queue.async'] = $app->share(function ($app) {
+             return new AsyncCommand();
+        });
     }
 }

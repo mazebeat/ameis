@@ -209,6 +209,36 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getHash(CommandInterface $command)
+    {
+        $hash = $command->getHash();
+
+        if (!isset($hash) && isset($this->commands[$cmdID = $command->getId()])) {
+            $key = call_user_func($this->commands[$cmdID], $command);
+
+            if (isset($key)) {
+                $hash = $this->getKeyHash($key);
+                $command->setHash($hash);
+            }
+        }
+
+        return $hash;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getKeyHash($key)
+    {
+        $key = $this->extractKeyTag($key);
+        $hash = $this->hashGenerator->hash($key);
+
+        return $hash;
+    }
+
+    /**
      * Extracts the key from the first argument of a command instance.
      *
      * @param  CommandInterface $command Command instance.
@@ -233,6 +263,51 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
         if ($this->checkSameHashForKeys($arguments)) {
             return $arguments[0];
         }
+    }
+
+    /**
+     * Checks if the specified array of keys will generate the same hash.
+     *
+     * @param  array $keys Array of keys.
+     * @return bool
+     */
+    protected function checkSameHashForKeys(Array $keys)
+    {
+        if (!$count = count($keys)) {
+            return false;
+        }
+
+        $currentKey = $this->extractKeyTag($keys[0]);
+
+        for ($i = 1; $i < $count; $i++) {
+            $nextKey = $this->extractKeyTag($keys[$i]);
+
+            if ($currentKey !== $nextKey) {
+                return false;
+            }
+
+            $currentKey = $nextKey;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns only the hashable part of a key (delimited by "{...}"), or the
+     * whole key if a key tag is not found in the string.
+     *
+     * @param  string $key A key.
+     * @return string
+     */
+    protected function extractKeyTag($key)
+    {
+        if (false !== $start = strpos($key, '{')) {
+            if (false !== $end = strpos($key, '}', $start)) {
+                $key = substr($key, ++$start, $end - $start);
+            }
+        }
+
+        return $key;
     }
 
     /**
@@ -319,80 +394,5 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
         if ($keys && $this->checkSameHashForKeys($keys)) {
             return $keys[0];
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getHash(CommandInterface $command)
-    {
-        $hash = $command->getHash();
-
-        if (!isset($hash) && isset($this->commands[$cmdID = $command->getId()])) {
-            $key = call_user_func($this->commands[$cmdID], $command);
-
-            if (isset($key)) {
-                $hash = $this->getKeyHash($key);
-                $command->setHash($hash);
-            }
-        }
-
-        return $hash;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getKeyHash($key)
-    {
-        $key = $this->extractKeyTag($key);
-        $hash = $this->hashGenerator->hash($key);
-
-        return $hash;
-    }
-
-    /**
-     * Checks if the specified array of keys will generate the same hash.
-     *
-     * @param  array $keys Array of keys.
-     * @return bool
-     */
-    protected function checkSameHashForKeys(Array $keys)
-    {
-        if (!$count = count($keys)) {
-            return false;
-        }
-
-        $currentKey = $this->extractKeyTag($keys[0]);
-
-        for ($i = 1; $i < $count; $i++) {
-            $nextKey = $this->extractKeyTag($keys[$i]);
-
-            if ($currentKey !== $nextKey) {
-                return false;
-            }
-
-            $currentKey = $nextKey;
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns only the hashable part of a key (delimited by "{...}"), or the
-     * whole key if a key tag is not found in the string.
-     *
-     * @param  string $key A key.
-     * @return string
-     */
-    protected function extractKeyTag($key)
-    {
-        if (false !== $start = strpos($key, '{')) {
-            if (false !== $end = strpos($key, '}', $start)) {
-                $key = substr($key, ++$start, $end - $start);
-            }
-        }
-
-        return $key;
     }
 }

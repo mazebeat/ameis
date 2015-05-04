@@ -11,10 +11,10 @@
 
 namespace Predis\Connection;
 
-use Predis\NotSupportedException;
-use Predis\ResponseError;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
+use Predis\ResponseError;
 
 /**
  * This class implements a Predis connection that actually talks with Webdis
@@ -63,25 +63,6 @@ class WebdisConnection implements SingleConnectionInterface
         $this->parameters = $parameters;
         $this->resource = $this->initializeCurl($parameters);
         $this->reader = $this->initializeReader($parameters);
-    }
-
-    /**
-     * Frees the underlying cURL and protocol reader resources when PHP's
-     * garbage collector kicks in.
-     */
-    public function __destruct()
-    {
-        curl_close($this->resource);
-        phpiredis_reader_destroy($this->reader);
-    }
-
-    /**
-     * Helper method used to throw on unsupported methods.
-     */
-    private function throwNotSupportedException($function)
-    {
-        $class = __CLASS__;
-        throw new NotSupportedException("The method $class::$function() is not supported");
     }
 
     /**
@@ -165,23 +146,27 @@ class WebdisConnection implements SingleConnectionInterface
     }
 
     /**
-     * Feeds phpredis' reader resource with the data read from the network.
-     *
-     * @param  resource $resource Reader resource.
-     * @param  string   $buffer   Buffer with the reply read from the network.
-     * @return int
+     * Frees the underlying cURL and protocol reader resources when PHP's
+     * garbage collector kicks in.
      */
-    protected function feedReader($resource, $buffer)
+	public function __destruct()
     {
-        phpiredis_reader_feed($this->reader, $buffer);
-
-        return strlen($buffer);
+	    curl_close($this->resource);
+	    phpiredis_reader_destroy($this->reader);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function connect()
+	public function __toString()
+    {
+	    return "{$this->parameters->host}:{$this->parameters->port}";
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+	public function connect()
     {
         // NOOP
     }
@@ -189,57 +174,9 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function disconnect()
+	public function disconnect()
     {
-        // NOOP
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isConnected()
-    {
-        return true;
-    }
-
-    /**
-     * Checks if the specified command is supported by this connection class.
-     *
-     * @param  CommandInterface $command The instance of a Redis command.
-     * @return string
-     */
-    protected function getCommandId(CommandInterface $command)
-    {
-        switch (($commandId = $command->getId())) {
-            case 'AUTH':
-            case 'SELECT':
-            case 'MULTI':
-            case 'EXEC':
-            case 'WATCH':
-            case 'UNWATCH':
-            case 'DISCARD':
-            case 'MONITOR':
-                throw new NotSupportedException("Disabled command: {$command->getId()}");
-
-            default:
-                return $commandId;
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function writeCommand(CommandInterface $command)
-    {
-        $this->throwNotSupportedException(__FUNCTION__);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function readResponse(CommandInterface $command)
-    {
-        $this->throwNotSupportedException(__FUNCTION__);
+	    // NOOP
     }
 
     /**
@@ -275,6 +212,14 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
+	public function getParameters()
+	{
+		return $this->parameters;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
     public function getResource()
     {
         return $this->resource;
@@ -283,9 +228,9 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getParameters()
+	public function isConnected()
     {
-        return $this->parameters;
+	    return true;
     }
 
     /**
@@ -307,14 +252,56 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+	public function readResponse(CommandInterface $command)
     {
-        return "{$this->parameters->host}:{$this->parameters->port}";
+	    $this->throwNotSupportedException(__FUNCTION__);
     }
 
     /**
      * {@inheritdoc}
      */
+	public function writeCommand(CommandInterface $command)
+	{
+		$this->throwNotSupportedException(__FUNCTION__);
+	}
+
+	/**
+	 * Helper method used to throw on unsupported methods.
+	 */
+	private function throwNotSupportedException($function)
+	{
+		$class = __CLASS__;
+		throw new NotSupportedException("The method $class::$function() is not supported");
+	}
+
+	/**
+	 * Checks if the specified command is supported by this connection class.
+	 *
+	 * @param  CommandInterface $command The instance of a Redis command.
+	 *
+	 * @return string
+	 */
+	protected function getCommandId(CommandInterface $command)
+	{
+		switch (($commandId = $command->getId())) {
+			case 'AUTH':
+			case 'SELECT':
+			case 'MULTI':
+			case 'EXEC':
+			case 'WATCH':
+			case 'UNWATCH':
+			case 'DISCARD':
+			case 'MONITOR':
+				throw new NotSupportedException("Disabled command: {$command->getId()}");
+
+			default:
+				return $commandId;
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
     public function __sleep()
     {
         return array('parameters');
@@ -330,5 +317,20 @@ class WebdisConnection implements SingleConnectionInterface
 
         $this->resource = $this->initializeCurl($parameters);
         $this->reader = $this->initializeReader($parameters);
+    }
+
+	/**
+	 * Feeds phpredis' reader resource with the data read from the network.
+	 *
+	 * @param  resource $resource Reader resource.
+	 * @param  string   $buffer   Buffer with the reply read from the network.
+	 *
+	 * @return int
+	 */
+	protected function feedReader($resource, $buffer)
+	{
+		phpiredis_reader_feed($this->reader, $buffer);
+
+		return strlen($buffer);
     }
 }

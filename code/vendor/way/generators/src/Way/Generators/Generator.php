@@ -1,7 +1,7 @@
 <?php namespace Way\Generators;
 
-use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Compilers\TemplateCompiler;
+use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\UndefinedTemplate;
 
 class Generator {

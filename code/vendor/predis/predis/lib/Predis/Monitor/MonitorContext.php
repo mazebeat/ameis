@@ -12,8 +12,8 @@
 namespace Predis\Monitor;
 
 use Predis\ClientInterface;
-use Predis\NotSupportedException;
 use Predis\Connection\AggregatedConnectionInterface;
+use Predis\NotSupportedException;
 
 /**
  * Client-side abstraction of a Redis MONITOR context.
@@ -34,14 +34,6 @@ class MonitorContext implements \Iterator
         $this->checkCapabilities($client);
         $this->client = $client;
         $this->openContext();
-    }
-
-    /**
-     * Automatically closes the context when PHP's garbage collector kicks in.
-     */
-    public function __destruct()
-    {
-        $this->closeContext();
     }
 
     /**
@@ -71,6 +63,14 @@ class MonitorContext implements \Iterator
     }
 
     /**
+     * Automatically closes the context when PHP's garbage collector kicks in.
+     */
+    public function __destruct()
+    {
+        $this->closeContext();
+    }
+
+    /**
      * Closes the context. Internally this is done by disconnecting from server
      * since there is no way to terminate the stream initialized by MONITOR.
      */
@@ -78,14 +78,6 @@ class MonitorContext implements \Iterator
     {
         $this->client->disconnect();
         $this->isValid = false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rewind()
-    {
-        // NOOP
     }
 
     /**
@@ -112,6 +104,14 @@ class MonitorContext implements \Iterator
     public function next()
     {
         $this->position++;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rewind()
+    {
+        // NOOP
     }
 
     /**

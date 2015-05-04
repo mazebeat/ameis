@@ -40,6 +40,47 @@ class ChoiceQuestion extends Question
     }
 
     /**
+     * Returns the default answer validator.
+     *
+     * @return callable
+     */
+    private function getDefaultValidator()
+    {
+        $choices = $this->choices;
+        $errorMessage = $this->errorMessage;
+        $multiselect = $this->multiselect;
+
+        return function ($selected) use ($choices, $errorMessage, $multiselect) {
+            // Collapse all spaces.
+            $selectedChoices = str_replace(' ', '', $selected);
+
+            if ($multiselect) {
+                // Check for a separated comma values
+                if (!preg_match('/^[a-zA-Z0-9_-]+(?:,[a-zA-Z0-9_-]+)*$/', $selectedChoices, $matches)) {
+                    throw new \InvalidArgumentException(sprintf($errorMessage, $selected));
+                }
+                $selectedChoices = explode(',', $selectedChoices);
+            } else {
+                $selectedChoices = array($selected);
+            }
+
+            $multiselectChoices = array();
+            foreach ($selectedChoices as $value) {
+                if (empty($choices[$value])) {
+                    throw new \InvalidArgumentException(sprintf($errorMessage, $value));
+                }
+                array_push($multiselectChoices, $choices[$value]);
+            }
+
+            if ($multiselect) {
+                return $multiselectChoices;
+            }
+
+            return $choices[$selected];
+        };
+    }
+
+    /**
      * Returns available choices.
      *
      * @return array
@@ -105,46 +146,5 @@ class ChoiceQuestion extends Question
         $this->setValidator($this->getDefaultValidator());
 
         return $this;
-    }
-
-    /**
-     * Returns the default answer validator.
-     *
-     * @return callable
-     */
-    private function getDefaultValidator()
-    {
-        $choices = $this->choices;
-        $errorMessage = $this->errorMessage;
-        $multiselect = $this->multiselect;
-
-        return function ($selected) use ($choices, $errorMessage, $multiselect) {
-            // Collapse all spaces.
-            $selectedChoices = str_replace(' ', '', $selected);
-
-            if ($multiselect) {
-                // Check for a separated comma values
-                if (!preg_match('/^[a-zA-Z0-9_-]+(?:,[a-zA-Z0-9_-]+)*$/', $selectedChoices, $matches)) {
-                    throw new \InvalidArgumentException(sprintf($errorMessage, $selected));
-                }
-                $selectedChoices = explode(',', $selectedChoices);
-            } else {
-                $selectedChoices = array($selected);
-            }
-
-            $multiselectChoices = array();
-            foreach ($selectedChoices as $value) {
-                if (empty($choices[$value])) {
-                    throw new \InvalidArgumentException(sprintf($errorMessage, $value));
-                }
-                array_push($multiselectChoices, $choices[$value]);
-            }
-
-            if ($multiselect) {
-                return $multiselectChoices;
-            }
-
-            return $choices[$selected];
-        };
     }
 }

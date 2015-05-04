@@ -11,10 +11,10 @@
 
 namespace Predis\Connection;
 
+use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
-use Predis\Command\CommandInterface;
 
 /**
  * This class provides the implementation of a Predis connection that uses PHP's
@@ -63,16 +63,6 @@ class PhpiredisStreamConnection extends StreamConnection
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function __destruct()
-    {
-        phpiredis_reader_destroy($this->reader);
-
-        parent::__destruct();
-    }
-
-    /**
      * Checks if the phpiredis extension is loaded in PHP.
      */
     protected function checkExtensions()
@@ -82,64 +72,6 @@ class PhpiredisStreamConnection extends StreamConnection
                 'The phpiredis extension must be loaded in order to be able to use this connection class'
             );
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkParameters(ConnectionParametersInterface $parameters)
-    {
-        if (isset($parameters->iterable_multibulk)) {
-            $this->onInvalidOption('iterable_multibulk', $parameters);
-        }
-
-        return parent::checkParameters($parameters);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tcpStreamInitializer(ConnectionParametersInterface $parameters)
-    {
-        $uri = "tcp://{$parameters->host}:{$parameters->port}";
-        $flags = STREAM_CLIENT_CONNECT;
-        $socket = null;
-
-        if (isset($parameters->async_connect) && $parameters->async_connect) {
-            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
-        }
-
-        if (isset($parameters->persistent) && $parameters->persistent) {
-            $flags |= STREAM_CLIENT_PERSISTENT;
-            $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
-        }
-
-        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
-
-        if (!$resource) {
-            $this->onConnectionError(trim($errstr), $errno);
-        }
-
-        if (isset($parameters->read_write_timeout) && function_exists('socket_import_stream')) {
-            $rwtimeout = (float) $parameters->read_write_timeout;
-            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
-
-            $timeout = array(
-                'sec'  => $timeoutSeconds = floor($rwtimeout),
-                'usec' => ($rwtimeout - $timeoutSeconds) * 1000000,
-            );
-
-            $socket = $socket ?: socket_import_stream($resource);
-            @socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, $timeout);
-            @socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, $timeout);
-        }
-
-        if (isset($parameters->tcp_nodelay) && function_exists('socket_import_stream')) {
-            $socket = $socket ?: socket_import_stream($resource);
-            socket_set_option($socket, SOL_TCP, TCP_NODELAY, (int) $parameters->tcp_nodelay);
-        }
-
-        return $resource;
     }
 
     /**
@@ -191,6 +123,36 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
+    public function __destruct()
+    {
+        phpiredis_reader_destroy($this->reader);
+
+        parent::__destruct();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __sleep()
+    {
+        return array_diff(parent::__sleep(), array('mbiterable'));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function checkParameters(ConnectionParametersInterface $parameters)
+    {
+        if (isset($parameters->iterable_multibulk)) {
+            $this->onInvalidOption('iterable_multibulk', $parameters);
+        }
+
+        return parent::checkParameters($parameters);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function read()
     {
         $socket = $this->getResource();
@@ -216,19 +178,57 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(CommandInterface $command)
+    protected function tcpStreamInitializer(ConnectionParametersInterface $parameters)
     {
-        $cmdargs = $command->getArguments();
-        array_unshift($cmdargs, $command->getId());
-        $this->writeBytes(phpiredis_format_command($cmdargs));
+        $uri = "tcp://{$parameters->host}:{$parameters->port}";
+        $flags = STREAM_CLIENT_CONNECT;
+        $socket = null;
+
+        if (isset($parameters->async_connect) && $parameters->async_connect) {
+            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
+
+        if (isset($parameters->persistent) && $parameters->persistent) {
+            $flags |= STREAM_CLIENT_PERSISTENT;
+            $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
+        }
+
+        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
+
+        if (!$resource) {
+            $this->onConnectionError(trim($errstr), $errno);
+        }
+
+        if (isset($parameters->read_write_timeout) && function_exists('socket_import_stream')) {
+            $rwtimeout = (float) $parameters->read_write_timeout;
+            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
+
+            $timeout = array(
+                'sec'  => $timeoutSeconds = floor($rwtimeout),
+                'usec' => ($rwtimeout - $timeoutSeconds) * 1000000,
+            );
+
+            $socket = $socket ?: socket_import_stream($resource);
+            @socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, $timeout);
+            @socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, $timeout);
+        }
+
+        if (isset($parameters->tcp_nodelay) && function_exists('socket_import_stream')) {
+            $socket = $socket ?: socket_import_stream($resource);
+            socket_set_option($socket, SOL_TCP, TCP_NODELAY, (int) $parameters->tcp_nodelay);
+        }
+
+        return $resource;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __sleep()
+    public function writeCommand(CommandInterface $command)
     {
-        return array_diff(parent::__sleep(), array('mbiterable'));
+        $cmdargs = $command->getArguments();
+        array_unshift($cmdargs, $command->getId());
+        $this->writeBytes(phpiredis_format_command($cmdargs));
     }
 
     /**

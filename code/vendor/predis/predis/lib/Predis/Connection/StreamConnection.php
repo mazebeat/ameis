@@ -11,10 +11,10 @@
 
 namespace Predis\Connection;
 
-use Predis\ResponseError;
-use Predis\ResponseQueued;
 use Predis\Command\CommandInterface;
 use Predis\Iterator\MultiBulkResponseSimple;
+use Predis\ResponseError;
+use Predis\ResponseQueued;
 
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
@@ -62,78 +62,9 @@ class StreamConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    protected function createResource()
+    public function __sleep()
     {
-        $parameters = $this->parameters;
-        $initializer = "{$parameters->scheme}StreamInitializer";
-
-        return $this->$initializer($parameters);
-    }
-
-    /**
-     * Initializes a TCP stream resource.
-     *
-     * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
-     * @return resource
-     */
-    protected function tcpStreamInitializer(ConnectionParametersInterface $parameters)
-    {
-        $uri = "tcp://{$parameters->host}:{$parameters->port}";
-        $flags = STREAM_CLIENT_CONNECT;
-
-        if (isset($parameters->async_connect) && $parameters->async_connect) {
-            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
-        }
-
-        if (isset($parameters->persistent) && $parameters->persistent) {
-            $flags |= STREAM_CLIENT_PERSISTENT;
-            $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
-        }
-
-        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
-
-        if (!$resource) {
-            $this->onConnectionError(trim($errstr), $errno);
-        }
-
-        if (isset($parameters->read_write_timeout)) {
-            $rwtimeout = $parameters->read_write_timeout;
-            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
-            $timeoutSeconds  = floor($rwtimeout);
-            $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
-            stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
-        }
-
-        if (isset($parameters->tcp_nodelay) && function_exists('socket_import_stream')) {
-            $socket = socket_import_stream($resource);
-            socket_set_option($socket, SOL_TCP, TCP_NODELAY, (int) $parameters->tcp_nodelay);
-        }
-
-        return $resource;
-    }
-
-    /**
-     * Initializes a UNIX stream resource.
-     *
-     * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
-     * @return resource
-     */
-    private function unixStreamInitializer(ConnectionParametersInterface $parameters)
-    {
-        $uri = "unix://{$parameters->path}";
-        $flags = STREAM_CLIENT_CONNECT;
-
-        if ($parameters->persistent) {
-            $flags |= STREAM_CLIENT_PERSISTENT;
-        }
-
-        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
-
-        if (!$resource) {
-            $this->onConnectionError(trim($errstr), $errno);
-        }
-
-        return $resource;
+        return array_merge(parent::__sleep(), array('mbiterable'));
     }
 
     /**
@@ -151,48 +82,22 @@ class StreamConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
+    protected function createResource()
+    {
+        $parameters = $this->parameters;
+        $initializer = "{$parameters->scheme}StreamInitializer";
+
+        return $this->$initializer($parameters);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function disconnect()
     {
         if ($this->isConnected()) {
             fclose($this->getResource());
             parent::disconnect();
-        }
-    }
-
-    /**
-     * Sends the initialization commands to Redis when the connection is opened.
-     */
-    private function sendInitializationCommands()
-    {
-        foreach ($this->initCmds as $command) {
-            $this->writeCommand($command);
-        }
-        foreach ($this->initCmds as $command) {
-            $this->readResponse($command);
-        }
-    }
-
-    /**
-     * Performs a write operation on the stream of the buffer containing a
-     * command serialized with the Redis wire protocol.
-     *
-     * @param string $buffer Redis wire protocol representation of a command.
-     */
-    protected function writeBytes($buffer)
-    {
-        $socket = $this->getResource();
-
-        while (($length = strlen($buffer)) > 0) {
-            $written = @fwrite($socket, $buffer);
-
-            if ($length === $written) {
-                return;
-            }
-            if ($written === false || $written === 0) {
-                $this->onConnectionError('Error while writing bytes to the server');
-            }
-
-            $buffer = substr($buffer, $written);
         }
     }
 
@@ -298,10 +203,105 @@ class StreamConnection extends AbstractConnection
     }
 
     /**
-     * {@inheritdoc}
+     * Sends the initialization commands to Redis when the connection is opened.
      */
-    public function __sleep()
+    private function sendInitializationCommands()
     {
-        return array_merge(parent::__sleep(), array('mbiterable'));
+        foreach ($this->initCmds as $command) {
+            $this->writeCommand($command);
+        }
+        foreach ($this->initCmds as $command) {
+            $this->readResponse($command);
+        }
+    }
+
+    /**
+     * Initializes a TCP stream resource.
+     *
+     * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @return resource
+     */
+    protected function tcpStreamInitializer(ConnectionParametersInterface $parameters)
+    {
+        $uri = "tcp://{$parameters->host}:{$parameters->port}";
+        $flags = STREAM_CLIENT_CONNECT;
+
+        if (isset($parameters->async_connect) && $parameters->async_connect) {
+            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
+
+        if (isset($parameters->persistent) && $parameters->persistent) {
+            $flags |= STREAM_CLIENT_PERSISTENT;
+            $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
+        }
+
+        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
+
+        if (!$resource) {
+            $this->onConnectionError(trim($errstr), $errno);
+        }
+
+        if (isset($parameters->read_write_timeout)) {
+            $rwtimeout = $parameters->read_write_timeout;
+            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
+            $timeoutSeconds  = floor($rwtimeout);
+            $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
+            stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
+        }
+
+        if (isset($parameters->tcp_nodelay) && function_exists('socket_import_stream')) {
+            $socket = socket_import_stream($resource);
+            socket_set_option($socket, SOL_TCP, TCP_NODELAY, (int) $parameters->tcp_nodelay);
+        }
+
+        return $resource;
+    }
+
+    /**
+     * Performs a write operation on the stream of the buffer containing a
+     * command serialized with the Redis wire protocol.
+     *
+     * @param string $buffer Redis wire protocol representation of a command.
+     */
+    protected function writeBytes($buffer)
+    {
+        $socket = $this->getResource();
+
+        while (($length = strlen($buffer)) > 0) {
+            $written = @fwrite($socket, $buffer);
+
+            if ($length === $written) {
+                return;
+            }
+            if ($written === false || $written === 0) {
+                $this->onConnectionError('Error while writing bytes to the server');
+            }
+
+            $buffer = substr($buffer, $written);
+        }
+    }
+
+    /**
+     * Initializes a UNIX stream resource.
+     *
+     * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @return resource
+     */
+    private function unixStreamInitializer(ConnectionParametersInterface $parameters)
+    {
+        $uri = "unix://{$parameters->path}";
+        $flags = STREAM_CLIENT_CONNECT;
+
+        if ($parameters->persistent) {
+            $flags |= STREAM_CLIENT_PERSISTENT;
+        }
+
+        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
+
+        if (!$resource) {
+            $this->onConnectionError(trim($errstr), $errno);
+        }
+
+        return $resource;
     }
 }

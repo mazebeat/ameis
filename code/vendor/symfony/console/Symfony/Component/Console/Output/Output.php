@@ -11,8 +11,8 @@
 
 namespace Symfony\Component\Console\Output;
 
-use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 
 /**
  * Base class for output classes.
@@ -53,14 +53,6 @@ abstract class Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function setFormatter(OutputFormatterInterface $formatter)
-    {
-        $this->formatter = $formatter;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getFormatter()
     {
         return $this->formatter;
@@ -69,17 +61,17 @@ abstract class Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function setDecorated($decorated)
+    public function setFormatter(OutputFormatterInterface $formatter)
     {
-        $this->formatter->setDecorated($decorated);
+        $this->formatter = $formatter;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function isDecorated()
+    public function getVerbosity()
     {
-        return $this->formatter->isDecorated();
+        return $this->verbosity;
     }
 
     /**
@@ -93,37 +85,17 @@ abstract class Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function getVerbosity()
+    public function isDecorated()
     {
-        return $this->verbosity;
-    }
-
-    public function isQuiet()
-    {
-        return self::VERBOSITY_QUIET === $this->verbosity;
-    }
-
-    public function isVerbose()
-    {
-        return self::VERBOSITY_VERBOSE <= $this->verbosity;
-    }
-
-    public function isVeryVerbose()
-    {
-        return self::VERBOSITY_VERY_VERBOSE <= $this->verbosity;
-    }
-
-    public function isDebug()
-    {
-        return self::VERBOSITY_DEBUG <= $this->verbosity;
+        return $this->formatter->isDecorated();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function writeln($messages, $type = self::OUTPUT_NORMAL)
+    public function setDecorated($decorated)
     {
-        $this->write($messages, true, $type);
+        $this->formatter->setDecorated($decorated);
     }
 
     /**
@@ -153,6 +125,34 @@ abstract class Output implements OutputInterface
 
             $this->doWrite($message, $newline);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function writeln($messages, $type = self::OUTPUT_NORMAL)
+    {
+        $this->write($messages, true, $type);
+    }
+
+    public function isQuiet()
+    {
+        return self::VERBOSITY_QUIET === $this->verbosity;
+    }
+
+    public function isVerbose()
+    {
+        return self::VERBOSITY_VERBOSE <= $this->verbosity;
+    }
+
+    public function isVeryVerbose()
+    {
+        return self::VERBOSITY_VERY_VERBOSE <= $this->verbosity;
+    }
+
+    public function isDebug()
+    {
+        return self::VERBOSITY_DEBUG <= $this->verbosity;
     }
 
     /**

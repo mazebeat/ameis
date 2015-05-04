@@ -5,10 +5,10 @@ return array(
 	'connections' => array(
 		'sqlsrv' => array(
 			'driver'   => 'sqlsrv',
-			'host'     => 'localhost',
-			'database' => 'ameis',
+			'host'     => '190.44.200.136',
+			'database' => 'AMEIS',
 			'username' => 'sa',
-			'password' => 'mz.120712',
+			'password' => 'Ameis*2015',
 			'prefix'   => '',
 			),
 

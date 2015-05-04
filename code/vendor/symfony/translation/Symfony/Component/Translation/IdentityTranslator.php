@@ -40,9 +40,9 @@ class IdentityTranslator implements TranslatorInterface
      *
      * @api
      */
-    public function setLocale($locale)
+    public function getLocale()
     {
-        $this->locale = $locale;
+        return $this->locale ?: \Locale::getDefault();
     }
 
     /**
@@ -50,9 +50,9 @@ class IdentityTranslator implements TranslatorInterface
      *
      * @api
      */
-    public function getLocale()
+    public function setLocale($locale)
     {
-        return $this->locale ?: \Locale::getDefault();
+        $this->locale = $locale;
     }
 
     /**

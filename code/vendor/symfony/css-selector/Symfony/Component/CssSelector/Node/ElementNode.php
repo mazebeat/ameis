@@ -60,18 +60,18 @@ class ElementNode extends AbstractNode
     /**
      * {@inheritdoc}
      */
-    public function getSpecificity()
-    {
-        return new Specificity(0, 0, $this->element ? 1 : 0);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function __toString()
     {
         $element = $this->element ?: '*';
 
         return sprintf('%s[%s]', $this->getNodeName(), $this->namespace ? $this->namespace.'|'.$element : $element);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSpecificity()
+    {
+        return new Specificity(0, 0, $this->element ? 1 : 0);
     }
 }

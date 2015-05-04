@@ -31,30 +31,6 @@ class LaravelHtmlMinifyCompiler extends BladeCompiler
     }
 
     /**
-    * We'll only compress a view if none of the following conditions are met.
-    * 1) <pre> or <textarea> tags
-    * 2) Embedded javascript (opening <script> tag not immediately followed
-    * by </script>)
-    * 3) Value attribute that contains 2 or more adjacent spaces
-    *
-    * @param string $value the contents of the view file
-    *
-    * @return bool
-    */
-    public function shouldMinify($value)
-    {
-        if (preg_match('/skipmin/', $value)
-         || preg_match('/<(pre|textarea)/', $value)
-         || preg_match('/<script[^\??>]*>[^<\/script>]/', $value)
-         || preg_match('/value=("|\')(.*)([ ]{2,})(.*)("|\')/', $value)
-        ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
     * Compress the HTML output before saving it
     *
     * @param string $value the contents of the view file
@@ -81,6 +57,30 @@ class LaravelHtmlMinifyCompiler extends BladeCompiler
             return $value;
         }
 
+    }
+
+    /**
+    * We'll only compress a view if none of the following conditions are met.
+    * 1) <pre> or <textarea> tags
+    * 2) Embedded javascript (opening <script> tag not immediately followed
+    * by </script>)
+    * 3) Value attribute that contains 2 or more adjacent spaces
+    *
+    * @param string $value the contents of the view file
+    *
+    * @return bool
+    */
+    public function shouldMinify($value)
+    {
+        if (preg_match('/skipmin/', $value)
+         || preg_match('/<(pre|textarea)/', $value)
+         || preg_match('/<script[^\??>]*>[^<\/script>]/', $value)
+         || preg_match('/value=("|\')(.*)([ ]{2,})(.*)("|\')/', $value)
+        ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

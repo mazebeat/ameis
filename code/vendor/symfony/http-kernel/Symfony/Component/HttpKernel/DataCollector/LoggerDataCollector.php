@@ -43,12 +43,83 @@ class LoggerDataCollector extends DataCollector implements LateDataCollectorInte
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return 'logger';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function lateCollect()
     {
         if (null !== $this->logger) {
             $this->data = $this->computeErrorsCount();
             $this->data['logs'] = $this->sanitizeLogs($this->logger->getLogs());
         }
+    }
+
+    private function computeErrorsCount()
+    {
+        $count = array(
+            'error_count' => $this->logger->countErrors(),
+            'deprecation_count' => 0,
+            'scream_count' => 0,
+            'priorities' => array(),
+        );
+
+        foreach ($this->logger->getLogs() as $log) {
+            if (isset($count['priorities'][$log['priority']])) {
+                ++$count['priorities'][$log['priority']]['count'];
+            } else {
+                $count['priorities'][$log['priority']] = array(
+                    'count' => 1,
+                    'name' => $log['priorityName'],
+                );
+            }
+
+            if (isset($log['context']['type'])) {
+                if (ErrorHandler::TYPE_DEPRECATION === $log['context']['type']) {
+                    ++$count['deprecation_count'];
+                } elseif (isset($log['context']['scream'])) {
+                    ++$count['scream_count'];
+                }
+            }
+        }
+
+        ksort($count['priorities']);
+
+        return $count;
+    }
+
+    private function sanitizeLogs($logs)
+    {
+        foreach ($logs as $i => $log) {
+            $logs[$i]['context'] = $this->sanitizeContext($log['context']);
+        }
+
+        return $logs;
+    }
+
+    private function sanitizeContext($context)
+    {
+        if (is_array($context)) {
+            foreach ($context as $key => $value) {
+                $context[$key] = $this->sanitizeContext($value);
+            }
+
+            return $context;
+        }
+
+        if (is_resource($context)) {
+            return sprintf('Resource(%s)', get_resource_type($context));
+        }
+
+        if (is_object($context)) {
+            return sprintf('Object(%s)', get_class($context));
+        }
+
+        return $context;
     }
 
     /**
@@ -86,76 +157,5 @@ class LoggerDataCollector extends DataCollector implements LateDataCollectorInte
     public function countScreams()
     {
         return isset($this->data['scream_count']) ? $this->data['scream_count'] : 0;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'logger';
-    }
-
-    private function sanitizeLogs($logs)
-    {
-        foreach ($logs as $i => $log) {
-            $logs[$i]['context'] = $this->sanitizeContext($log['context']);
-        }
-
-        return $logs;
-    }
-
-    private function sanitizeContext($context)
-    {
-        if (is_array($context)) {
-            foreach ($context as $key => $value) {
-                $context[$key] = $this->sanitizeContext($value);
-            }
-
-            return $context;
-        }
-
-        if (is_resource($context)) {
-            return sprintf('Resource(%s)', get_resource_type($context));
-        }
-
-        if (is_object($context)) {
-            return sprintf('Object(%s)', get_class($context));
-        }
-
-        return $context;
-    }
-
-    private function computeErrorsCount()
-    {
-        $count = array(
-            'error_count' => $this->logger->countErrors(),
-            'deprecation_count' => 0,
-            'scream_count' => 0,
-            'priorities' => array(),
-        );
-
-        foreach ($this->logger->getLogs() as $log) {
-            if (isset($count['priorities'][$log['priority']])) {
-                ++$count['priorities'][$log['priority']]['count'];
-            } else {
-                $count['priorities'][$log['priority']] = array(
-                    'count' => 1,
-                    'name' => $log['priorityName'],
-                );
-            }
-
-            if (isset($log['context']['type'])) {
-                if (ErrorHandler::TYPE_DEPRECATION === $log['context']['type']) {
-                    ++$count['deprecation_count'];
-                } elseif (isset($log['context']['scream'])) {
-                    ++$count['scream_count'];
-                }
-            }
-        }
-
-        ksort($count['priorities']);
-
-        return $count;
     }
 }

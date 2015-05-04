@@ -21,6 +21,18 @@ abstract class AbstractOption implements OptionInterface
     /**
      * {@inheritdoc}
      */
+    public function __invoke(ClientOptionsInterface $options, $value)
+    {
+        if (isset($value)) {
+            return $this->filter($options, $value);
+        }
+
+        return $this->getDefault($options);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function filter(ClientOptionsInterface $options, $value)
     {
         return $value;
@@ -32,17 +44,5 @@ abstract class AbstractOption implements OptionInterface
     public function getDefault(ClientOptionsInterface $options)
     {
         return null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __invoke(ClientOptionsInterface $options, $value)
-    {
-        if (isset($value)) {
-            return $this->filter($options, $value);
-        }
-
-        return $this->getDefault($options);
     }
 }

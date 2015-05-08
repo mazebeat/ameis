@@ -48,16 +48,16 @@ class RedisHandler extends AbstractProcessingHandler
         parent::__construct($level, $bubble);
     }
 
+    protected function write(array $record)
+    {
+        $this->redisClient->rpush($this->redisKey, $record["formatted"]);
+    }
+
     /**
      * {@inheritDoc}
      */
     protected function getDefaultFormatter()
     {
         return new LineFormatter();
-    }
-
-    protected function write(array $record)
-    {
-        $this->redisClient->rpush($this->redisKey, $record["formatted"]);
     }
 }

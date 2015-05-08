@@ -4,5 +4,5 @@ namespace Doctrine\Tests\Common\Reflection;
 
 class NoParent
 {
-	public $test;
+    public $test;
 }

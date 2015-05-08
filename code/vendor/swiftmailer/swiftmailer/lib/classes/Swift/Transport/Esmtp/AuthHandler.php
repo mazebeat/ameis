@@ -61,16 +61,6 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
     }
 
     /**
-     * Get the Authenticators which can process a login request.
-     *
-     * @return Swift_Transport_Esmtp_Authenticator[]
-     */
-    public function getAuthenticators()
-    {
-        return $this->_authenticators;
-    }
-
-    /**
      * Set the Authenticators which can process a login request.
      *
      * @param Swift_Transport_Esmtp_Authenticator[] $authenticators
@@ -81,13 +71,13 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
     }
 
     /**
-     * Get the username to authenticate with.
+     * Get the Authenticators which can process a login request.
      *
-     * @return string
+     * @return Swift_Transport_Esmtp_Authenticator[]
      */
-    public function getUsername()
+    public function getAuthenticators()
     {
-        return $this->_username;
+        return $this->_authenticators;
     }
 
     /**
@@ -101,13 +91,13 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
     }
 
     /**
-     * Get the password to authenticate with.
+     * Get the username to authenticate with.
      *
      * @return string
      */
-    public function getPassword()
+    public function getUsername()
     {
-        return $this->_password;
+        return $this->_username;
     }
 
     /**
@@ -121,13 +111,13 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
     }
 
     /**
-     * Get the auth mode to use to authenticate.
+     * Get the password to authenticate with.
      *
      * @return string
      */
-    public function getAuthMode()
+    public function getPassword()
     {
-        return $this->_auth_mode;
+        return $this->_password;
     }
 
     /**
@@ -138,6 +128,36 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
     public function setAuthMode($mode)
     {
         $this->_auth_mode = $mode;
+    }
+
+    /**
+     * Get the auth mode to use to authenticate.
+     *
+     * @return string
+     */
+    public function getAuthMode()
+    {
+        return $this->_auth_mode;
+    }
+
+    /**
+     * Get the name of the ESMTP extension this handles.
+     *
+     * @return bool
+     */
+    public function getHandledKeyword()
+    {
+        return 'AUTH';
+    }
+
+    /**
+     * Set the parameters which the EHLO greeting indicated.
+     *
+     * @param string[] $parameters
+     */
+    public function setKeywordParams(array $parameters)
+    {
+        $this->_esmtpParams = $parameters;
     }
 
     /**
@@ -166,45 +186,11 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
     }
 
     /**
-     * Returns an array of method names which are exposed to the Esmtp class.
-     *
-     * @return string[]
-     */
-    public function exposeMixinMethods()
-    {
-        return array('setUsername', 'getUsername', 'setPassword', 'getPassword', 'setAuthMode', 'getAuthMode');
-    }
-
-    /**
-     * Get the name of the ESMTP extension this handles.
-     *
-     * @return bool
-     */
-    public function getHandledKeyword()
-    {
-        return 'AUTH';
-    }
-
-    /**
      * Not used.
      */
     public function getMailParams()
     {
         return array();
-    }
-
-    /**
-     * Returns +1, -1 or 0 according to the rules for usort().
-     *
-     * This method is called to ensure extensions can be execute in an appropriate order.
-     *
-     * @param string $esmtpKeyword to compare with
-     *
-     * @return int
-     */
-    public function getPriorityOver($esmtpKeyword)
-    {
-        return 0;
     }
 
     /**
@@ -223,20 +209,34 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
     }
 
     /**
+     * Returns +1, -1 or 0 according to the rules for usort().
+     *
+     * This method is called to ensure extensions can be execute in an appropriate order.
+     *
+     * @param string $esmtpKeyword to compare with
+     *
+     * @return int
+     */
+    public function getPriorityOver($esmtpKeyword)
+    {
+        return 0;
+    }
+
+    /**
+     * Returns an array of method names which are exposed to the Esmtp class.
+     *
+     * @return string[]
+     */
+    public function exposeMixinMethods()
+    {
+        return array('setUsername', 'getUsername', 'setPassword', 'getPassword', 'setAuthMode', 'getAuthMode');
+    }
+
+    /**
      * Not used.
      */
     public function resetState()
     {
-    }
-
-    /**
-     * Set the parameters which the EHLO greeting indicated.
-     *
-     * @param string[] $parameters
-     */
-    public function setKeywordParams(array $parameters)
-    {
-        $this->_esmtpParams = $parameters;
     }
 
     /**

@@ -18,6 +18,13 @@ class EventManagerTest extends \Doctrine\Tests\DoctrineTestCase
 
     private $_eventManager;
 
+    protected function setUp()
+    {
+        $this->_eventManager = new EventManager;
+        $this->_preFooInvoked = false;
+        $this->_postFooInvoked = false;
+    }
+
     public function testInitialState()
     {
         $this->assertEquals(array(), $this->_eventManager->getListeners());
@@ -59,23 +66,16 @@ class EventManagerTest extends \Doctrine\Tests\DoctrineTestCase
         $this->assertTrue($this->_eventManager->hasListeners(self::postFoo));
     }
 
+    /* Listener methods */
+
     public function preFoo(EventArgs $e)
     {
         $this->_preFooInvoked = true;
     }
 
-    /* Listener methods */
-
     public function postFoo(EventArgs $e)
     {
         $this->_postFooInvoked = true;
-    }
-
-    protected function setUp()
-    {
-        $this->_eventManager = new EventManager;
-        $this->_preFooInvoked = false;
-        $this->_postFooInvoked = false;
     }
 }
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * An helper file for Laravel 4, to provide autocomplete information to your IDE
- * Generated for Laravel 4.2.17 on 2015-05-04.
+ * Generated for Laravel 4.2.17 on 2015-05-07.
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
@@ -1033,6 +1033,18 @@ namespace {
         }
         
         /**
+         * Returns an array of possible abbreviations given a set of names.
+         *
+         * @param array $names An array of names
+         * @return array An array of abbreviations
+         * @static 
+         */
+        public static function getAbbreviations($names){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::getAbbreviations($names);
+        }
+        
+        /**
          * 
          *
          * @static 
@@ -1058,16 +1070,15 @@ namespace {
         }
         
         /**
-         * Runs the current application.
+         * Get the helper set associated with the command.
          *
-         * @param \Symfony\Component\Console\InputInterface $input An Input instance
-         * @param \Symfony\Component\Console\OutputInterface $output An Output instance
-         * @return int 0 if everything went fine, or an error code
+         * @return \Symfony\Component\Console\HelperSet The HelperSet instance associated with this command
+         * @api 
          * @static 
          */
-        public static function doRun($input, $output){
+        public static function getHelperSet(){
             //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::doRun($input, $output);
+            return \Illuminate\Console\Application::getHelperSet();
         }
         
         /**
@@ -1083,61 +1094,28 @@ namespace {
         }
         
         /**
-         * Get the helper set associated with the command.
+         * Runs the current application.
          *
-         * @return \Symfony\Component\Console\HelperSet The HelperSet instance associated with this command
+         * @param \Symfony\Component\Console\InputInterface $input An Input instance
+         * @param \Symfony\Component\Console\OutputInterface $output An Output instance
+         * @return int 0 if everything went fine, or an error code
+         * @static 
+         */
+        public static function doRun($input, $output){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::doRun($input, $output);
+        }
+        
+        /**
+         * Returns the long version of the application.
+         *
+         * @return string The long application version
          * @api 
          * @static 
          */
-        public static function getHelperSet(){
+        public static function getLongVersion(){
             //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::getHelperSet();
-        }
-        
-        /**
-         * Set an input definition set to be used with this application.
-         *
-         * @param \Symfony\Component\Console\InputDefinition $definition The input definition
-         * @api 
-         * @static 
-         */
-        public static function setDefinition($definition){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::setDefinition($definition);
-        }
-        
-        /**
-         * Gets the InputDefinition related to this Application.
-         *
-         * @return \Symfony\Component\Console\InputDefinition The InputDefinition instance
-         * @static 
-         */
-        public static function getDefinition(){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::getDefinition();
-        }
-        
-        /**
-         * Gets the help message.
-         *
-         * @return string A help message.
-         * @static 
-         */
-        public static function getHelp(){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::getHelp();
-        }
-        
-        /**
-         * Sets whether to catch exceptions or not during commands execution.
-         *
-         * @param bool $boolean Whether to catch exceptions or not during commands execution
-         * @api 
-         * @static 
-         */
-        public static function setCatchExceptions($boolean){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::setCatchExceptions($boolean);
+            return \Illuminate\Console\Application::getLongVersion();
         }
         
         /**
@@ -1189,96 +1167,6 @@ namespace {
         }
         
         /**
-         * Returns the long version of the application.
-         *
-         * @return string The long application version
-         * @api 
-         * @static 
-         */
-        public static function getLongVersion(){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::getLongVersion();
-        }
-        
-        /**
-         * Registers a new command.
-         *
-         * @param string $name The command name
-         * @return \Symfony\Component\Console\Command The newly created command
-         * @api 
-         * @static 
-         */
-        public static function register($name){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::register($name);
-        }
-        
-        /**
-         * Adds an array of command objects.
-         *
-         * @param \Symfony\Component\Console\Command[] $commands An array of commands
-         * @api 
-         * @static 
-         */
-        public static function addCommands($commands){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::addCommands($commands);
-        }
-        
-        /**
-         * Returns a registered command by name or alias.
-         *
-         * @param string $name The command name or alias
-         * @return \Symfony\Component\Console\Command A Command object
-         * @throws \InvalidArgumentException When command name given does not exist
-         * @api 
-         * @static 
-         */
-        public static function get($name){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::get($name);
-        }
-        
-        /**
-         * Returns true if the command exists, false otherwise.
-         *
-         * @param string $name The command name or alias
-         * @return bool true if the command exists, false otherwise
-         * @api 
-         * @static 
-         */
-        public static function has($name){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::has($name);
-        }
-        
-        /**
-         * Returns an array of all unique namespaces used by currently registered commands.
-         * 
-         * It does not returns the global namespace which always exists.
-         *
-         * @return array An array of namespaces
-         * @static 
-         */
-        public static function getNamespaces(){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::getNamespaces();
-        }
-        
-        /**
-         * Finds a registered namespace by a name or an abbreviation.
-         *
-         * @param string $namespace A namespace or abbreviation to search for
-         * @return string A registered namespace
-         * @throws \InvalidArgumentException When namespace is incorrect or ambiguous
-         * @static 
-         */
-        public static function findNamespace($namespace){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::findNamespace($namespace);
-        }
-        
-        /**
          * Finds a command by name or alias.
          * 
          * Contrary to get, this command tries to find the best
@@ -1296,58 +1184,43 @@ namespace {
         }
         
         /**
-         * Gets the commands (registered in the given namespace if provided).
-         * 
-         * The array keys are the full names and the values the command instances.
+         * Finds a registered namespace by a name or an abbreviation.
          *
-         * @param string $namespace A namespace name
-         * @return \Symfony\Component\Console\Command[] An array of Command instances
+         * @param string $namespace A namespace or abbreviation to search for
+         * @return string A registered namespace
+         * @throws \InvalidArgumentException When namespace is incorrect or ambiguous
+         * @static 
+         */
+        public static function findNamespace($namespace){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::findNamespace($namespace);
+        }
+        
+        /**
+         * Returns an array of all unique namespaces used by currently registered commands.
+         * 
+         * It does not returns the global namespace which always exists.
+         *
+         * @return array An array of namespaces
+         * @static 
+         */
+        public static function getNamespaces(){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::getNamespaces();
+        }
+        
+        /**
+         * Returns a registered command by name or alias.
+         *
+         * @param string $name The command name or alias
+         * @return \Symfony\Component\Console\Command A Command object
+         * @throws \InvalidArgumentException When command name given does not exist
          * @api 
          * @static 
          */
-        public static function all($namespace = null){
+        public static function get($name){
             //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::all($namespace);
-        }
-        
-        /**
-         * Returns an array of possible abbreviations given a set of names.
-         *
-         * @param array $names An array of names
-         * @return array An array of abbreviations
-         * @static 
-         */
-        public static function getAbbreviations($names){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::getAbbreviations($names);
-        }
-        
-        /**
-         * Returns a text representation of the Application.
-         *
-         * @param string $namespace An optional namespace name
-         * @param bool $raw Whether to return raw command list
-         * @return string A string representing the Application
-         * @deprecated Deprecated since version 2.3, to be removed in 3.0.
-         * @static 
-         */
-        public static function asText($namespace = null, $raw = false){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::asText($namespace, $raw);
-        }
-        
-        /**
-         * Returns an XML representation of the Application.
-         *
-         * @param string $namespace An optional namespace name
-         * @param bool $asDom Whether to return a DOM or an XML string
-         * @return string|\DOMDocument An XML string representing the Application
-         * @deprecated Deprecated since version 2.3, to be removed in 3.0.
-         * @static 
-         */
-        public static function asXml($namespace = null, $asDom = false){
-            //Method inherited from \Symfony\Component\Console\Application            
-            return \Illuminate\Console\Application::asXml($namespace, $asDom);
+            return \Illuminate\Console\Application::get($name);
         }
         
         /**
@@ -1377,6 +1250,105 @@ namespace {
         }
         
         /**
+         * Gets the help message.
+         *
+         * @return string A help message.
+         * @static 
+         */
+        public static function getHelp(){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::getHelp();
+        }
+        
+        /**
+         * Gets the InputDefinition related to this Application.
+         *
+         * @return \Symfony\Component\Console\InputDefinition The InputDefinition instance
+         * @static 
+         */
+        public static function getDefinition(){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::getDefinition();
+        }
+        
+        /**
+         * Set an input definition set to be used with this application.
+         *
+         * @param \Symfony\Component\Console\InputDefinition $definition The input definition
+         * @api 
+         * @static 
+         */
+        public static function setDefinition($definition){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::setDefinition($definition);
+        }
+        
+        /**
+         * Sets whether to catch exceptions or not during commands execution.
+         *
+         * @param bool $boolean Whether to catch exceptions or not during commands execution
+         * @api 
+         * @static 
+         */
+        public static function setCatchExceptions($boolean){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::setCatchExceptions($boolean);
+        }
+        
+        /**
+         * Registers a new command.
+         *
+         * @param string $name The command name
+         * @return \Symfony\Component\Console\Command The newly created command
+         * @api 
+         * @static 
+         */
+        public static function register($name){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::register($name);
+        }
+        
+        /**
+         * Adds an array of command objects.
+         *
+         * @param \Symfony\Component\Console\Command[] $commands An array of commands
+         * @api 
+         * @static 
+         */
+        public static function addCommands($commands){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::addCommands($commands);
+        }
+        
+        /**
+         * Returns true if the command exists, false otherwise.
+         *
+         * @param string $name The command name or alias
+         * @return bool true if the command exists, false otherwise
+         * @api 
+         * @static 
+         */
+        public static function has($name){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::has($name);
+        }
+        
+        /**
+         * Gets the commands (registered in the given namespace if provided).
+         * 
+         * The array keys are the full names and the values the command instances.
+         *
+         * @param string $namespace A namespace name
+         * @return \Symfony\Component\Console\Command[] An array of Command instances
+         * @api 
+         * @static 
+         */
+        public static function all($namespace = null){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::all($namespace);
+        }
+        
+        /**
          * Returns the namespace part of the command name.
          * 
          * This method is not part of public API and should not be used directly.
@@ -1389,6 +1361,34 @@ namespace {
         public static function extractNamespace($name, $limit = null){
             //Method inherited from \Symfony\Component\Console\Application            
             return \Illuminate\Console\Application::extractNamespace($name, $limit);
+        }
+        
+        /**
+         * Returns a text representation of the Application.
+         *
+         * @param string $namespace An optional namespace name
+         * @param bool $raw Whether to return raw command list
+         * @return string A string representing the Application
+         * @deprecated Deprecated since version 2.3, to be removed in 3.0.
+         * @static 
+         */
+        public static function asText($namespace = null, $raw = false){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::asText($namespace, $raw);
+        }
+        
+        /**
+         * Returns an XML representation of the Application.
+         *
+         * @param string $namespace An optional namespace name
+         * @param bool $asDom Whether to return a DOM or an XML string
+         * @return string|\DOMDocument An XML string representing the Application
+         * @deprecated Deprecated since version 2.3, to be removed in 3.0.
+         * @static 
+         */
+        public static function asXml($namespace = null, $asDom = false){
+            //Method inherited from \Symfony\Component\Console\Application            
+            return \Illuminate\Console\Application::asXml($namespace, $asDom);
         }
         
         /**
@@ -1507,7 +1507,7 @@ namespace {
         /**
          * Get the currently authenticated user.
          *
-         * @return \User|null 
+         * @return \Usuario|null 
          * @static 
          */
         public static function user(){
@@ -1611,7 +1611,7 @@ namespace {
          *
          * @param mixed $id
          * @param bool $remember
-         * @return \User 
+         * @return \Usuario 
          * @static 
          */
         public static function loginUsingId($id, $remember = false){
@@ -1716,7 +1716,7 @@ namespace {
         /**
          * Return the currently cached user of the application.
          *
-         * @return \User|null 
+         * @return \Usuario|null 
          * @static 
          */
         public static function getUser(){
@@ -1758,7 +1758,7 @@ namespace {
         /**
          * Get the last user we attempted to authenticate.
          *
-         * @return \User 
+         * @return \Usuario 
          * @static 
          */
         public static function getLastAttempted(){
@@ -2839,6 +2839,709 @@ namespace {
          */
         public static function getConnections(){
             return \Illuminate\Database\DatabaseManager::getConnections();
+        }
+        
+        /**
+         * Execute a Closure within a transaction.
+         *
+         * @param \Closure $callback
+         * @return mixed 
+         * @throws \Exception
+         * @static 
+         */
+        public static function transaction($callback){
+            return \Illuminate\Database\SqlServerConnection::transaction($callback);
+        }
+        
+        /**
+         * Set the query grammar to the default implementation.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function useDefaultQueryGrammar(){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::useDefaultQueryGrammar();
+        }
+        
+        /**
+         * Set the schema grammar to the default implementation.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function useDefaultSchemaGrammar(){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::useDefaultSchemaGrammar();
+        }
+        
+        /**
+         * Set the query post processor to the default implementation.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function useDefaultPostProcessor(){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::useDefaultPostProcessor();
+        }
+        
+        /**
+         * Get a schema builder instance for the connection.
+         *
+         * @return \Illuminate\Database\Schema\Builder 
+         * @static 
+         */
+        public static function getSchemaBuilder(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getSchemaBuilder();
+        }
+        
+        /**
+         * Begin a fluent query against a database table.
+         *
+         * @param string $table
+         * @return \Illuminate\Database\Query\Builder 
+         * @static 
+         */
+        public static function table($table){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::table($table);
+        }
+        
+        /**
+         * Get a new raw query expression.
+         *
+         * @param mixed $value
+         * @return \Illuminate\Database\Query\Expression 
+         * @static 
+         */
+        public static function raw($value){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::raw($value);
+        }
+        
+        /**
+         * Run a select statement and return a single result.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return mixed 
+         * @static 
+         */
+        public static function selectOne($query, $bindings = array()){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::selectOne($query, $bindings);
+        }
+        
+        /**
+         * Run a select statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return array 
+         * @static 
+         */
+        public static function selectFromWriteConnection($query, $bindings = array()){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::selectFromWriteConnection($query, $bindings);
+        }
+        
+        /**
+         * Run a select statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @param bool $useReadPdo
+         * @return array 
+         * @static 
+         */
+        public static function select($query, $bindings = array(), $useReadPdo = true){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::select($query, $bindings, $useReadPdo);
+        }
+        
+        /**
+         * Run an insert statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return bool 
+         * @static 
+         */
+        public static function insert($query, $bindings = array()){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::insert($query, $bindings);
+        }
+        
+        /**
+         * Run an update statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return int 
+         * @static 
+         */
+        public static function update($query, $bindings = array()){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::update($query, $bindings);
+        }
+        
+        /**
+         * Run a delete statement against the database.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return int 
+         * @static 
+         */
+        public static function delete($query, $bindings = array()){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::delete($query, $bindings);
+        }
+        
+        /**
+         * Execute an SQL statement and return the boolean result.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return bool 
+         * @static 
+         */
+        public static function statement($query, $bindings = array()){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::statement($query, $bindings);
+        }
+        
+        /**
+         * Run an SQL statement and get the number of rows affected.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @return int 
+         * @static 
+         */
+        public static function affectingStatement($query, $bindings = array()){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::affectingStatement($query, $bindings);
+        }
+        
+        /**
+         * Run a raw, unprepared query against the PDO connection.
+         *
+         * @param string $query
+         * @return bool 
+         * @static 
+         */
+        public static function unprepared($query){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::unprepared($query);
+        }
+        
+        /**
+         * Prepare the query bindings for execution.
+         *
+         * @param array $bindings
+         * @return array 
+         * @static 
+         */
+        public static function prepareBindings($bindings){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::prepareBindings($bindings);
+        }
+        
+        /**
+         * Start a new database transaction.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function beginTransaction(){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::beginTransaction();
+        }
+        
+        /**
+         * Commit the active database transaction.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function commit(){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::commit();
+        }
+        
+        /**
+         * Rollback the active database transaction.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function rollBack(){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::rollBack();
+        }
+        
+        /**
+         * Get the number of active transactions.
+         *
+         * @return int 
+         * @static 
+         */
+        public static function transactionLevel(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::transactionLevel();
+        }
+        
+        /**
+         * Execute the given callback in "dry run" mode.
+         *
+         * @param \Closure $callback
+         * @return array 
+         * @static 
+         */
+        public static function pretend($callback){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::pretend($callback);
+        }
+        
+        /**
+         * Log a query in the connection's query log.
+         *
+         * @param string $query
+         * @param array $bindings
+         * @param float|null $time
+         * @return void 
+         * @static 
+         */
+        public static function logQuery($query, $bindings, $time = null){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::logQuery($query, $bindings, $time);
+        }
+        
+        /**
+         * Register a database query listener with the connection.
+         *
+         * @param \Closure $callback
+         * @return void 
+         * @static 
+         */
+        public static function listen($callback){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::listen($callback);
+        }
+        
+        /**
+         * Get a Doctrine Schema Column instance.
+         *
+         * @param string $table
+         * @param string $column
+         * @return \Doctrine\DBAL\Schema\Column 
+         * @static 
+         */
+        public static function getDoctrineColumn($table, $column){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getDoctrineColumn($table, $column);
+        }
+        
+        /**
+         * Get the Doctrine DBAL schema manager for the connection.
+         *
+         * @return \Doctrine\DBAL\Schema\AbstractSchemaManager 
+         * @static 
+         */
+        public static function getDoctrineSchemaManager(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getDoctrineSchemaManager();
+        }
+        
+        /**
+         * Get the Doctrine DBAL database connection instance.
+         *
+         * @return \Doctrine\DBAL\Connection 
+         * @static 
+         */
+        public static function getDoctrineConnection(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getDoctrineConnection();
+        }
+        
+        /**
+         * Get the current PDO connection.
+         *
+         * @return \PDO 
+         * @static 
+         */
+        public static function getPdo(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getPdo();
+        }
+        
+        /**
+         * Get the current PDO connection used for reading.
+         *
+         * @return \PDO 
+         * @static 
+         */
+        public static function getReadPdo(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getReadPdo();
+        }
+        
+        /**
+         * Set the PDO connection.
+         *
+         * @param \PDO|null $pdo
+         * @return $this 
+         * @static 
+         */
+        public static function setPdo($pdo){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::setPdo($pdo);
+        }
+        
+        /**
+         * Set the PDO connection used for reading.
+         *
+         * @param \PDO|null $pdo
+         * @return $this 
+         * @static 
+         */
+        public static function setReadPdo($pdo){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::setReadPdo($pdo);
+        }
+        
+        /**
+         * Set the reconnect instance on the connection.
+         *
+         * @param callable $reconnector
+         * @return $this 
+         * @static 
+         */
+        public static function setReconnector($reconnector){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::setReconnector($reconnector);
+        }
+        
+        /**
+         * Get the database connection name.
+         *
+         * @return string|null 
+         * @static 
+         */
+        public static function getName(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getName();
+        }
+        
+        /**
+         * Get an option from the configuration options.
+         *
+         * @param string $option
+         * @return mixed 
+         * @static 
+         */
+        public static function getConfig($option){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getConfig($option);
+        }
+        
+        /**
+         * Get the PDO driver name.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function getDriverName(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getDriverName();
+        }
+        
+        /**
+         * Get the query grammar used by the connection.
+         *
+         * @return \Illuminate\Database\Query\Grammars\Grammar 
+         * @static 
+         */
+        public static function getQueryGrammar(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getQueryGrammar();
+        }
+        
+        /**
+         * Set the query grammar used by the connection.
+         *
+         * @param \Illuminate\Database\Query\Grammars\Grammar
+         * @return void 
+         * @static 
+         */
+        public static function setQueryGrammar($grammar){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::setQueryGrammar($grammar);
+        }
+        
+        /**
+         * Get the schema grammar used by the connection.
+         *
+         * @return \Illuminate\Database\Query\Grammars\Grammar 
+         * @static 
+         */
+        public static function getSchemaGrammar(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getSchemaGrammar();
+        }
+        
+        /**
+         * Set the schema grammar used by the connection.
+         *
+         * @param \Illuminate\Database\Schema\Grammars\Grammar
+         * @return void 
+         * @static 
+         */
+        public static function setSchemaGrammar($grammar){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::setSchemaGrammar($grammar);
+        }
+        
+        /**
+         * Get the query post processor used by the connection.
+         *
+         * @return \Illuminate\Database\Query\Processors\Processor 
+         * @static 
+         */
+        public static function getPostProcessor(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getPostProcessor();
+        }
+        
+        /**
+         * Set the query post processor used by the connection.
+         *
+         * @param \Illuminate\Database\Query\Processors\Processor
+         * @return void 
+         * @static 
+         */
+        public static function setPostProcessor($processor){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::setPostProcessor($processor);
+        }
+        
+        /**
+         * Get the event dispatcher used by the connection.
+         *
+         * @return \Illuminate\Events\Dispatcher 
+         * @static 
+         */
+        public static function getEventDispatcher(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getEventDispatcher();
+        }
+        
+        /**
+         * Set the event dispatcher instance on the connection.
+         *
+         * @param \Illuminate\Events\Dispatcher
+         * @return void 
+         * @static 
+         */
+        public static function setEventDispatcher($events){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::setEventDispatcher($events);
+        }
+        
+        /**
+         * Get the paginator environment instance.
+         *
+         * @return \Illuminate\Pagination\Factory 
+         * @static 
+         */
+        public static function getPaginator(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getPaginator();
+        }
+        
+        /**
+         * Set the pagination environment instance.
+         *
+         * @param \Illuminate\Pagination\Factory|\Closure $paginator
+         * @return void 
+         * @static 
+         */
+        public static function setPaginator($paginator){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::setPaginator($paginator);
+        }
+        
+        /**
+         * Get the cache manager instance.
+         *
+         * @return \Illuminate\Cache\CacheManager 
+         * @static 
+         */
+        public static function getCacheManager(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getCacheManager();
+        }
+        
+        /**
+         * Set the cache manager instance on the connection.
+         *
+         * @param \Illuminate\Cache\CacheManager|\Closure $cache
+         * @return void 
+         * @static 
+         */
+        public static function setCacheManager($cache){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::setCacheManager($cache);
+        }
+        
+        /**
+         * Determine if the connection in a "dry run".
+         *
+         * @return bool 
+         * @static 
+         */
+        public static function pretending(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::pretending();
+        }
+        
+        /**
+         * Get the default fetch mode for the connection.
+         *
+         * @return int 
+         * @static 
+         */
+        public static function getFetchMode(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getFetchMode();
+        }
+        
+        /**
+         * Set the default fetch mode for the connection.
+         *
+         * @param int $fetchMode
+         * @return int 
+         * @static 
+         */
+        public static function setFetchMode($fetchMode){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::setFetchMode($fetchMode);
+        }
+        
+        /**
+         * Get the connection query log.
+         *
+         * @return array 
+         * @static 
+         */
+        public static function getQueryLog(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getQueryLog();
+        }
+        
+        /**
+         * Clear the query log.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function flushQueryLog(){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::flushQueryLog();
+        }
+        
+        /**
+         * Enable the query log on the connection.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function enableQueryLog(){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::enableQueryLog();
+        }
+        
+        /**
+         * Disable the query log on the connection.
+         *
+         * @return void 
+         * @static 
+         */
+        public static function disableQueryLog(){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::disableQueryLog();
+        }
+        
+        /**
+         * Determine whether we're logging queries.
+         *
+         * @return bool 
+         * @static 
+         */
+        public static function logging(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::logging();
+        }
+        
+        /**
+         * Get the name of the connected database.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function getDatabaseName(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getDatabaseName();
+        }
+        
+        /**
+         * Set the name of the connected database.
+         *
+         * @param string $database
+         * @return string 
+         * @static 
+         */
+        public static function setDatabaseName($database){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::setDatabaseName($database);
+        }
+        
+        /**
+         * Get the table prefix for the connection.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function getTablePrefix(){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::getTablePrefix();
+        }
+        
+        /**
+         * Set the table prefix in use by the connection.
+         *
+         * @param string $prefix
+         * @return void 
+         * @static 
+         */
+        public static function setTablePrefix($prefix){
+            //Method inherited from \Illuminate\Database\Connection            
+            \Illuminate\Database\SqlServerConnection::setTablePrefix($prefix);
+        }
+        
+        /**
+         * Set the table prefix and return the grammar.
+         *
+         * @param \Illuminate\Database\Grammar $grammar
+         * @return \Illuminate\Database\Grammar 
+         * @static 
+         */
+        public static function withTablePrefix($grammar){
+            //Method inherited from \Illuminate\Database\Connection            
+            return \Illuminate\Database\SqlServerConnection::withTablePrefix($grammar);
         }
         
     }
@@ -5393,23 +6096,21 @@ namespace {
     class Input extends \Illuminate\Support\Facades\Input{
         
         /**
-         * Retrieve an input item from the request.
+         * Create an Illuminate request from a Symfony instance.
          *
-         * @param string $key
-         * @param mixed  $default
-         * @return string
-         * @static
+         * @param \Symfony\Component\HttpFoundation\Request $request
+         * @return \Illuminate\Http\Request 
+         * @static 
          */
-	    public static function input($key = null, $default = null)
-	    {
-		    return \Illuminate\Http\Request::input($key, $default);
-	    }
-
-	    /**
+        public static function createFromBase($request){
+            return \Illuminate\Http\Request::createFromBase($request);
+        }
+        
+        /**
          * Return the Request instance.
          *
-	     * @return $this
-	     * @static
+         * @return $this 
+         * @static 
          */
         public static function instance(){
             return \Illuminate\Http\Request::instance();
@@ -5418,8 +6119,8 @@ namespace {
         /**
          * Get the request method.
          *
-         * @return string
-         * @static
+         * @return string 
+         * @static 
          */
         public static function method(){
             return \Illuminate\Http\Request::method();
@@ -5428,51 +6129,51 @@ namespace {
         /**
          * Get the root URL for the application.
          *
-         * @return string
-         * @static
+         * @return string 
+         * @static 
          */
         public static function root(){
             return \Illuminate\Http\Request::root();
         }
         
         /**
-         * Get the URL (no query string) for the request.
-         *
-         * @return string
-         * @static
-         */
-        public static function url(){
-            return \Illuminate\Http\Request::url();
-        }
-        
-        /**
          * Get the full URL for the request.
          *
-         * @return string
-         * @static
+         * @return string 
+         * @static 
          */
         public static function fullUrl(){
             return \Illuminate\Http\Request::fullUrl();
         }
         
         /**
-         * Get the current path info for the request.
+         * Get the URL (no query string) for the request.
          *
-         * @return string
-         * @static
+         * @return string 
+         * @static 
          */
-        public static function path(){
-            return \Illuminate\Http\Request::path();
+        public static function url(){
+            return \Illuminate\Http\Request::url();
         }
         
         /**
          * Get the current encoded path info for the request.
          *
-         * @return string
-         * @static
+         * @return string 
+         * @static 
          */
         public static function decodedPath(){
             return \Illuminate\Http\Request::decodedPath();
+        }
+        
+        /**
+         * Get the current path info for the request.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function path(){
+            return \Illuminate\Http\Request::path();
         }
         
         /**
@@ -5480,9 +6181,8 @@ namespace {
          *
          * @param string $index
          * @param mixed $default
-         *
-         * @return string
-         * @static
+         * @return string 
+         * @static 
          */
         public static function segment($index, $default = null){
             return \Illuminate\Http\Request::segment($index, $default);
@@ -5491,8 +6191,8 @@ namespace {
         /**
          * Get all of the segments for the request path.
          *
-         * @return array
-         * @static
+         * @return array 
+         * @static 
          */
         public static function segments(){
             return \Illuminate\Http\Request::segments();
@@ -5502,9 +6202,8 @@ namespace {
          * Determine if the current request URI matches a pattern.
          *
          * @param mixed  string
-         *
-         * @return bool
-         * @static
+         * @return bool 
+         * @static 
          */
         public static function is(){
             return \Illuminate\Http\Request::is();
@@ -5513,8 +6212,8 @@ namespace {
         /**
          * Determine if the request is the result of an AJAX call.
          *
-         * @return bool
-         * @static
+         * @return bool 
+         * @static 
          */
         public static function ajax(){
             return \Illuminate\Http\Request::ajax();
@@ -5523,8 +6222,8 @@ namespace {
         /**
          * Determine if the request is over HTTPS.
          *
-         * @return bool
-         * @static
+         * @return bool 
+         * @static 
          */
         public static function secure(){
             return \Illuminate\Http\Request::secure();
@@ -5533,8 +6232,8 @@ namespace {
         /**
          * Returns the client IP address.
          *
-         * @return string
-         * @static
+         * @return string 
+         * @static 
          */
         public static function ip(){
             return \Illuminate\Http\Request::ip();
@@ -5543,8 +6242,8 @@ namespace {
         /**
          * Returns the client IP addresses.
          *
-         * @return array
-         * @static
+         * @return array 
+         * @static 
          */
         public static function ips(){
             return \Illuminate\Http\Request::ips();
@@ -5554,34 +6253,78 @@ namespace {
          * Determine if the request contains a given input item key.
          *
          * @param string|array $key
-         *
-         * @return bool
-         * @static
+         * @return bool 
+         * @static 
          */
         public static function exists($key){
             return \Illuminate\Http\Request::exists($key);
         }
         
         /**
-         * Determine if the request contains a non-empty value for an input item.
-         *
-         * @param string|array $key
-         *
-         * @return bool
-         * @static
-         */
-        public static function has($key){
-            return \Illuminate\Http\Request::has($key);
-        }
-        
-        /**
          * Get all of the input and files for the request.
          *
-         * @return array
-         * @static
+         * @return array 
+         * @static 
          */
         public static function all(){
             return \Illuminate\Http\Request::all();
+        }
+        
+        /**
+         * Retrieve an input item from the request.
+         *
+         * @param string $key
+         * @param mixed $default
+         * @return string 
+         * @static 
+         */
+        public static function input($key = null, $default = null){
+            return \Illuminate\Http\Request::input($key, $default);
+        }
+        
+        /**
+         * Determine if the request is sending JSON.
+         *
+         * @return bool 
+         * @static 
+         */
+        public static function isJson(){
+            return \Illuminate\Http\Request::isJson();
+        }
+        
+        /**
+         * Retrieve a header from the request.
+         *
+         * @param string $key
+         * @param mixed $default
+         * @return string 
+         * @static 
+         */
+        public static function header($key = null, $default = null){
+            return \Illuminate\Http\Request::header($key, $default);
+        }
+        
+        /**
+         * Get the JSON payload for the request.
+         *
+         * @param string $key
+         * @param mixed $default
+         * @return mixed 
+         * @static 
+         */
+        public static function json($key = null, $default = null){
+            return \Illuminate\Http\Request::json($key, $default);
+        }
+        
+        /**
+         * Determine if the request contains a non-empty value for an input item.
+         *
+         * @param string|array $key
+         * @return bool 
+         * @static 
+         */
+        public static function has($key){
+            return \Illuminate\Http\Request::has($key);
         }
         
         /**
@@ -5611,8 +6354,7 @@ namespace {
          *
          * @param string $key
          * @param mixed $default
-         *
-         * @return string|array
+         * @return string|array 
          * @static 
          */
         public static function query($key = null, $default = null){
@@ -5643,18 +6385,6 @@ namespace {
         }
         
         /**
-         * Retrieve a file from the request.
-         *
-         * @param string $key
-         * @param mixed $default
-         * @return \Symfony\Component\HttpFoundation\File\UploadedFile|array 
-         * @static 
-         */
-        public static function file($key = null, $default = null){
-            return \Illuminate\Http\Request::file($key, $default);
-        }
-        
-        /**
          * Determine if the uploaded data contains a file.
          *
          * @param string $key
@@ -5666,15 +6396,15 @@ namespace {
         }
         
         /**
-         * Retrieve a header from the request.
+         * Retrieve a file from the request.
          *
          * @param string $key
          * @param mixed $default
-         * @return string 
+         * @return \Symfony\Component\HttpFoundation\File\UploadedFile|array 
          * @static 
          */
-        public static function header($key = null, $default = null){
-            return \Illuminate\Http\Request::header($key, $default);
+        public static function file($key = null, $default = null){
+            return \Illuminate\Http\Request::file($key, $default);
         }
         
         /**
@@ -5702,15 +6432,14 @@ namespace {
         }
         
         /**
-         * Flash the input for the current request to the session.
+         * Get the session associated with the request.
          *
-         * @param string $filter
-         * @param array $keys
-         * @return void 
+         * @return \Illuminate\Session\Store 
+         * @throws \RuntimeException
          * @static 
          */
-        public static function flash($filter = null, $keys = array()){
-            \Illuminate\Http\Request::flash($filter, $keys);
+        public static function session(){
+            return \Illuminate\Http\Request::session();
         }
         
         /**
@@ -5722,6 +6451,18 @@ namespace {
          */
         public static function flashOnly($keys){
             \Illuminate\Http\Request::flashOnly($keys);
+        }
+        
+        /**
+         * Flash the input for the current request to the session.
+         *
+         * @param string $filter
+         * @param array $keys
+         * @return void 
+         * @static 
+         */
+        public static function flash($filter = null, $keys = array()){
+            \Illuminate\Http\Request::flash($filter, $keys);
         }
         
         /**
@@ -5768,28 +6509,6 @@ namespace {
         }
         
         /**
-         * Get the JSON payload for the request.
-         *
-         * @param string $key
-         * @param mixed $default
-         * @return mixed 
-         * @static 
-         */
-        public static function json($key = null, $default = null){
-            return \Illuminate\Http\Request::json($key, $default);
-        }
-        
-        /**
-         * Determine if the request is sending JSON.
-         *
-         * @return bool 
-         * @static 
-         */
-        public static function isJson(){
-            return \Illuminate\Http\Request::isJson();
-        }
-        
-        /**
          * Determine if the current request is asking for JSON in return.
          *
          * @return bool 
@@ -5808,28 +6527,6 @@ namespace {
          */
         public static function format($default = 'html'){
             return \Illuminate\Http\Request::format($default);
-        }
-        
-        /**
-         * Create an Illuminate request from a Symfony instance.
-         *
-         * @param \Symfony\Component\HttpFoundation\Request $request
-         * @return \Illuminate\Http\Request 
-         * @static 
-         */
-        public static function createFromBase($request){
-            return \Illuminate\Http\Request::createFromBase($request);
-        }
-        
-        /**
-         * Get the session associated with the request.
-         *
-         * @return \Illuminate\Session\Store 
-         * @throws \RuntimeException
-         * @static 
-         */
-        public static function session(){
-            return \Illuminate\Http\Request::session();
         }
         
         /**
@@ -5862,6 +6559,19 @@ namespace {
         public static function createFromGlobals(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::createFromGlobals();
+        }
+        
+        /**
+         * Returns the request body content.
+         *
+         * @param bool $asResource If true, a resource will be returned
+         * @return string|resource The request body content or a resource to read the body stream.
+         * @throws \LogicException
+         * @static 
+         */
+        public static function getContent($asResource = false){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getContent($asResource);
         }
         
         /**
@@ -5902,35 +6612,14 @@ namespace {
         }
         
         /**
-         * Clones a request and overrides some of its parameters.
+         * Gets the list of trusted proxies.
          *
-         * @param array $query The GET parameters
-         * @param array $request The POST parameters
-         * @param array $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
-         * @param array $cookies The COOKIE parameters
-         * @param array $files The FILES parameters
-         * @param array $server The SERVER parameters
-         * @return \Symfony\Component\HttpFoundation\Request The duplicated request
-         * @api 
+         * @return array An array of trusted proxies.
          * @static 
          */
-        public static function duplicate($query = null, $request = null, $attributes = null, $cookies = null, $files = null, $server = null){
+        public static function getTrustedProxies(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::duplicate($query, $request, $attributes, $cookies, $files, $server);
-        }
-        
-        /**
-         * Overrides the PHP global variables according to this request instance.
-         * 
-         * It overrides $_GET, $_POST, $_REQUEST, $_SERVER, $_COOKIE.
-         * $_FILES is never overridden, see rfc1867
-         *
-         * @api 
-         * @static 
-         */
-        public static function overrideGlobals(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::overrideGlobals();
+            return \Illuminate\Http\Request::getTrustedProxies();
         }
         
         /**
@@ -5948,14 +6637,14 @@ namespace {
         }
         
         /**
-         * Gets the list of trusted proxies.
+         * Gets the list of trusted host patterns.
          *
-         * @return array An array of trusted proxies.
+         * @return array An array of trusted host patterns.
          * @static 
          */
-        public static function getTrustedProxies(){
+        public static function getTrustedHosts(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getTrustedProxies();
+            return \Illuminate\Http\Request::getTrustedHosts();
         }
         
         /**
@@ -5969,17 +6658,6 @@ namespace {
         public static function setTrustedHosts($hostPatterns){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::setTrustedHosts($hostPatterns);
-        }
-        
-        /**
-         * Gets the list of trusted host patterns.
-         *
-         * @return array An array of trusted host patterns.
-         * @static 
-         */
-        public static function getTrustedHosts(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getTrustedHosts();
         }
         
         /**
@@ -6018,21 +6696,6 @@ namespace {
         }
         
         /**
-         * Normalizes a query string.
-         * 
-         * It builds a normalized query string, where keys/value pairs are alphabetized,
-         * have consistent escaping and unneeded delimiters are removed.
-         *
-         * @param string $qs Query string
-         * @return string A normalized query string for the Request
-         * @static 
-         */
-        public static function normalizeQueryString($qs){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::normalizeQueryString($qs);
-        }
-        
-        /**
          * Enables support for the _method request parameter to determine the intended HTTP method.
          * 
          * Be warned that enabling this feature might lead to CSRF issues in your code.
@@ -6062,6 +6725,24 @@ namespace {
         }
         
         /**
+         * Clones a request and overrides some of its parameters.
+         *
+         * @param array $query The GET parameters
+         * @param array $request The POST parameters
+         * @param array $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
+         * @param array $cookies The COOKIE parameters
+         * @param array $files The FILES parameters
+         * @param array $server The SERVER parameters
+         * @return \Symfony\Component\HttpFoundation\Request The duplicated request
+         * @api 
+         * @static 
+         */
+        public static function duplicate($query = null, $request = null, $attributes = null, $cookies = null, $files = null, $server = null){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::duplicate($query, $request, $attributes, $cookies, $files, $server);
+        }
+        
+        /**
          * Gets a "parameter" value.
          * 
          * This method is mainly useful for libraries that want to provide some flexibility.
@@ -6088,6 +6769,213 @@ namespace {
         }
         
         /**
+         * Gets the request format.
+         * 
+         * Here is the process to determine the format:
+         * 
+         *  * format defined by the user (with setRequestFormat())
+         *  * _format request parameter
+         *  * $default
+         *
+         * @param string $default The default format
+         * @return string The request format
+         * @api 
+         * @static 
+         */
+        public static function getRequestFormat($default = 'html'){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getRequestFormat($default);
+        }
+        
+        /**
+         * Sets the request format.
+         *
+         * @param string $format The request format.
+         * @api 
+         * @static 
+         */
+        public static function setRequestFormat($format){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::setRequestFormat($format);
+        }
+        
+        /**
+         * Gets the request "intended" method.
+         * 
+         * If the X-HTTP-Method-Override header is set, and if the method is a POST,
+         * then it is used to determine the "real" intended HTTP method.
+         * 
+         * The _method request parameter can also be used to determine the HTTP method,
+         * but only if enableHttpMethodParameterOverride() has been called.
+         * 
+         * The method is always an uppercased string.
+         *
+         * @return string The request method
+         * @api 
+         * @see getRealMethod()
+         * @static 
+         */
+        public static function getMethod(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getMethod();
+        }
+        
+        /**
+         * Sets the request method.
+         *
+         * @param string $method
+         * @api 
+         * @static 
+         */
+        public static function setMethod($method){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::setMethod($method);
+        }
+        
+        /**
+         * Returns the requested URI (path and query string).
+         *
+         * @return string The raw URI (i.e. not URI decoded)
+         * @api 
+         * @static 
+         */
+        public static function getRequestUri(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getRequestUri();
+        }
+        
+        /**
+         * Gets the scheme and HTTP host.
+         * 
+         * If the URL was called with basic authentication, the user
+         * and the password are not added to the generated string.
+         *
+         * @return string The scheme and HTTP host
+         * @static 
+         */
+        public static function getSchemeAndHttpHost(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getSchemeAndHttpHost();
+        }
+        
+        /**
+         * Gets the request's scheme.
+         *
+         * @return string 
+         * @api 
+         * @static 
+         */
+        public static function getScheme(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getScheme();
+        }
+        
+        /**
+         * Checks whether the request is secure or not.
+         * 
+         * This method can read the client port from the "X-Forwarded-Proto" header
+         * when trusted proxies were set via "setTrustedProxies()".
+         * 
+         * The "X-Forwarded-Proto" header must contain the protocol: "https" or "http".
+         * 
+         * If your reverse proxy uses a different header name than "X-Forwarded-Proto"
+         * ("SSL_HTTPS" for instance), configure it via "setTrustedHeaderName()" with
+         * the "client-proto" key.
+         *
+         * @return bool 
+         * @api 
+         * @static 
+         */
+        public static function isSecure(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::isSecure();
+        }
+        
+        /**
+         * Returns the HTTP host being requested.
+         * 
+         * The port name will be appended to the host if it's non-standard.
+         *
+         * @return string 
+         * @api 
+         * @static 
+         */
+        public static function getHttpHost(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getHttpHost();
+        }
+        
+        /**
+         * Returns the port on which the request is made.
+         * 
+         * This method can read the client port from the "X-Forwarded-Port" header
+         * when trusted proxies were set via "setTrustedProxies()".
+         * 
+         * The "X-Forwarded-Port" header must contain the client port.
+         * 
+         * If your reverse proxy uses a different header name than "X-Forwarded-Port",
+         * configure it via "setTrustedHeaderName()" with the "client-port" key.
+         *
+         * @return string 
+         * @api 
+         * @static 
+         */
+        public static function getPort(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getPort();
+        }
+        
+        /**
+         * Returns the host name.
+         * 
+         * This method can read the client port from the "X-Forwarded-Host" header
+         * when trusted proxies were set via "setTrustedProxies()".
+         * 
+         * The "X-Forwarded-Host" header must contain the client host name.
+         * 
+         * If your reverse proxy uses a different header name than "X-Forwarded-Host",
+         * configure it via "setTrustedHeaderName()" with the "client-host" key.
+         *
+         * @return string 
+         * @throws \UnexpectedValueException when the host name is invalid
+         * @api 
+         * @static 
+         */
+        public static function getHost(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getHost();
+        }
+        
+        /**
+         * Overrides the PHP global variables according to this request instance.
+         * 
+         * It overrides $_GET, $_POST, $_REQUEST, $_SERVER, $_COOKIE.
+         * $_FILES is never overridden, see rfc1867
+         *
+         * @api 
+         * @static 
+         */
+        public static function overrideGlobals(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::overrideGlobals();
+        }
+        
+        /**
+         * Normalizes a query string.
+         * 
+         * It builds a normalized query string, where keys/value pairs are alphabetized,
+         * have consistent escaping and unneeded delimiters are removed.
+         *
+         * @param string $qs Query string
+         * @return string A normalized query string for the Request
+         * @static 
+         */
+        public static function normalizeQueryString($qs){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::normalizeQueryString($qs);
+        }
+        
+        /**
          * Gets the Session.
          *
          * @return \Symfony\Component\HttpFoundation\SessionInterface|null The session
@@ -6097,6 +6985,18 @@ namespace {
         public static function getSession(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::getSession();
+        }
+        
+        /**
+         * Sets the Session.
+         *
+         * @param \Symfony\Component\HttpFoundation\SessionInterface $session The Session
+         * @api 
+         * @static 
+         */
+        public static function setSession($session){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::setSession($session);
         }
         
         /**
@@ -6129,36 +7029,6 @@ namespace {
         }
         
         /**
-         * Sets the Session.
-         *
-         * @param \Symfony\Component\HttpFoundation\SessionInterface $session The Session
-         * @api 
-         * @static 
-         */
-        public static function setSession($session){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::setSession($session);
-        }
-        
-        /**
-         * Returns the client IP addresses.
-         * 
-         * In the returned array the most trusted IP address is first, and the
-         * least trusted one last. The "real" client IP address is the last one,
-         * but this is also the least trusted one. Trusted proxies are stripped.
-         * 
-         * Use this method carefully; you should use getClientIp() instead.
-         *
-         * @return array The client IP addresses
-         * @see getClientIp()
-         * @static 
-         */
-        public static function getClientIps(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getClientIps();
-        }
-        
-        /**
          * Returns the client IP address.
          * 
          * This method can read the client IP address from the "X-Forwarded-For" header
@@ -6183,6 +7053,24 @@ namespace {
         }
         
         /**
+         * Returns the client IP addresses.
+         * 
+         * In the returned array the most trusted IP address is first, and the
+         * least trusted one last. The "real" client IP address is the last one,
+         * but this is also the least trusted one. Trusted proxies are stripped.
+         * 
+         * Use this method carefully; you should use getClientIp() instead.
+         *
+         * @return array The client IP addresses
+         * @see getClientIp()
+         * @static 
+         */
+        public static function getClientIps(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getClientIps();
+        }
+        
+        /**
          * Returns current script name.
          *
          * @return string 
@@ -6192,27 +7080,6 @@ namespace {
         public static function getScriptName(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::getScriptName();
-        }
-        
-        /**
-         * Returns the path being requested relative to the executed script.
-         * 
-         * The path info always starts with a /.
-         * 
-         * Suppose this request is instantiated from /mysite on localhost:
-         * 
-         *  * http://localhost/mysite              returns an empty string
-         *  * http://localhost/mysite/about        returns '/about'
-         *  * http://localhost/mysite/enco%20ded   returns '/enco%20ded'
-         *  * http://localhost/mysite/about?var=1  returns '/about'
-         *
-         * @return string The raw path (i.e. not urldecoded)
-         * @api 
-         * @static 
-         */
-        public static function getPathInfo(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getPathInfo();
         }
         
         /**
@@ -6252,35 +7119,14 @@ namespace {
         }
         
         /**
-         * Gets the request's scheme.
+         * Gets the user info.
          *
-         * @return string 
-         * @api 
+         * @return string A user name and, optionally, scheme-specific information about how to gain authorization to access the server
          * @static 
          */
-        public static function getScheme(){
+        public static function getUserInfo(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getScheme();
-        }
-        
-        /**
-         * Returns the port on which the request is made.
-         * 
-         * This method can read the client port from the "X-Forwarded-Port" header
-         * when trusted proxies were set via "setTrustedProxies()".
-         * 
-         * The "X-Forwarded-Port" header must contain the client port.
-         * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-Port",
-         * configure it via "setTrustedHeaderName()" with the "client-port" key.
-         *
-         * @return string 
-         * @api 
-         * @static 
-         */
-        public static function getPort(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getPort();
+            return \Illuminate\Http\Request::getUserInfo();
         }
         
         /**
@@ -6306,57 +7152,6 @@ namespace {
         }
         
         /**
-         * Gets the user info.
-         *
-         * @return string A user name and, optionally, scheme-specific information about how to gain authorization to access the server
-         * @static 
-         */
-        public static function getUserInfo(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getUserInfo();
-        }
-        
-        /**
-         * Returns the HTTP host being requested.
-         * 
-         * The port name will be appended to the host if it's non-standard.
-         *
-         * @return string 
-         * @api 
-         * @static 
-         */
-        public static function getHttpHost(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getHttpHost();
-        }
-        
-        /**
-         * Returns the requested URI (path and query string).
-         *
-         * @return string The raw URI (i.e. not URI decoded)
-         * @api 
-         * @static 
-         */
-        public static function getRequestUri(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getRequestUri();
-        }
-        
-        /**
-         * Gets the scheme and HTTP host.
-         * 
-         * If the URL was called with basic authentication, the user
-         * and the password are not added to the generated string.
-         *
-         * @return string The scheme and HTTP host
-         * @static 
-         */
-        public static function getSchemeAndHttpHost(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getSchemeAndHttpHost();
-        }
-        
-        /**
          * Generates a normalized URI (URL) for the Request.
          *
          * @return string A normalized URI (URL) for the Request
@@ -6367,19 +7162,6 @@ namespace {
         public static function getUri(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::getUri();
-        }
-        
-        /**
-         * Generates a normalized URI for the given path.
-         *
-         * @param string $path A path to use instead of the current one
-         * @return string The normalized URI for the path
-         * @api 
-         * @static 
-         */
-        public static function getUriForPath($path){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getUriForPath($path);
         }
         
         /**
@@ -6398,78 +7180,37 @@ namespace {
         }
         
         /**
-         * Checks whether the request is secure or not.
+         * Returns the path being requested relative to the executed script.
          * 
-         * This method can read the client port from the "X-Forwarded-Proto" header
-         * when trusted proxies were set via "setTrustedProxies()".
+         * The path info always starts with a /.
          * 
-         * The "X-Forwarded-Proto" header must contain the protocol: "https" or "http".
+         * Suppose this request is instantiated from /mysite on localhost:
          * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-Proto"
-         * ("SSL_HTTPS" for instance), configure it via "setTrustedHeaderName()" with
-         * the "client-proto" key.
+         *  * http://localhost/mysite              returns an empty string
+         *  * http://localhost/mysite/about        returns '/about'
+         *  * http://localhost/mysite/enco%20ded   returns '/enco%20ded'
+         *  * http://localhost/mysite/about?var=1  returns '/about'
          *
-         * @return bool 
+         * @return string The raw path (i.e. not urldecoded)
          * @api 
          * @static 
          */
-        public static function isSecure(){
+        public static function getPathInfo(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::isSecure();
+            return \Illuminate\Http\Request::getPathInfo();
         }
         
         /**
-         * Returns the host name.
-         * 
-         * This method can read the client port from the "X-Forwarded-Host" header
-         * when trusted proxies were set via "setTrustedProxies()".
-         * 
-         * The "X-Forwarded-Host" header must contain the client host name.
-         * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-Host",
-         * configure it via "setTrustedHeaderName()" with the "client-host" key.
+         * Generates a normalized URI for the given path.
          *
-         * @return string 
-         * @throws \UnexpectedValueException when the host name is invalid
+         * @param string $path A path to use instead of the current one
+         * @return string The normalized URI for the path
          * @api 
          * @static 
          */
-        public static function getHost(){
+        public static function getUriForPath($path){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getHost();
-        }
-        
-        /**
-         * Sets the request method.
-         *
-         * @param string $method
-         * @api 
-         * @static 
-         */
-        public static function setMethod($method){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::setMethod($method);
-        }
-        
-        /**
-         * Gets the request "intended" method.
-         * 
-         * If the X-HTTP-Method-Override header is set, and if the method is a POST,
-         * then it is used to determine the "real" intended HTTP method.
-         * 
-         * The _method request parameter can also be used to determine the HTTP method,
-         * but only if enableHttpMethodParameterOverride() has been called.
-         * 
-         * The method is always an uppercased string.
-         *
-         * @return string The request method
-         * @api 
-         * @see getRealMethod()
-         * @static 
-         */
-        public static function getMethod(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getMethod();
+            return \Illuminate\Http\Request::getUriForPath($path);
         }
         
         /**
@@ -6495,6 +7236,18 @@ namespace {
         public static function getMimeType($format){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::getMimeType($format);
+        }
+        
+        /**
+         * Gets the format associated with the request.
+         *
+         * @return string|null The format (null if no content type is present)
+         * @api 
+         * @static 
+         */
+        public static function getContentType(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getContentType();
         }
         
         /**
@@ -6524,46 +7277,14 @@ namespace {
         }
         
         /**
-         * Gets the request format.
-         * 
-         * Here is the process to determine the format:
-         * 
-         *  * format defined by the user (with setRequestFormat())
-         *  * _format request parameter
-         *  * $default
+         * Get the default locale.
          *
-         * @param string $default The default format
-         * @return string The request format
-         * @api 
+         * @return string 
          * @static 
          */
-        public static function getRequestFormat($default = 'html'){
+        public static function getDefaultLocale(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getRequestFormat($default);
-        }
-        
-        /**
-         * Sets the request format.
-         *
-         * @param string $format The request format.
-         * @api 
-         * @static 
-         */
-        public static function setRequestFormat($format){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::setRequestFormat($format);
-        }
-        
-        /**
-         * Gets the format associated with the request.
-         *
-         * @return string|null The format (null if no content type is present)
-         * @api 
-         * @static 
-         */
-        public static function getContentType(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getContentType();
+            return \Illuminate\Http\Request::getDefaultLocale();
         }
         
         /**
@@ -6579,14 +7300,14 @@ namespace {
         }
         
         /**
-         * Get the default locale.
+         * Get the locale.
          *
          * @return string 
          * @static 
          */
-        public static function getDefaultLocale(){
+        public static function getLocale(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getDefaultLocale();
+            return \Illuminate\Http\Request::getLocale();
         }
         
         /**
@@ -6599,17 +7320,6 @@ namespace {
         public static function setLocale($locale){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::setLocale($locale);
-        }
-        
-        /**
-         * Get the locale.
-         *
-         * @return string 
-         * @static 
-         */
-        public static function getLocale(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getLocale();
         }
         
         /**
@@ -6634,19 +7344,6 @@ namespace {
         public static function isMethodSafe(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::isMethodSafe();
-        }
-        
-        /**
-         * Returns the request body content.
-         *
-         * @param bool $asResource If true, a resource will be returned
-         * @return string|resource The request body content or a resource to read the body stream.
-         * @throws \LogicException
-         * @static 
-         */
-        public static function getContent($asResource = false){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getContent($asResource);
         }
         
         /**
@@ -7544,6 +8241,71 @@ namespace {
     }
 
 
+    class Password extends \Illuminate\Support\Facades\Password{
+        
+        /**
+         * Send a password reminder to a user.
+         *
+         * @param array $credentials
+         * @param \Closure $callback
+         * @return string 
+         * @static 
+         */
+        public static function remind($credentials, $callback = null){
+            return \Illuminate\Auth\Reminders\PasswordBroker::remind($credentials, $callback);
+        }
+        
+        /**
+         * Send the password reminder e-mail.
+         *
+         * @param \Illuminate\Auth\Reminders\RemindableInterface $user
+         * @param string $token
+         * @param \Closure $callback
+         * @return int 
+         * @static 
+         */
+        public static function sendReminder($user, $token, $callback = null){
+            return \Illuminate\Auth\Reminders\PasswordBroker::sendReminder($user, $token, $callback);
+        }
+        
+        /**
+         * Reset the password for the given token.
+         *
+         * @param array $credentials
+         * @param \Closure $callback
+         * @return mixed 
+         * @static 
+         */
+        public static function reset($credentials, $callback){
+            return \Illuminate\Auth\Reminders\PasswordBroker::reset($credentials, $callback);
+        }
+        
+        /**
+         * Set a custom password validator.
+         *
+         * @param \Closure $callback
+         * @return void 
+         * @static 
+         */
+        public static function validator($callback){
+            \Illuminate\Auth\Reminders\PasswordBroker::validator($callback);
+        }
+        
+        /**
+         * Get the user for the given credentials.
+         *
+         * @param array $credentials
+         * @return \Illuminate\Auth\Reminders\RemindableInterface 
+         * @throws \UnexpectedValueException
+         * @static 
+         */
+        public static function getUser($credentials){
+            return \Illuminate\Auth\Reminders\PasswordBroker::getUser($credentials);
+        }
+        
+    }
+
+
     class Queue extends \Illuminate\Support\Facades\Queue{
         
         /**
@@ -7668,6 +8430,20 @@ namespace {
         }
         
         /**
+         * Push a new job onto the queue after a delay.
+         *
+         * @param \DateTime|int $delay
+         * @param string $job
+         * @param mixed $data
+         * @param string|null $queue
+         * @return int 
+         * @static 
+         */
+        public static function later($delay, $job, $data = '', $queue = null){
+            return \Barryvdh\Queue\AsyncQueue::later($delay, $job, $data, $queue);
+        }
+        
+        /**
          * Push a new job onto the queue.
          *
          * @param string $job
@@ -7705,20 +8481,6 @@ namespace {
          */
         public static function startProcess($jobId, $delay = 0){
             \Barryvdh\Queue\AsyncQueue::startProcess($jobId, $delay);
-        }
-        
-        /**
-         * Push a new job onto the queue after a delay.
-         *
-         * @param \DateTime|int $delay
-         * @param string $job
-         * @param mixed $data
-         * @param string|null $queue
-         * @return int 
-         * @static 
-         */
-        public static function later($delay, $job, $data = '', $queue = null){
-            return \Barryvdh\Queue\AsyncQueue::later($delay, $job, $data, $queue);
         }
         
         /**
@@ -7998,6 +8760,17 @@ namespace {
     class Request extends \Illuminate\Support\Facades\Request{
         
         /**
+         * Create an Illuminate request from a Symfony instance.
+         *
+         * @param \Symfony\Component\HttpFoundation\Request $request
+         * @return \Illuminate\Http\Request 
+         * @static 
+         */
+        public static function createFromBase($request){
+            return \Illuminate\Http\Request::createFromBase($request);
+        }
+        
+        /**
          * Return the Request instance.
          *
          * @return $this 
@@ -8028,16 +8801,6 @@ namespace {
         }
         
         /**
-         * Get the URL (no query string) for the request.
-         *
-         * @return string 
-         * @static 
-         */
-        public static function url(){
-            return \Illuminate\Http\Request::url();
-        }
-        
-        /**
          * Get the full URL for the request.
          *
          * @return string 
@@ -8048,13 +8811,13 @@ namespace {
         }
         
         /**
-         * Get the current path info for the request.
+         * Get the URL (no query string) for the request.
          *
          * @return string 
          * @static 
          */
-        public static function path(){
-            return \Illuminate\Http\Request::path();
+        public static function url(){
+            return \Illuminate\Http\Request::url();
         }
         
         /**
@@ -8065,6 +8828,16 @@ namespace {
          */
         public static function decodedPath(){
             return \Illuminate\Http\Request::decodedPath();
+        }
+        
+        /**
+         * Get the current path info for the request.
+         *
+         * @return string 
+         * @static 
+         */
+        public static function path(){
+            return \Illuminate\Http\Request::path();
         }
         
         /**
@@ -8152,17 +8925,6 @@ namespace {
         }
         
         /**
-         * Determine if the request contains a non-empty value for an input item.
-         *
-         * @param string|array $key
-         * @return bool 
-         * @static 
-         */
-        public static function has($key){
-            return \Illuminate\Http\Request::has($key);
-        }
-        
-        /**
          * Get all of the input and files for the request.
          *
          * @return array 
@@ -8182,6 +8944,51 @@ namespace {
          */
         public static function input($key = null, $default = null){
             return \Illuminate\Http\Request::input($key, $default);
+        }
+        
+        /**
+         * Determine if the request is sending JSON.
+         *
+         * @return bool 
+         * @static 
+         */
+        public static function isJson(){
+            return \Illuminate\Http\Request::isJson();
+        }
+        
+        /**
+         * Retrieve a header from the request.
+         *
+         * @param string $key
+         * @param mixed $default
+         * @return string 
+         * @static 
+         */
+        public static function header($key = null, $default = null){
+            return \Illuminate\Http\Request::header($key, $default);
+        }
+        
+        /**
+         * Get the JSON payload for the request.
+         *
+         * @param string $key
+         * @param mixed $default
+         * @return mixed 
+         * @static 
+         */
+        public static function json($key = null, $default = null){
+            return \Illuminate\Http\Request::json($key, $default);
+        }
+        
+        /**
+         * Determine if the request contains a non-empty value for an input item.
+         *
+         * @param string|array $key
+         * @return bool 
+         * @static 
+         */
+        public static function has($key){
+            return \Illuminate\Http\Request::has($key);
         }
         
         /**
@@ -8211,8 +9018,7 @@ namespace {
          *
          * @param string $key
          * @param mixed $default
-         *
-         * @return string|array
+         * @return string|array 
          * @static 
          */
         public static function query($key = null, $default = null){
@@ -8243,18 +9049,6 @@ namespace {
         }
         
         /**
-         * Retrieve a file from the request.
-         *
-         * @param string $key
-         * @param mixed $default
-         * @return \Symfony\Component\HttpFoundation\File\UploadedFile|array 
-         * @static 
-         */
-        public static function file($key = null, $default = null){
-            return \Illuminate\Http\Request::file($key, $default);
-        }
-        
-        /**
          * Determine if the uploaded data contains a file.
          *
          * @param string $key
@@ -8266,15 +9060,15 @@ namespace {
         }
         
         /**
-         * Retrieve a header from the request.
+         * Retrieve a file from the request.
          *
          * @param string $key
          * @param mixed $default
-         * @return string 
+         * @return \Symfony\Component\HttpFoundation\File\UploadedFile|array 
          * @static 
          */
-        public static function header($key = null, $default = null){
-            return \Illuminate\Http\Request::header($key, $default);
+        public static function file($key = null, $default = null){
+            return \Illuminate\Http\Request::file($key, $default);
         }
         
         /**
@@ -8302,15 +9096,14 @@ namespace {
         }
         
         /**
-         * Flash the input for the current request to the session.
+         * Get the session associated with the request.
          *
-         * @param string $filter
-         * @param array $keys
-         * @return void 
+         * @return \Illuminate\Session\Store 
+         * @throws \RuntimeException
          * @static 
          */
-        public static function flash($filter = null, $keys = array()){
-            \Illuminate\Http\Request::flash($filter, $keys);
+        public static function session(){
+            return \Illuminate\Http\Request::session();
         }
         
         /**
@@ -8322,6 +9115,18 @@ namespace {
          */
         public static function flashOnly($keys){
             \Illuminate\Http\Request::flashOnly($keys);
+        }
+        
+        /**
+         * Flash the input for the current request to the session.
+         *
+         * @param string $filter
+         * @param array $keys
+         * @return void 
+         * @static 
+         */
+        public static function flash($filter = null, $keys = array()){
+            \Illuminate\Http\Request::flash($filter, $keys);
         }
         
         /**
@@ -8368,28 +9173,6 @@ namespace {
         }
         
         /**
-         * Get the JSON payload for the request.
-         *
-         * @param string $key
-         * @param mixed $default
-         * @return mixed 
-         * @static 
-         */
-        public static function json($key = null, $default = null){
-            return \Illuminate\Http\Request::json($key, $default);
-        }
-        
-        /**
-         * Determine if the request is sending JSON.
-         *
-         * @return bool 
-         * @static 
-         */
-        public static function isJson(){
-            return \Illuminate\Http\Request::isJson();
-        }
-        
-        /**
          * Determine if the current request is asking for JSON in return.
          *
          * @return bool 
@@ -8408,28 +9191,6 @@ namespace {
          */
         public static function format($default = 'html'){
             return \Illuminate\Http\Request::format($default);
-        }
-        
-        /**
-         * Create an Illuminate request from a Symfony instance.
-         *
-         * @param \Symfony\Component\HttpFoundation\Request $request
-         * @return \Illuminate\Http\Request 
-         * @static 
-         */
-        public static function createFromBase($request){
-            return \Illuminate\Http\Request::createFromBase($request);
-        }
-        
-        /**
-         * Get the session associated with the request.
-         *
-         * @return \Illuminate\Session\Store 
-         * @throws \RuntimeException
-         * @static 
-         */
-        public static function session(){
-            return \Illuminate\Http\Request::session();
         }
         
         /**
@@ -8462,6 +9223,19 @@ namespace {
         public static function createFromGlobals(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::createFromGlobals();
+        }
+        
+        /**
+         * Returns the request body content.
+         *
+         * @param bool $asResource If true, a resource will be returned
+         * @return string|resource The request body content or a resource to read the body stream.
+         * @throws \LogicException
+         * @static 
+         */
+        public static function getContent($asResource = false){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getContent($asResource);
         }
         
         /**
@@ -8502,35 +9276,14 @@ namespace {
         }
         
         /**
-         * Clones a request and overrides some of its parameters.
+         * Gets the list of trusted proxies.
          *
-         * @param array $query The GET parameters
-         * @param array $request The POST parameters
-         * @param array $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
-         * @param array $cookies The COOKIE parameters
-         * @param array $files The FILES parameters
-         * @param array $server The SERVER parameters
-         * @return \Symfony\Component\HttpFoundation\Request The duplicated request
-         * @api 
+         * @return array An array of trusted proxies.
          * @static 
          */
-        public static function duplicate($query = null, $request = null, $attributes = null, $cookies = null, $files = null, $server = null){
+        public static function getTrustedProxies(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::duplicate($query, $request, $attributes, $cookies, $files, $server);
-        }
-        
-        /**
-         * Overrides the PHP global variables according to this request instance.
-         * 
-         * It overrides $_GET, $_POST, $_REQUEST, $_SERVER, $_COOKIE.
-         * $_FILES is never overridden, see rfc1867
-         *
-         * @api 
-         * @static 
-         */
-        public static function overrideGlobals(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::overrideGlobals();
+            return \Illuminate\Http\Request::getTrustedProxies();
         }
         
         /**
@@ -8548,14 +9301,14 @@ namespace {
         }
         
         /**
-         * Gets the list of trusted proxies.
+         * Gets the list of trusted host patterns.
          *
-         * @return array An array of trusted proxies.
+         * @return array An array of trusted host patterns.
          * @static 
          */
-        public static function getTrustedProxies(){
+        public static function getTrustedHosts(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getTrustedProxies();
+            return \Illuminate\Http\Request::getTrustedHosts();
         }
         
         /**
@@ -8569,17 +9322,6 @@ namespace {
         public static function setTrustedHosts($hostPatterns){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::setTrustedHosts($hostPatterns);
-        }
-        
-        /**
-         * Gets the list of trusted host patterns.
-         *
-         * @return array An array of trusted host patterns.
-         * @static 
-         */
-        public static function getTrustedHosts(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getTrustedHosts();
         }
         
         /**
@@ -8618,21 +9360,6 @@ namespace {
         }
         
         /**
-         * Normalizes a query string.
-         * 
-         * It builds a normalized query string, where keys/value pairs are alphabetized,
-         * have consistent escaping and unneeded delimiters are removed.
-         *
-         * @param string $qs Query string
-         * @return string A normalized query string for the Request
-         * @static 
-         */
-        public static function normalizeQueryString($qs){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::normalizeQueryString($qs);
-        }
-        
-        /**
          * Enables support for the _method request parameter to determine the intended HTTP method.
          * 
          * Be warned that enabling this feature might lead to CSRF issues in your code.
@@ -8662,6 +9389,24 @@ namespace {
         }
         
         /**
+         * Clones a request and overrides some of its parameters.
+         *
+         * @param array $query The GET parameters
+         * @param array $request The POST parameters
+         * @param array $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
+         * @param array $cookies The COOKIE parameters
+         * @param array $files The FILES parameters
+         * @param array $server The SERVER parameters
+         * @return \Symfony\Component\HttpFoundation\Request The duplicated request
+         * @api 
+         * @static 
+         */
+        public static function duplicate($query = null, $request = null, $attributes = null, $cookies = null, $files = null, $server = null){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::duplicate($query, $request, $attributes, $cookies, $files, $server);
+        }
+        
+        /**
          * Gets a "parameter" value.
          * 
          * This method is mainly useful for libraries that want to provide some flexibility.
@@ -8688,6 +9433,213 @@ namespace {
         }
         
         /**
+         * Gets the request format.
+         * 
+         * Here is the process to determine the format:
+         * 
+         *  * format defined by the user (with setRequestFormat())
+         *  * _format request parameter
+         *  * $default
+         *
+         * @param string $default The default format
+         * @return string The request format
+         * @api 
+         * @static 
+         */
+        public static function getRequestFormat($default = 'html'){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getRequestFormat($default);
+        }
+        
+        /**
+         * Sets the request format.
+         *
+         * @param string $format The request format.
+         * @api 
+         * @static 
+         */
+        public static function setRequestFormat($format){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::setRequestFormat($format);
+        }
+        
+        /**
+         * Gets the request "intended" method.
+         * 
+         * If the X-HTTP-Method-Override header is set, and if the method is a POST,
+         * then it is used to determine the "real" intended HTTP method.
+         * 
+         * The _method request parameter can also be used to determine the HTTP method,
+         * but only if enableHttpMethodParameterOverride() has been called.
+         * 
+         * The method is always an uppercased string.
+         *
+         * @return string The request method
+         * @api 
+         * @see getRealMethod()
+         * @static 
+         */
+        public static function getMethod(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getMethod();
+        }
+        
+        /**
+         * Sets the request method.
+         *
+         * @param string $method
+         * @api 
+         * @static 
+         */
+        public static function setMethod($method){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::setMethod($method);
+        }
+        
+        /**
+         * Returns the requested URI (path and query string).
+         *
+         * @return string The raw URI (i.e. not URI decoded)
+         * @api 
+         * @static 
+         */
+        public static function getRequestUri(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getRequestUri();
+        }
+        
+        /**
+         * Gets the scheme and HTTP host.
+         * 
+         * If the URL was called with basic authentication, the user
+         * and the password are not added to the generated string.
+         *
+         * @return string The scheme and HTTP host
+         * @static 
+         */
+        public static function getSchemeAndHttpHost(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getSchemeAndHttpHost();
+        }
+        
+        /**
+         * Gets the request's scheme.
+         *
+         * @return string 
+         * @api 
+         * @static 
+         */
+        public static function getScheme(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getScheme();
+        }
+        
+        /**
+         * Checks whether the request is secure or not.
+         * 
+         * This method can read the client port from the "X-Forwarded-Proto" header
+         * when trusted proxies were set via "setTrustedProxies()".
+         * 
+         * The "X-Forwarded-Proto" header must contain the protocol: "https" or "http".
+         * 
+         * If your reverse proxy uses a different header name than "X-Forwarded-Proto"
+         * ("SSL_HTTPS" for instance), configure it via "setTrustedHeaderName()" with
+         * the "client-proto" key.
+         *
+         * @return bool 
+         * @api 
+         * @static 
+         */
+        public static function isSecure(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::isSecure();
+        }
+        
+        /**
+         * Returns the HTTP host being requested.
+         * 
+         * The port name will be appended to the host if it's non-standard.
+         *
+         * @return string 
+         * @api 
+         * @static 
+         */
+        public static function getHttpHost(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getHttpHost();
+        }
+        
+        /**
+         * Returns the port on which the request is made.
+         * 
+         * This method can read the client port from the "X-Forwarded-Port" header
+         * when trusted proxies were set via "setTrustedProxies()".
+         * 
+         * The "X-Forwarded-Port" header must contain the client port.
+         * 
+         * If your reverse proxy uses a different header name than "X-Forwarded-Port",
+         * configure it via "setTrustedHeaderName()" with the "client-port" key.
+         *
+         * @return string 
+         * @api 
+         * @static 
+         */
+        public static function getPort(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getPort();
+        }
+        
+        /**
+         * Returns the host name.
+         * 
+         * This method can read the client port from the "X-Forwarded-Host" header
+         * when trusted proxies were set via "setTrustedProxies()".
+         * 
+         * The "X-Forwarded-Host" header must contain the client host name.
+         * 
+         * If your reverse proxy uses a different header name than "X-Forwarded-Host",
+         * configure it via "setTrustedHeaderName()" with the "client-host" key.
+         *
+         * @return string 
+         * @throws \UnexpectedValueException when the host name is invalid
+         * @api 
+         * @static 
+         */
+        public static function getHost(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getHost();
+        }
+        
+        /**
+         * Overrides the PHP global variables according to this request instance.
+         * 
+         * It overrides $_GET, $_POST, $_REQUEST, $_SERVER, $_COOKIE.
+         * $_FILES is never overridden, see rfc1867
+         *
+         * @api 
+         * @static 
+         */
+        public static function overrideGlobals(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::overrideGlobals();
+        }
+        
+        /**
+         * Normalizes a query string.
+         * 
+         * It builds a normalized query string, where keys/value pairs are alphabetized,
+         * have consistent escaping and unneeded delimiters are removed.
+         *
+         * @param string $qs Query string
+         * @return string A normalized query string for the Request
+         * @static 
+         */
+        public static function normalizeQueryString($qs){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::normalizeQueryString($qs);
+        }
+        
+        /**
          * Gets the Session.
          *
          * @return \Symfony\Component\HttpFoundation\SessionInterface|null The session
@@ -8697,6 +9649,18 @@ namespace {
         public static function getSession(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::getSession();
+        }
+        
+        /**
+         * Sets the Session.
+         *
+         * @param \Symfony\Component\HttpFoundation\SessionInterface $session The Session
+         * @api 
+         * @static 
+         */
+        public static function setSession($session){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::setSession($session);
         }
         
         /**
@@ -8729,36 +9693,6 @@ namespace {
         }
         
         /**
-         * Sets the Session.
-         *
-         * @param \Symfony\Component\HttpFoundation\SessionInterface $session The Session
-         * @api 
-         * @static 
-         */
-        public static function setSession($session){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::setSession($session);
-        }
-        
-        /**
-         * Returns the client IP addresses.
-         * 
-         * In the returned array the most trusted IP address is first, and the
-         * least trusted one last. The "real" client IP address is the last one,
-         * but this is also the least trusted one. Trusted proxies are stripped.
-         * 
-         * Use this method carefully; you should use getClientIp() instead.
-         *
-         * @return array The client IP addresses
-         * @see getClientIp()
-         * @static 
-         */
-        public static function getClientIps(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getClientIps();
-        }
-        
-        /**
          * Returns the client IP address.
          * 
          * This method can read the client IP address from the "X-Forwarded-For" header
@@ -8783,6 +9717,24 @@ namespace {
         }
         
         /**
+         * Returns the client IP addresses.
+         * 
+         * In the returned array the most trusted IP address is first, and the
+         * least trusted one last. The "real" client IP address is the last one,
+         * but this is also the least trusted one. Trusted proxies are stripped.
+         * 
+         * Use this method carefully; you should use getClientIp() instead.
+         *
+         * @return array The client IP addresses
+         * @see getClientIp()
+         * @static 
+         */
+        public static function getClientIps(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getClientIps();
+        }
+        
+        /**
          * Returns current script name.
          *
          * @return string 
@@ -8792,27 +9744,6 @@ namespace {
         public static function getScriptName(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::getScriptName();
-        }
-        
-        /**
-         * Returns the path being requested relative to the executed script.
-         * 
-         * The path info always starts with a /.
-         * 
-         * Suppose this request is instantiated from /mysite on localhost:
-         * 
-         *  * http://localhost/mysite              returns an empty string
-         *  * http://localhost/mysite/about        returns '/about'
-         *  * http://localhost/mysite/enco%20ded   returns '/enco%20ded'
-         *  * http://localhost/mysite/about?var=1  returns '/about'
-         *
-         * @return string The raw path (i.e. not urldecoded)
-         * @api 
-         * @static 
-         */
-        public static function getPathInfo(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getPathInfo();
         }
         
         /**
@@ -8852,35 +9783,14 @@ namespace {
         }
         
         /**
-         * Gets the request's scheme.
+         * Gets the user info.
          *
-         * @return string 
-         * @api 
+         * @return string A user name and, optionally, scheme-specific information about how to gain authorization to access the server
          * @static 
          */
-        public static function getScheme(){
+        public static function getUserInfo(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getScheme();
-        }
-        
-        /**
-         * Returns the port on which the request is made.
-         * 
-         * This method can read the client port from the "X-Forwarded-Port" header
-         * when trusted proxies were set via "setTrustedProxies()".
-         * 
-         * The "X-Forwarded-Port" header must contain the client port.
-         * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-Port",
-         * configure it via "setTrustedHeaderName()" with the "client-port" key.
-         *
-         * @return string 
-         * @api 
-         * @static 
-         */
-        public static function getPort(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getPort();
+            return \Illuminate\Http\Request::getUserInfo();
         }
         
         /**
@@ -8906,57 +9816,6 @@ namespace {
         }
         
         /**
-         * Gets the user info.
-         *
-         * @return string A user name and, optionally, scheme-specific information about how to gain authorization to access the server
-         * @static 
-         */
-        public static function getUserInfo(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getUserInfo();
-        }
-        
-        /**
-         * Returns the HTTP host being requested.
-         * 
-         * The port name will be appended to the host if it's non-standard.
-         *
-         * @return string 
-         * @api 
-         * @static 
-         */
-        public static function getHttpHost(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getHttpHost();
-        }
-        
-        /**
-         * Returns the requested URI (path and query string).
-         *
-         * @return string The raw URI (i.e. not URI decoded)
-         * @api 
-         * @static 
-         */
-        public static function getRequestUri(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getRequestUri();
-        }
-        
-        /**
-         * Gets the scheme and HTTP host.
-         * 
-         * If the URL was called with basic authentication, the user
-         * and the password are not added to the generated string.
-         *
-         * @return string The scheme and HTTP host
-         * @static 
-         */
-        public static function getSchemeAndHttpHost(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getSchemeAndHttpHost();
-        }
-        
-        /**
          * Generates a normalized URI (URL) for the Request.
          *
          * @return string A normalized URI (URL) for the Request
@@ -8967,19 +9826,6 @@ namespace {
         public static function getUri(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::getUri();
-        }
-        
-        /**
-         * Generates a normalized URI for the given path.
-         *
-         * @param string $path A path to use instead of the current one
-         * @return string The normalized URI for the path
-         * @api 
-         * @static 
-         */
-        public static function getUriForPath($path){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getUriForPath($path);
         }
         
         /**
@@ -8998,78 +9844,37 @@ namespace {
         }
         
         /**
-         * Checks whether the request is secure or not.
+         * Returns the path being requested relative to the executed script.
          * 
-         * This method can read the client port from the "X-Forwarded-Proto" header
-         * when trusted proxies were set via "setTrustedProxies()".
+         * The path info always starts with a /.
          * 
-         * The "X-Forwarded-Proto" header must contain the protocol: "https" or "http".
+         * Suppose this request is instantiated from /mysite on localhost:
          * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-Proto"
-         * ("SSL_HTTPS" for instance), configure it via "setTrustedHeaderName()" with
-         * the "client-proto" key.
+         *  * http://localhost/mysite              returns an empty string
+         *  * http://localhost/mysite/about        returns '/about'
+         *  * http://localhost/mysite/enco%20ded   returns '/enco%20ded'
+         *  * http://localhost/mysite/about?var=1  returns '/about'
          *
-         * @return bool 
+         * @return string The raw path (i.e. not urldecoded)
          * @api 
          * @static 
          */
-        public static function isSecure(){
+        public static function getPathInfo(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::isSecure();
+            return \Illuminate\Http\Request::getPathInfo();
         }
         
         /**
-         * Returns the host name.
-         * 
-         * This method can read the client port from the "X-Forwarded-Host" header
-         * when trusted proxies were set via "setTrustedProxies()".
-         * 
-         * The "X-Forwarded-Host" header must contain the client host name.
-         * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-Host",
-         * configure it via "setTrustedHeaderName()" with the "client-host" key.
+         * Generates a normalized URI for the given path.
          *
-         * @return string 
-         * @throws \UnexpectedValueException when the host name is invalid
+         * @param string $path A path to use instead of the current one
+         * @return string The normalized URI for the path
          * @api 
          * @static 
          */
-        public static function getHost(){
+        public static function getUriForPath($path){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getHost();
-        }
-        
-        /**
-         * Sets the request method.
-         *
-         * @param string $method
-         * @api 
-         * @static 
-         */
-        public static function setMethod($method){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::setMethod($method);
-        }
-        
-        /**
-         * Gets the request "intended" method.
-         * 
-         * If the X-HTTP-Method-Override header is set, and if the method is a POST,
-         * then it is used to determine the "real" intended HTTP method.
-         * 
-         * The _method request parameter can also be used to determine the HTTP method,
-         * but only if enableHttpMethodParameterOverride() has been called.
-         * 
-         * The method is always an uppercased string.
-         *
-         * @return string The request method
-         * @api 
-         * @see getRealMethod()
-         * @static 
-         */
-        public static function getMethod(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getMethod();
+            return \Illuminate\Http\Request::getUriForPath($path);
         }
         
         /**
@@ -9095,6 +9900,18 @@ namespace {
         public static function getMimeType($format){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::getMimeType($format);
+        }
+        
+        /**
+         * Gets the format associated with the request.
+         *
+         * @return string|null The format (null if no content type is present)
+         * @api 
+         * @static 
+         */
+        public static function getContentType(){
+            //Method inherited from \Symfony\Component\HttpFoundation\Request            
+            return \Illuminate\Http\Request::getContentType();
         }
         
         /**
@@ -9124,46 +9941,14 @@ namespace {
         }
         
         /**
-         * Gets the request format.
-         * 
-         * Here is the process to determine the format:
-         * 
-         *  * format defined by the user (with setRequestFormat())
-         *  * _format request parameter
-         *  * $default
+         * Get the default locale.
          *
-         * @param string $default The default format
-         * @return string The request format
-         * @api 
+         * @return string 
          * @static 
          */
-        public static function getRequestFormat($default = 'html'){
+        public static function getDefaultLocale(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getRequestFormat($default);
-        }
-        
-        /**
-         * Sets the request format.
-         *
-         * @param string $format The request format.
-         * @api 
-         * @static 
-         */
-        public static function setRequestFormat($format){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::setRequestFormat($format);
-        }
-        
-        /**
-         * Gets the format associated with the request.
-         *
-         * @return string|null The format (null if no content type is present)
-         * @api 
-         * @static 
-         */
-        public static function getContentType(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getContentType();
+            return \Illuminate\Http\Request::getDefaultLocale();
         }
         
         /**
@@ -9179,14 +9964,14 @@ namespace {
         }
         
         /**
-         * Get the default locale.
+         * Get the locale.
          *
          * @return string 
          * @static 
          */
-        public static function getDefaultLocale(){
+        public static function getLocale(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getDefaultLocale();
+            return \Illuminate\Http\Request::getLocale();
         }
         
         /**
@@ -9199,17 +9984,6 @@ namespace {
         public static function setLocale($locale){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::setLocale($locale);
-        }
-        
-        /**
-         * Get the locale.
-         *
-         * @return string 
-         * @static 
-         */
-        public static function getLocale(){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getLocale();
         }
         
         /**
@@ -9234,19 +10008,6 @@ namespace {
         public static function isMethodSafe(){
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::isMethodSafe();
-        }
-        
-        /**
-         * Returns the request body content.
-         *
-         * @param bool $asResource If true, a resource will be returned
-         * @return string|resource The request body content or a resource to read the body stream.
-         * @throws \LogicException
-         * @static 
-         */
-        public static function getContent($asResource = false){
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getContent($asResource);
         }
         
         /**
@@ -9962,6 +10723,135 @@ namespace {
          */
         public static function handle($request, $type = 1, $catch = true){
             return \Illuminate\Routing\Router::handle($request, $type, $catch);
+        }
+        
+    }
+
+
+    class Schema extends \Illuminate\Support\Facades\Schema{
+        
+        /**
+         * Determine if the given table exists.
+         *
+         * @param string $table
+         * @return bool 
+         * @static 
+         */
+        public static function hasTable($table){
+            return \Illuminate\Database\Schema\Builder::hasTable($table);
+        }
+        
+        /**
+         * Determine if the given table has a given column.
+         *
+         * @param string $table
+         * @param string $column
+         * @return bool 
+         * @static 
+         */
+        public static function hasColumn($table, $column){
+            return \Illuminate\Database\Schema\Builder::hasColumn($table, $column);
+        }
+        
+        /**
+         * Get the column listing for a given table.
+         *
+         * @param string $table
+         * @return array 
+         * @static 
+         */
+        public static function getColumnListing($table){
+            return \Illuminate\Database\Schema\Builder::getColumnListing($table);
+        }
+        
+        /**
+         * Modify a table on the schema.
+         *
+         * @param string $table
+         * @param \Closure $callback
+         * @return \Illuminate\Database\Schema\Blueprint 
+         * @static 
+         */
+        public static function table($table, $callback){
+            return \Illuminate\Database\Schema\Builder::table($table, $callback);
+        }
+        
+        /**
+         * Create a new table on the schema.
+         *
+         * @param string $table
+         * @param \Closure $callback
+         * @return \Illuminate\Database\Schema\Blueprint 
+         * @static 
+         */
+        public static function create($table, $callback){
+            return \Illuminate\Database\Schema\Builder::create($table, $callback);
+        }
+        
+        /**
+         * Drop a table from the schema.
+         *
+         * @param string $table
+         * @return \Illuminate\Database\Schema\Blueprint 
+         * @static 
+         */
+        public static function drop($table){
+            return \Illuminate\Database\Schema\Builder::drop($table);
+        }
+        
+        /**
+         * Drop a table from the schema if it exists.
+         *
+         * @param string $table
+         * @return \Illuminate\Database\Schema\Blueprint 
+         * @static 
+         */
+        public static function dropIfExists($table){
+            return \Illuminate\Database\Schema\Builder::dropIfExists($table);
+        }
+        
+        /**
+         * Rename a table on the schema.
+         *
+         * @param string $from
+         * @param string $to
+         * @return \Illuminate\Database\Schema\Blueprint 
+         * @static 
+         */
+        public static function rename($from, $to){
+            return \Illuminate\Database\Schema\Builder::rename($from, $to);
+        }
+        
+        /**
+         * Get the database connection instance.
+         *
+         * @return \Illuminate\Database\Connection 
+         * @static 
+         */
+        public static function getConnection(){
+            return \Illuminate\Database\Schema\Builder::getConnection();
+        }
+        
+        /**
+         * Set the database connection instance.
+         *
+         * @param \Illuminate\Database\Connection
+         * @return $this 
+         * @static 
+         */
+        public static function setConnection($connection){
+            return \Illuminate\Database\Schema\Builder::setConnection($connection);
+        }
+        
+        /**
+         * Set the Schema Blueprint resolver callback.
+         *
+         * @param \Closure $resolver
+         * @return void 
+         * @static 
+         */
+        public static function blueprintResolver($resolver){
+            \Illuminate\Database\Schema\Builder::blueprintResolver($resolver);
         }
         
     }
@@ -11910,6 +12800,11 @@ namespace {
             //Method inherited from \DebugBar\DebugBar            
             return \Barryvdh\Debugbar\LaravelDebugbar::offsetUnset($key);
         }
+        
+    }
+
+
+    class Functions extends \App\Util\Functions{
         
     }
 

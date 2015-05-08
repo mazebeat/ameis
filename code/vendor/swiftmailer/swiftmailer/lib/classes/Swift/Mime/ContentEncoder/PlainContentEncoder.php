@@ -42,10 +42,21 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
     }
 
     /**
-     * Not used.
+     * Encode a given string to produce an encoded string.
+     *
+     * @param string  $string
+     * @param int     $firstLineOffset ignored
+     * @param int     $maxLineLength   - 0 means no wrapping will occur
+     *
+     * @return string
      */
-    public function charsetChanged($charset)
+    public function encodeString($string, $firstLineOffset = 0, $maxLineLength = 0)
     {
+        if ($this->_canonical) {
+            $string = $this->_canonicalize($string);
+        }
+
+        return $this->_safeWordWrap($string, $maxLineLength, "\r\n");
     }
 
     /**
@@ -77,24 +88,6 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
     }
 
     /**
-     * Encode a given string to produce an encoded string.
-     *
-     * @param string  $string
-     * @param int     $firstLineOffset ignored
-     * @param int     $maxLineLength   - 0 means no wrapping will occur
-     *
-     * @return string
-     */
-    public function encodeString($string, $firstLineOffset = 0, $maxLineLength = 0)
-    {
-        if ($this->_canonical) {
-            $string = $this->_canonicalize($string);
-        }
-
-        return $this->_safeWordWrap($string, $maxLineLength, "\r\n");
-    }
-
-    /**
      * Get the name of this encoding scheme.
      *
      * @return string
@@ -105,19 +98,10 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
     }
 
     /**
-     * Canonicalize string input (fix CRLF).
-     *
-     * @param string $string
-     *
-     * @return string
+     * Not used.
      */
-    private function _canonicalize($string)
+    public function charsetChanged($charset)
     {
-        return str_replace(
-            array("\r\n", "\r", "\n"),
-            array("\n", "\n", "\r\n"),
-            $string
-            );
     }
 
     /**
@@ -158,5 +142,21 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
         }
 
         return implode("\r\n", $lines);
+    }
+
+    /**
+     * Canonicalize string input (fix CRLF).
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    private function _canonicalize($string)
+    {
+        return str_replace(
+            array("\r\n", "\r", "\n"),
+            array("\n", "\n", "\r\n"),
+            $string
+            );
     }
 }

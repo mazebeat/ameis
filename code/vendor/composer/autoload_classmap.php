@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ApiController' => $baseDir . '/app/controllers/ApiController.php',
     'App\\Util\\ArrayToXML' => $baseDir . '/app/utils/Xml.php',
     'App\\Util\\CustomEvents' => $baseDir . '/app/utils/Events.php',
     'App\\Util\\DummyAuthProvider' => $baseDir . '/app/utils/CustomAuthenticate.php',
@@ -79,6 +80,7 @@ return array(
     'ClassPreloader\\Parser\\DirVisitor' => $vendorDir . '/classpreloader/classpreloader/src/ClassPreloader/Parser/DirVisitor.php',
     'ClassPreloader\\Parser\\FileVisitor' => $vendorDir . '/classpreloader/classpreloader/src/ClassPreloader/Parser/FileVisitor.php',
     'ClassPreloader\\Parser\\NodeTraverser' => $vendorDir . '/classpreloader/classpreloader/src/ClassPreloader/Parser/NodeTraverser.php',
+    'Clientes' => $baseDir . '/app/models/Clientes.php',
     'Comunas' => $baseDir . '/app/models/Comunas.php',
     'CreateQueueTable' => $baseDir . '/app/database/migrations/2015_03_31_194510_create_queue_table.php',
     'Crypt_AES' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Crypt/AES.php',
@@ -1935,7 +1937,7 @@ return array(
     'Symfony\\Component\\Security\\Core\\User\\ChainUserProvider' => $vendorDir . '/symfony/security-core/Symfony/Component/Security/Core/User/ChainUserProvider.php',
     'Symfony\\Component\\Security\\Core\\User\\EquatableInterface' => $vendorDir . '/symfony/security-core/Symfony/Component/Security/Core/User/EquatableInterface.php',
     'Symfony\\Component\\Security\\Core\\User\\InMemoryUserProvider' => $vendorDir . '/symfony/security-core/Symfony/Component/Security/Core/User/InMemoryUserProvider.php',
-    'Symfony\\Component\\Security\\Core\\User\\User' => $vendorDir . '/symfony/security-core/Symfony/Component/Security/Core/User/Usuario.php',
+    'Symfony\\Component\\Security\\Core\\User\\User' => $vendorDir . '/symfony/security-core/Symfony/Component/Security/Core/User/User.php',
     'Symfony\\Component\\Security\\Core\\User\\UserChecker' => $vendorDir . '/symfony/security-core/Symfony/Component/Security/Core/User/UserChecker.php',
     'Symfony\\Component\\Security\\Core\\User\\UserCheckerInterface' => $vendorDir . '/symfony/security-core/Symfony/Component/Security/Core/User/UserCheckerInterface.php',
     'Symfony\\Component\\Security\\Core\\User\\UserInterface' => $vendorDir . '/symfony/security-core/Symfony/Component/Security/Core/User/UserInterface.php',
@@ -2024,7 +2026,7 @@ return array(
     'System_SSH_Agent' => $vendorDir . '/phpseclib/phpseclib/phpseclib/System/SSH/Agent.php',
     'System_SSH_Agent_Identity' => $vendorDir . '/phpseclib/phpseclib/phpseclib/System/SSH/Agent.php',
     'TestCase' => $baseDir . '/app/tests/TestCase.php',
-    'User' => $baseDir . '/app/models/Usuario.php',
+    'Usuario' => $baseDir . '/app/models/Usuario.php',
     'UsuarioController' => $baseDir . '/app/controllers/UsuarioController.php',
     'Way\\Generators\\Commands\\ControllerGeneratorCommand' => $vendorDir . '/way/generators/src/Way/Generators/Commands/ControllerGeneratorCommand.php',
     'Way\\Generators\\Commands\\GeneratorCommand' => $vendorDir . '/way/generators/src/Way/Generators/Commands/GeneratorCommand.php',

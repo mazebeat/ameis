@@ -150,11 +150,6 @@ class TestClassMetadataFactory extends AbstractClassMetadataFactory
 
     }
 
-    protected function getDriver()
-    {
-        return $this->driver;
-    }
-
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
     {
         return __NAMESPACE__ . '\\' . $simpleClassName;
@@ -163,6 +158,19 @@ class TestClassMetadataFactory extends AbstractClassMetadataFactory
     protected function initialize()
     {
 
+    }
+
+    protected function newClassMetadataInstance($className)
+    {
+        return $this->metadata;
+    }
+
+    protected function getDriver()
+    {
+        return $this->driver;
+    }
+    protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService)
+    {
     }
 
     protected function initializeReflection(ClassMetadata $class, ReflectionService $reflService)
@@ -174,16 +182,6 @@ class TestClassMetadataFactory extends AbstractClassMetadataFactory
         return true;
     }
 
-    public function isTransient($class)
-    {
-        return true;
-    }
-
-    protected function newClassMetadataInstance($className)
-    {
-        return $this->metadata;
-    }
-
     protected function onNotFoundMetadata($className)
     {
         if (! $fallback = $this->fallbackCallback) {
@@ -193,8 +191,9 @@ class TestClassMetadataFactory extends AbstractClassMetadataFactory
         return $fallback();
     }
 
-    protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService)
+    public function isTransient($class)
     {
+        return true;
     }
 }
 

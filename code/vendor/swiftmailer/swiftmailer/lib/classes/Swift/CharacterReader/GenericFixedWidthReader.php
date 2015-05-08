@@ -55,16 +55,6 @@ class Swift_CharacterReader_GenericFixedWidthReader implements Swift_CharacterRe
     }
 
     /**
-     * Returns the number of bytes which should be read to start each character.
-     *
-     * @return int
-     */
-    public function getInitialByteSize()
-    {
-        return $this->_width;
-    }
-
-    /**
      * Returns the mapType.
      *
      * @return int
@@ -93,5 +83,15 @@ class Swift_CharacterReader_GenericFixedWidthReader implements Swift_CharacterRe
         $needed = $this->_width - $size;
 
         return ($needed > -1) ? $needed : -1;
+    }
+
+    /**
+     * Returns the number of bytes which should be read to start each character.
+     *
+     * @return int
+     */
+    public function getInitialByteSize()
+    {
+        return $this->_width;
     }
 }

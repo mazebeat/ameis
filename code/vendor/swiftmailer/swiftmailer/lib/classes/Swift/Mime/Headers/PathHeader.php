@@ -35,38 +35,6 @@ class Swift_Mime_Headers_PathHeader extends Swift_Mime_Headers_AbstractHeader
     }
 
     /**
-     * Get the string value of the body in this Header.
-     *
-     * This is not necessarily RFC 2822 compliant since folding white space will
-     * not be added at this stage (see {@link toString()} for that).
-     *
-     * @see toString()
-     *
-     * @return string
-     */
-    public function getFieldBody()
-    {
-        if (!$this->getCachedValue()) {
-            if (isset($this->_address)) {
-                $this->setCachedValue('<'.$this->_address.'>');
-            }
-        }
-
-        return $this->getCachedValue();
-    }
-
-    /**
-     * Get the model for the field body.
-     * This method returns a string email address.
-     *
-     * @return mixed
-     */
-    public function getFieldBodyModel()
-    {
-        return $this->getAddress();
-    }
-
-    /**
      * Get the type of Header that this instance represents.
      *
      * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
@@ -93,15 +61,14 @@ class Swift_Mime_Headers_PathHeader extends Swift_Mime_Headers_AbstractHeader
     }
 
     /**
-     * Get the address which is used in this Header (if any).
+     * Get the model for the field body.
+     * This method returns a string email address.
      *
-     * Null is returned if no address is set.
-     *
-     * @return string
+     * @return mixed
      */
-    public function getAddress()
+    public function getFieldBodyModel()
     {
-        return $this->_address;
+        return $this->getAddress();
     }
 
     /**
@@ -122,6 +89,39 @@ class Swift_Mime_Headers_PathHeader extends Swift_Mime_Headers_AbstractHeader
             $this->_address = $address;
         }
         $this->setCachedValue(null);
+    }
+
+    /**
+     * Get the address which is used in this Header (if any).
+     *
+     * Null is returned if no address is set.
+     *
+     * @return string
+     */
+    public function getAddress()
+    {
+        return $this->_address;
+    }
+
+    /**
+     * Get the string value of the body in this Header.
+     *
+     * This is not necessarily RFC 2822 compliant since folding white space will
+     * not be added at this stage (see {@link toString()} for that).
+     *
+     * @see toString()
+     *
+     * @return string
+     */
+    public function getFieldBody()
+    {
+        if (!$this->getCachedValue()) {
+            if (isset($this->_address)) {
+                $this->setCachedValue('<'.$this->_address.'>');
+            }
+        }
+
+        return $this->getCachedValue();
     }
 
     /**

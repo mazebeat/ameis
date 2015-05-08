@@ -42,16 +42,6 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     }
 
     /**
-     * Get the recipient of all messages.
-     *
-     * @return mixed
-     */
-    public function getRecipient()
-    {
-        return $this->_recipient;
-    }
-
-    /**
      * Set the recipient of all messages.
      *
      * @param mixed $recipient
@@ -62,13 +52,13 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     }
 
     /**
-     * Get the whitelist
+     * Get the recipient of all messages.
      *
-     * @return array
+     * @return mixed
      */
-    public function getWhitelist()
+    public function getRecipient()
     {
-        return $this->_whitelist;
+        return $this->_recipient;
     }
 
     /**
@@ -79,6 +69,16 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     public function setWhitelist(array $whitelist)
     {
         $this->_whitelist = $whitelist;
+    }
+
+    /**
+     * Get the whitelist
+     *
+     * @return array
+     */
+    public function getWhitelist()
+    {
+        return $this->_whitelist;
     }
 
     /**
@@ -121,16 +121,6 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
                 $message->addTo($recipient);
             }
         }
-    }
-
-    /**
-     * Invoked immediately after the Message is sent.
-     *
-     * @param Swift_Events_SendEvent $evt
-     */
-    public function sendPerformed(Swift_Events_SendEvent $evt)
-    {
-        $this->_restoreMessage($evt->getMessage());
     }
 
     /**
@@ -184,6 +174,16 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
         }
 
         return false;
+    }
+
+    /**
+     * Invoked immediately after the Message is sent.
+     *
+     * @param Swift_Events_SendEvent $evt
+     */
+    public function sendPerformed(Swift_Events_SendEvent $evt)
+    {
+        $this->_restoreMessage($evt->getMessage());
     }
 
     private function _restoreMessage(Swift_Mime_Message $message)

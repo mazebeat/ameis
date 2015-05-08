@@ -16,13 +16,16 @@
  */
 class Swift_Signers_OpenDKIMSigner extends Swift_Signers_DKIMSigner
 {
+    private $_peclLoaded = false;
+
+    private $_dkimHandler = null;
+
+    private $dropFirstLF = true;
+
     const CANON_RELAXED = 1;
     const CANON_SIMPLE = 2;
     const SIG_RSA_SHA1 = 3;
     const SIG_RSA_SHA256 = 4;
-    private $_peclLoaded = false;
-    private $_dkimHandler = null;
-    private $dropFirstLF = true;
 
     public function __construct($privateKey, $domainName, $selector)
     {
@@ -34,20 +37,9 @@ class Swift_Signers_OpenDKIMSigner extends Swift_Signers_DKIMSigner
         parent::__construct($privateKey, $domainName, $selector);
     }
 
-    protected function _canonicalizeBody($string)
+    public static function newInstance($privateKey, $domainName, $selector)
     {
-        if (! $this->_peclLoaded) {
-            return parent::_canonicalizeBody($string);
-        }
-        if (false && $this->dropFirstLF === true) {
-            if ($string[0] == "\r" && $string[1] == "\n") {
-                $string = substr($string, 2);
-            }
-        }
-        $this->dropFirstLF = false;
-        if (strlen($string)) {
-            $this->_dkimHandler->body($string);
-        }
+        return new static($privateKey, $domainName, $selector);
     }
 
     public function addSignature(Swift_Mime_HeaderSet $headers)
@@ -59,42 +51,6 @@ class Swift_Signers_OpenDKIMSigner extends Swift_Signers_DKIMSigner
         }
         $header->setValue($headerVal);
         $headers->set($header);
-
-        return $this;
-    }
-
-    public function endBody()
-    {
-        if (! $this->_peclLoaded) {
-            return parent::endBody();
-        }
-        $this->_dkimHandler->eom();
-
-        return $this;
-    }
-
-    public static function newInstance($privateKey, $domainName, $selector)
-    {
-        return new static($privateKey, $domainName, $selector);
-    }
-
-    public function reset()
-    {
-        $this->_dkimHandler = null;
-        parent::reset();
-
-        return $this;
-    }
-
-    /**
-     * Enable / disable the DebugHeaders
-     *
-     * @param bool    $debug
-     * @return Swift_Signers_DKIMSigner
-     */
-    public function setDebugHeaders($debug)
-    {
-        $this->_debugHeaders = (bool) $debug;
 
         return $this;
     }
@@ -142,15 +98,31 @@ class Swift_Signers_OpenDKIMSigner extends Swift_Signers_DKIMSigner
         return $this;
     }
 
-    /**
-     * Set the signature expiration timestamp
-     *
-     * @param timestamp $time
-     * @return Swift_Signers_DKIMSigner
-     */
-    public function setSignatureExpiration($time)
+    public function startBody()
     {
-        $this->_signatureExpiration = $time;
+        if (! $this->_peclLoaded) {
+            return parent::startBody();
+        }
+        $this->dropFirstLF = true;
+        $this->_dkimHandler->eoh();
+
+        return $this;
+    }
+
+    public function endBody()
+    {
+        if (! $this->_peclLoaded) {
+            return parent::endBody();
+        }
+        $this->_dkimHandler->eom();
+
+        return $this;
+    }
+
+    public function reset()
+    {
+        $this->_dkimHandler = null;
+        parent::reset();
 
         return $this;
     }
@@ -168,16 +140,47 @@ class Swift_Signers_OpenDKIMSigner extends Swift_Signers_DKIMSigner
         return $this;
     }
 
-    // Protected
-
-    public function startBody()
+    /**
+     * Set the signature expiration timestamp
+     *
+     * @param timestamp $time
+     * @return Swift_Signers_DKIMSigner
+     */
+    public function setSignatureExpiration($time)
     {
-        if (! $this->_peclLoaded) {
-            return parent::startBody();
-        }
-        $this->dropFirstLF = true;
-        $this->_dkimHandler->eoh();
+        $this->_signatureExpiration = $time;
 
         return $this;
+    }
+
+    /**
+     * Enable / disable the DebugHeaders
+     *
+     * @param bool    $debug
+     * @return Swift_Signers_DKIMSigner
+     */
+    public function setDebugHeaders($debug)
+    {
+        $this->_debugHeaders = (bool) $debug;
+
+        return $this;
+    }
+
+    // Protected
+
+    protected function _canonicalizeBody($string)
+    {
+        if (! $this->_peclLoaded) {
+            return parent::_canonicalizeBody($string);
+        }
+        if (false && $this->dropFirstLF === true) {
+            if ($string[0] == "\r" && $string[1] == "\n") {
+                $string = substr($string, 2);
+            }
+        }
+        $this->dropFirstLF = false;
+        if (strlen($string)) {
+            $this->_dkimHandler->body($string);
+        }
     }
 }

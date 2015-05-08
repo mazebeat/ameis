@@ -10,23 +10,17 @@ class SerializedClass
     /**
      * @var mixed
      */
-    public $baz = 'baz';
+    private $foo = 'foo';
+
     /**
      * @var mixed
      */
     protected $bar = 'bar';
+
     /**
      * @var mixed
      */
-    private $foo = 'foo';
-
-    /**
-     * @return mixed|string
-     */
-    public function getFoo()
-    {
-        return $this->foo;
-    }
+    public $baz = 'baz';
 
     /**
      * @param mixed $foo
@@ -39,9 +33,9 @@ class SerializedClass
     /**
      * @return mixed|string
      */
-    public function getBar()
+    public function getFoo()
     {
-        return $this->bar;
+        return $this->foo;
     }
 
     /**
@@ -55,9 +49,9 @@ class SerializedClass
     /**
      * @return mixed|string
      */
-    public function getBaz()
+    public function getBar()
     {
-        return $this->baz;
+        return $this->bar;
     }
 
     /**
@@ -66,5 +60,13 @@ class SerializedClass
     public function setBaz($baz)
     {
         $this->baz = $baz;
+    }
+
+    /**
+     * @return mixed|string
+     */
+    public function getBaz()
+    {
+        return $this->baz;
     }
 }

@@ -51,6 +51,43 @@ class Swift_Mime_Headers_ParameterizedHeader extends Swift_Mime_Headers_Unstruct
     }
 
     /**
+     * Get the type of Header that this instance represents.
+     *
+     * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
+     * @see TYPE_DATE, TYPE_ID, TYPE_PATH
+     *
+     * @return int
+     */
+    public function getFieldType()
+    {
+        return self::TYPE_PARAMETERIZED;
+    }
+
+    /**
+     * Set the character set used in this Header.
+     *
+     * @param string $charset
+     */
+    public function setCharset($charset)
+    {
+        parent::setCharset($charset);
+        if (isset($this->_paramEncoder)) {
+            $this->_paramEncoder->charsetChanged($charset);
+        }
+    }
+
+    /**
+     * Set the value of $parameter.
+     *
+     * @param string $parameter
+     * @param string $value
+     */
+    public function setParameter($parameter, $value)
+    {
+        $this->setParameters(array_merge($this->getParameters(), array($parameter => $value)));
+    }
+
+    /**
      * Get the value of $parameter.
      *
      * @param string $parameter
@@ -64,17 +101,6 @@ class Swift_Mime_Headers_ParameterizedHeader extends Swift_Mime_Headers_Unstruct
         return array_key_exists($parameter, $params)
             ? $params[$parameter]
             : null;
-    }
-
-    /**
-     * Set the value of $parameter.
-     *
-     * @param string $parameter
-     * @param string $value
-     */
-    public function setParameter($parameter, $value)
-    {
-        $this->setParameters(array_merge($this->getParameters(), array($parameter => $value)));
     }
 
     /**
@@ -114,32 +140,6 @@ class Swift_Mime_Headers_ParameterizedHeader extends Swift_Mime_Headers_Unstruct
         }
 
         return $body;
-    }
-
-    /**
-     * Get the type of Header that this instance represents.
-     *
-     * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
-     * @see TYPE_DATE, TYPE_ID, TYPE_PATH
-     *
-     * @return int
-     */
-    public function getFieldType()
-    {
-        return self::TYPE_PARAMETERIZED;
-    }
-
-    /**
-     * Set the character set used in this Header.
-     *
-     * @param string $charset
-     */
-    public function setCharset($charset)
-    {
-        parent::setCharset($charset);
-        if (isset($this->_paramEncoder)) {
-            $this->_paramEncoder->charsetChanged($charset);
-        }
     }
 
     /**

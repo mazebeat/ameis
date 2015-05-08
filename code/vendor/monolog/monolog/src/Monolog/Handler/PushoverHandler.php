@@ -93,42 +93,11 @@ class PushoverHandler extends SocketHandler
         $this->expire = $expire;
     }
 
-    public function setHighPriorityLevel($value)
-    {
-        $this->highPriorityLevel = $value;
-    }
-
-    public function setEmergencyLevel($value)
-    {
-        $this->emergencyLevel = $value;
-    }
-
-    /**
-     * Use the formatted message?
-     * @param boolean $value
-     */
-    public function useFormattedMessage($value)
-    {
-        $this->useFormattedMessage = (boolean) $value;
-    }
-
     protected function generateDataStream($record)
     {
         $content = $this->buildContent($record);
 
         return $this->buildHeader($content) . $content;
-    }
-
-    protected function write(array $record)
-    {
-        foreach ($this->users as $user) {
-            $this->user = $user;
-
-            parent::write($record);
-            $this->closeSocket();
-        }
-
-        $this->user = null;
     }
 
     private function buildContent($record)
@@ -181,5 +150,36 @@ class PushoverHandler extends SocketHandler
         $header .= "\r\n";
 
         return $header;
+    }
+
+    protected function write(array $record)
+    {
+        foreach ($this->users as $user) {
+            $this->user = $user;
+
+            parent::write($record);
+            $this->closeSocket();
+        }
+
+        $this->user = null;
+    }
+
+    public function setHighPriorityLevel($value)
+    {
+        $this->highPriorityLevel = $value;
+    }
+
+    public function setEmergencyLevel($value)
+    {
+        $this->emergencyLevel = $value;
+    }
+
+    /**
+     * Use the formatted message?
+     * @param boolean $value
+     */
+    public function useFormattedMessage($value)
+    {
+        $this->useFormattedMessage = (boolean) $value;
     }
 }

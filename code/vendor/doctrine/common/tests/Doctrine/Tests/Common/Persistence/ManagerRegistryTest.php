@@ -5,7 +5,7 @@ namespace Doctrine\Tests\Common\Persistence;
 use Doctrine\Common\Persistence\AbstractManagerRegistry;
 use Doctrine\Tests\Common\Persistence\Mapping\TestClassMetadataFactory;
 use Doctrine\Tests\DoctrineTestCase;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_MockObject_Generator;
 
 /**
  * @groups DCOM-270
@@ -64,12 +64,12 @@ class ManagerRegistryTest extends DoctrineTestCase
     }
 }
 
-class TestManager extends PHPUnit_Framework_TestCase
+class TestManager
 {
     public function getMetadataFactory()
     {
-        $driver = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
-        $metadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
+        $driver = PHPUnit_Framework_MockObject_Generator::getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
+        $metadata = PHPUnit_Framework_MockObject_Generator::getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
 
         return new TestClassMetadataFactory($driver, $metadata);
     }
@@ -77,11 +77,6 @@ class TestManager extends PHPUnit_Framework_TestCase
 
 class TestManagerRegistry extends AbstractManagerRegistry
 {
-    public function getAliasNamespace($alias)
-    {
-        return __NAMESPACE__;
-    }
-
     protected function getService($name)
     {
         return new TestManager();
@@ -93,5 +88,10 @@ class TestManagerRegistry extends AbstractManagerRegistry
     protected function resetService($name)
     {
 
+    }
+
+    public function getAliasNamespace($alias)
+    {
+        return __NAMESPACE__;
     }
 }

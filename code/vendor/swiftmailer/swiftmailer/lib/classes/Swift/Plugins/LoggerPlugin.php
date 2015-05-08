@@ -90,17 +90,6 @@ class Swift_Plugins_LoggerPlugin implements Swift_Events_CommandListener, Swift_
     }
 
     /**
-     * Invoked just before a Transport is stopped.
-     *
-     * @param Swift_Events_TransportChangeEvent $evt
-     */
-    public function beforeTransportStopped(Swift_Events_TransportChangeEvent $evt)
-    {
-        $transportName = get_class($evt->getSource());
-        $this->_logger->add(sprintf("++ Stopping %s", $transportName));
-    }
-
-    /**
      * Invoked immediately after the Transport is started.
      *
      * @param Swift_Events_TransportChangeEvent $evt
@@ -109,6 +98,17 @@ class Swift_Plugins_LoggerPlugin implements Swift_Events_CommandListener, Swift_
     {
         $transportName = get_class($evt->getSource());
         $this->_logger->add(sprintf("++ %s started", $transportName));
+    }
+
+    /**
+     * Invoked just before a Transport is stopped.
+     *
+     * @param Swift_Events_TransportChangeEvent $evt
+     */
+    public function beforeTransportStopped(Swift_Events_TransportChangeEvent $evt)
+    {
+        $transportName = get_class($evt->getSource());
+        $this->_logger->add(sprintf("++ Stopping %s", $transportName));
     }
 
     /**
@@ -131,11 +131,12 @@ class Swift_Plugins_LoggerPlugin implements Swift_Events_CommandListener, Swift_
     {
         $e = $evt->getException();
         $message = $e->getMessage();
-        $this->_logger->add(sprintf("!! %s", $message));
+        $code = $e->getCode();
+        $this->_logger->add(sprintf("!! %s (code: %s)", $message, $code));
         $message .= PHP_EOL;
         $message .= 'Log data:'.PHP_EOL;
         $message .= $this->_logger->dump();
         $evt->cancelBubble();
-        throw new Swift_TransportException($message);
+        throw new Swift_TransportException($message, $code, $e->getPrevious());
     }
 }

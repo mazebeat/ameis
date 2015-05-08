@@ -89,6 +89,36 @@ class ModelsCommand extends Command
         }
     }
 
+
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return array(
+            array('model', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Which models to include', array()),
+        );
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return array(
+            array('filename', 'F', InputOption::VALUE_OPTIONAL, 'The path to the helper file', $this->filename),
+            array('dir', 'D', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The model dir', array()),
+            array('write', 'W', InputOption::VALUE_NONE, 'Write to Model file'),
+            array('nowrite', 'N', InputOption::VALUE_NONE, 'Don\'t write to Model file'),
+            array('reset', 'R', InputOption::VALUE_NONE, 'Remove the original phpdocs instead of appending'),
+            array('ignore', 'I', InputOption::VALUE_OPTIONAL, 'Which models to ignore', ''),
+        );
+    }
+
     protected function generateDocs($loadModels, $ignore = '')
     {
 
@@ -163,6 +193,7 @@ class ModelsCommand extends Command
 
     }
 
+
     protected function loadModels()
     {
         $models = array();
@@ -233,42 +264,6 @@ class ModelsCommand extends Command
                     array('$value')
                 );
             }
-        }
-    }
-
-    /**
-     * @param string $name
-     * @param string|null $type
-     * @param bool|null $read
-     * @param bool|null $write
-     * @param string|null $comment
-     */
-    protected function setProperty($name, $type = null, $read = null, $write = null, $comment='')
-    {
-        if (!isset($this->properties[$name])) {
-            $this->properties[$name] = array();
-            $this->properties[$name]['type'] = 'mixed';
-            $this->properties[$name]['read'] = false;
-            $this->properties[$name]['write'] = false;
-            $this->properties[$name]['comment'] = (string) $comment;
-        }
-        if ($type !== null) {
-            $this->properties[$name]['type'] = $type;
-        }
-        if ($read !== null) {
-            $this->properties[$name]['read'] = $read;
-        }
-        if ($write !== null) {
-            $this->properties[$name]['write'] = $write;
-        }
-    }
-
-    protected function setMethod($name, $type = '', $arguments = array())
-    {
-        if (!isset($this->methods[$name])) {
-            $this->methods[$name] = array();
-            $this->methods[$name]['type'] = $type;
-            $this->methods[$name]['arguments'] = $arguments;
         }
     }
 
@@ -362,58 +357,39 @@ class ModelsCommand extends Command
     }
 
     /**
-     * Get the parameters and format them correctly
-     *
-     * @param $method
-     * @return array
+     * @param string $name
+     * @param string|null $type
+     * @param bool|null $read
+     * @param bool|null $write
+     * @param string|null $comment
      */
-    public function getParameters($method)
+    protected function setProperty($name, $type = null, $read = null, $write = null, $comment='')
     {
-        //Loop through the default values for paremeters, and make the correct output string
-        $params = array();
-        $paramsWithDefault = array();
-        foreach ($method->getParameters() as $param) {
-            $paramStr = '$' . $param->getName();
-            $params[] = $paramStr;
-            if ($param->isOptional()) {
-                $default = $param->getDefaultValue();
-                if (is_bool($default)) {
-                    $default = $default ? 'true' : 'false';
-                } elseif (is_array($default)) {
-                    $default = 'array()';
-                } elseif (is_null($default)) {
-                    $default = 'null';
-                } elseif (is_int($default)) {
-                    //$default = $default;
-                } else {
-                    $default = "'" . trim($default) . "'";
-                }
-                $paramStr .= " = $default";
-            }
-            $paramsWithDefault[] = $paramStr;
+        if (!isset($this->properties[$name])) {
+            $this->properties[$name] = array();
+            $this->properties[$name]['type'] = 'mixed';
+            $this->properties[$name]['read'] = false;
+            $this->properties[$name]['write'] = false;
+            $this->properties[$name]['comment'] = (string) $comment;
         }
-        return $paramsWithDefault;
+        if ($type !== null) {
+            $this->properties[$name]['type'] = $type;
+        }
+        if ($read !== null) {
+            $this->properties[$name]['read'] = $read;
+        }
+        if ($write !== null) {
+            $this->properties[$name]['write'] = $write;
+        }
     }
 
-    /**
-     * @param string $className
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @return string
-     */
-    private function getClassName($className, $model)
+    protected function setMethod($name, $type = '', $arguments = array())
     {
-        // If the class name was resolved via get_class($this) or static::class
-        if (strpos($className, 'get_class($this)') !== false || strpos($className, 'static::class') !== false) {
-            return get_class($model);
+        if (!isset($this->methods[$name])) {
+            $this->methods[$name] = array();
+            $this->methods[$name]['type'] = $type;
+            $this->methods[$name]['arguments'] = $arguments;
         }
-
-        // If the class name was resolved via ::class (PHP 5.5+)
-        if (strpos($className, '::class') !== false) {
-            $end = -1 * strlen('::class');
-            return substr($className, 0, $end);
-        }
-
-        return "\\" . ltrim(trim($className, " \"'"), "\\") ;
     }
 
     /**
@@ -502,31 +478,57 @@ class ModelsCommand extends Command
     }
 
     /**
-     * Get the console command arguments.
+     * Get the parameters and format them correctly
      *
+     * @param $method
      * @return array
      */
-    protected function getArguments()
+    public function getParameters($method)
     {
-        return array(
-            array('model', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Which models to include', array()),
-        );
+        //Loop through the default values for paremeters, and make the correct output string
+        $params = array();
+        $paramsWithDefault = array();
+        foreach ($method->getParameters() as $param) {
+            $paramStr = '$' . $param->getName();
+            $params[] = $paramStr;
+            if ($param->isOptional()) {
+                $default = $param->getDefaultValue();
+                if (is_bool($default)) {
+                    $default = $default ? 'true' : 'false';
+                } elseif (is_array($default)) {
+                    $default = 'array()';
+                } elseif (is_null($default)) {
+                    $default = 'null';
+                } elseif (is_int($default)) {
+                    //$default = $default;
+                } else {
+                    $default = "'" . trim($default) . "'";
+                }
+                $paramStr .= " = $default";
+            }
+            $paramsWithDefault[] = $paramStr;
+        }
+        return $paramsWithDefault;
     }
 
     /**
-     * Get the console command options.
-     *
-     * @return array
+     * @param string $className
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @return string
      */
-    protected function getOptions()
+    private function getClassName($className, $model)
     {
-        return array(
-            array('filename', 'F', InputOption::VALUE_OPTIONAL, 'The path to the helper file', $this->filename),
-            array('dir', 'D', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The model dir', array()),
-            array('write', 'W', InputOption::VALUE_NONE, 'Write to Model file'),
-            array('nowrite', 'N', InputOption::VALUE_NONE, 'Don\'t write to Model file'),
-            array('reset', 'R', InputOption::VALUE_NONE, 'Remove the original phpdocs instead of appending'),
-            array('ignore', 'I', InputOption::VALUE_OPTIONAL, 'Which models to ignore', ''),
-        );
+        // If the class name was resolved via get_class($this) or static::class
+        if (strpos($className, 'get_class($this)') !== false || strpos($className, 'static::class') !== false) {
+            return get_class($model);
+        }
+
+        // If the class name was resolved via ::class (PHP 5.5+)
+        if (strpos($className, '::class') !== false) {
+            $end = -1 * strlen('::class');
+            return substr($className, 0, $end);
+        }
+
+        return "\\" . ltrim(trim($className, " \"'"), "\\") ;
     }
 }

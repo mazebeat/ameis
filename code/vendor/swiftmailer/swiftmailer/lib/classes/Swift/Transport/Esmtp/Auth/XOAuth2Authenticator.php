@@ -25,6 +25,16 @@
 class Swift_Transport_Esmtp_Auth_XOAuth2Authenticator implements Swift_Transport_Esmtp_Authenticator
 {
     /**
+     * Get the name of the AUTH mechanism this Authenticator handles.
+     *
+     * @return string
+     */
+    public function getAuthKeyword()
+    {
+        return 'XOAUTH2';
+    }
+
+    /**
      * Try to authenticate the user with $email and $token.
      *
      * @param Swift_Transport_SmtpAgent $agent
@@ -45,16 +55,6 @@ class Swift_Transport_Esmtp_Auth_XOAuth2Authenticator implements Swift_Transport
 
             return false;
         }
-    }
-
-    /**
-     * Get the name of the AUTH mechanism this Authenticator handles.
-     *
-     * @return string
-     */
-    public function getAuthKeyword()
-    {
-        return 'XOAUTH2';
     }
 
     /**

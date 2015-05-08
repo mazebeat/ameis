@@ -3,7 +3,7 @@
 /**
  * Class ApiController
  */
-class ApiController extends BaseController
+class ApiController extends \BaseController
 {
 
 	public function __construct()
@@ -17,6 +17,7 @@ class ApiController extends BaseController
 	 */
 	public static function exec_sp($sql = '')
 	{
+		$result = array();
 		$data = array(
 			'data'    => array(),
 			'message' => '',
@@ -24,7 +25,25 @@ class ApiController extends BaseController
 		);
 		try {
 			if ($sql != '') {
-				$result = DB::select($sql);
+
+				$sql = 'EXEC dbo.AMEIS_RetornaClientesPorRut 15890302, 0, "OK"';
+
+				$pdo  = \DB::connection()->getPdo();
+				try {
+					$stmt = $pdo->query($sql);
+					do {
+						$rowset = $stmt->fetchAll(PDO::FETCH_NAMED);
+						if ($rowset) {
+							foreach ($rowset as $row) {
+								$var = \Functions::toObject($row);
+								array_push($result, $var);
+							}
+						}
+					} while ($stmt->nextRowset());
+
+				} catch(PDOException $ex) {
+					$data['message'] = 'Error: ' . $pdo->errorInfo() . ' | ' . $pdo->errorCode();
+				}
 				if (count($result) <= 0) {
 					$data['message'] = 'No se encontraron datos en la consulta';
 				}

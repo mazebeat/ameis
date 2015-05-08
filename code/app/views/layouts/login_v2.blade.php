@@ -35,6 +35,7 @@
 {{ HTML::script('assets/js/login_v2.js' ) }}
 <!-- BEGIN CORE TEMPLATE JS -->
 
+@include('layouts.modules.angularjs')
 <!-- END CORE TEMPLATE JS -->
 </body>
 

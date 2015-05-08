@@ -22,8 +22,16 @@ Route::get('logout', 'HomeController@logout');
 
 //Route::group(array('before' => 'auth'), function () {
 Route::controller('menu', 'MenuController');
-Route::get('admin', function(){
+Route::get('admin', function () {
 	return View::make('blank');
 });
 //});
 
+Route::get('test', function () {
+		$query   = 'EXEC dbo.AMEIS_RetornaClientesPorRut ' . Input::get('rut') . ', 0, "OK"';
+		$resulta = ApiController::exec_sp($query);
+		$cel     = $resulta['data'][0];
+		var_dump($cel);
+		die();
+
+});

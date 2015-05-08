@@ -26,11 +26,12 @@ use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
  */
 class RuntimeReflectionServiceTest extends \PHPUnit_Framework_TestCase
 {
-    public $unusedPublicProperty;
     /**
      * @var RuntimeReflectionService
      */
     private $reflectionService;
+
+    public $unusedPublicProperty;
 
     public function setUp()
     {

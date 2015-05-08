@@ -31,16 +31,6 @@ class Swift_Transport_SpoolTransport implements Swift_Transport
     }
 
     /**
-     * Get the spool object.
-     *
-     * @return Swift_Spool
-     */
-	public function getSpool()
-	{
-		return $this->_spool;
-	}
-
-	/**
      * Sets the spool object.
      *
      * @param Swift_Spool $spool
@@ -55,6 +45,16 @@ class Swift_Transport_SpoolTransport implements Swift_Transport
     }
 
     /**
+     * Get the spool object.
+     *
+     * @return Swift_Spool
+     */
+    public function getSpool()
+    {
+        return $this->_spool;
+    }
+
+    /**
      * Tests if this Transport mechanism has started.
      *
      * @return bool
@@ -65,13 +65,17 @@ class Swift_Transport_SpoolTransport implements Swift_Transport
     }
 
     /**
-     * Register a plugin.
-     *
-     * @param Swift_Events_EventListener $plugin
+     * Starts this Transport mechanism.
      */
-	public function registerPlugin(Swift_Events_EventListener $plugin)
+    public function start()
     {
-	    $this->_eventDispatcher->bindEventListener($plugin);
+    }
+
+    /**
+     * Stops this Transport mechanism.
+     */
+    public function stop()
+    {
     }
 
     /**
@@ -102,16 +106,12 @@ class Swift_Transport_SpoolTransport implements Swift_Transport
     }
 
     /**
-     * Starts this Transport mechanism.
+     * Register a plugin.
+     *
+     * @param Swift_Events_EventListener $plugin
      */
-	public function start()
+    public function registerPlugin(Swift_Events_EventListener $plugin)
     {
-    }
-
-	/**
-	 * Stops this Transport mechanism.
-	 */
-	public function stop()
-	{
+        $this->_eventDispatcher->bindEventListener($plugin);
     }
 }

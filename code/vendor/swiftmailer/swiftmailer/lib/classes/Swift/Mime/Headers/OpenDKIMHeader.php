@@ -45,9 +45,9 @@ class Swift_Mime_Headers_OpenDKIMHeader implements Swift_Mime_Header
      *
      * @return string
      */
-	public function getFieldBody()
+    public function getFieldBody()
     {
-	    return $this->_value;
+        return $this->_value;
     }
 
     /**
@@ -64,30 +64,30 @@ class Swift_Mime_Headers_OpenDKIMHeader implements Swift_Mime_Header
 
     /**
      * Set the Header FieldName
-     * @see Swift_Mime_Header::getFieldName()
-     */
-	public function getFieldName()
-	{
-		return $this->_fieldName;
-	}
-
-	/**
-	 * Get the type of Header that this instance represents.
-     *
-	 * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
-	 * @see TYPE_DATE, TYPE_ID, TYPE_PATH
-	 *
-	 * @return int
-     */
-	public function getFieldType()
+	 * @see Swift_Mime_Header::getFieldName()
+	 */
+    public function getFieldName()
     {
-	    return self::TYPE_TEXT;
+        return $this->_fieldName;
+    }
+
+    /**
+     * Get the type of Header that this instance represents.
+     *
+     * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
+     * @see TYPE_DATE, TYPE_ID, TYPE_PATH
+     *
+     * @return int
+     */
+    public function getFieldType()
+    {
+        return self::TYPE_TEXT;
     }
 
     /**
      * Ignored
      */
-	public function setCharset($charset)
+    public function setCharset($charset)
     {
     }
 
@@ -98,9 +98,9 @@ class Swift_Mime_Headers_OpenDKIMHeader implements Swift_Mime_Header
      *
      * @param string $model
      */
-	public function setFieldBodyModel($model)
+    public function setFieldBodyModel($model)
     {
-	    $this->setValue($model);
+        $this->setValue($model);
     }
 
     /**
@@ -118,9 +118,9 @@ class Swift_Mime_Headers_OpenDKIMHeader implements Swift_Mime_Header
      *
      * @return string
      */
-	public function getValue()
+    public function getValue()
     {
-	    return $this->_value;
+        return $this->_value;
     }
 
     /**
@@ -128,8 +128,8 @@ class Swift_Mime_Headers_OpenDKIMHeader implements Swift_Mime_Header
      *
      * @param string $value
      */
-	public function setValue($value)
+    public function setValue($value)
     {
-	    $this->_value = $value;
+        $this->_value = $value;
     }
 }

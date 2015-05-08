@@ -73,16 +73,16 @@ class Swift_Plugins_BandwidthMonitorPlugin implements Swift_Events_SendListener,
     }
 
     /**
-     * Attach $is to this stream.
+     * Called when a message is sent so that the outgoing counter can be increased.
      *
-     * The stream acts as an observer, receiving all data that is written.
-     * All {@link write()} and {@link flushBuffers()} operations will be mirrored.
-     *
-     * @param Swift_InputByteStream $is
+     * @param string $bytes
      */
-    public function bind(Swift_InputByteStream $is)
+    public function write($bytes)
     {
-        $this->_mirrors[] = $is;
+        $this->_out += strlen($bytes);
+        foreach ($this->_mirrors as $stream) {
+            $stream->write($bytes);
+        }
     }
 
     /**
@@ -93,13 +93,16 @@ class Swift_Plugins_BandwidthMonitorPlugin implements Swift_Events_SendListener,
     }
 
     /**
-     * Not used.
+     * Attach $is to this stream.
+     *
+     * The stream acts as an observer, receiving all data that is written.
+     * All {@link write()} and {@link flushBuffers()} operations will be mirrored.
+     *
+     * @param Swift_InputByteStream $is
      */
-    public function flushBuffers()
+    public function bind(Swift_InputByteStream $is)
     {
-        foreach ($this->_mirrors as $stream) {
-            $stream->flushBuffers();
-        }
+        $this->_mirrors[] = $is;
     }
 
     /**
@@ -121,15 +124,12 @@ class Swift_Plugins_BandwidthMonitorPlugin implements Swift_Events_SendListener,
     }
 
     /**
-     * Called when a message is sent so that the outgoing counter can be increased.
-     *
-     * @param string $bytes
+     * Not used.
      */
-    public function write($bytes)
+    public function flushBuffers()
     {
-        $this->_out += strlen($bytes);
         foreach ($this->_mirrors as $stream) {
-            $stream->write($bytes);
+            $stream->flushBuffers();
         }
     }
 

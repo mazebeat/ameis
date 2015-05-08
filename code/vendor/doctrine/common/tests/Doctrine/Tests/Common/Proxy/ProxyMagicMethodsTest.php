@@ -51,17 +51,17 @@ class ProxyMagicMethodsTest extends PHPUnit_Framework_TestCase
      */
     protected $initializerCallbackMock;
 
-    public static function tearDownAfterClass()
-    {
-
-    }
-
     /**
      * {@inheritDoc}
      */
     public function setUp()
     {
         $this->proxyGenerator = new ProxyGenerator(__DIR__ . '/generated', __NAMESPACE__ . '\\MagicMethodProxy');
+    }
+
+    public static function tearDownAfterClass()
+    {
+
     }
 
     public function testInheritedMagicGet()
@@ -91,81 +91,6 @@ class ProxyMagicMethodsTest extends PHPUnit_Framework_TestCase
         $this->assertSame('not defined', $proxy->notDefined);
 
         $this->assertSame(3, $counter);
-    }
-
-    /**
-     * @param $className
-     *
-     * @return string
-     */
-    private function generateProxyClass($className)
-    {
-        $proxyClassName = 'Doctrine\\Tests\\Common\\Proxy\\MagicMethodProxy\\__CG__\\' . $className;
-
-        if (class_exists($proxyClassName, false)) {
-            return $proxyClassName;
-        }
-
-        $metadata = $this->getMock('Doctrine\\Common\\Persistence\\Mapping\\ClassMetadata');
-
-        $metadata
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue($className));
-
-        $metadata
-            ->expects($this->any())
-            ->method('getIdentifier')
-            ->will($this->returnValue(array('id')));
-
-        $metadata
-            ->expects($this->any())
-            ->method('getReflectionClass')
-            ->will($this->returnValue(new ReflectionClass($className)));
-
-        $metadata
-            ->expects($this->any())
-            ->method('isIdentifier')
-            ->will($this->returnCallback(function ($fieldName) {
-                return 'id' === $fieldName;
-            }));
-
-        $metadata
-            ->expects($this->any())
-            ->method('hasField')
-            ->will($this->returnCallback(function ($fieldName) {
-                return in_array($fieldName, array('id', 'publicField'));
-            }));
-
-        $metadata
-            ->expects($this->any())
-            ->method('hasAssociation')
-            ->will($this->returnValue(false));
-
-        $metadata
-            ->expects($this->any())
-            ->method('getFieldNames')
-            ->will($this->returnValue(array('id', 'publicField')));
-
-        $metadata
-            ->expects($this->any())
-            ->method('getIdentifierFieldNames')
-            ->will($this->returnValue(array('id')));
-
-        $metadata
-            ->expects($this->any())
-            ->method('getAssociationNames')
-            ->will($this->returnValue(array()));
-
-        $metadata
-            ->expects($this->any())
-            ->method('getTypeOfField')
-            ->will($this->returnValue('string'));
-
-        $this->proxyGenerator->generateProxyClass($metadata, $this->proxyGenerator->getProxyFileName($className));
-        require_once $this->proxyGenerator->getProxyFileName($className);
-
-        return $proxyClassName;
     }
 
     /**
@@ -322,5 +247,80 @@ class ProxyMagicMethodsTest extends PHPUnit_Framework_TestCase
         $this->assertSame(1, $unserialized->getFoo());
         $this->assertSame(2, $unserialized->getBar());
         $this->assertSame(3, $unserialized->getBaz());
+    }
+
+    /**
+     * @param $className
+     *
+     * @return string
+     */
+    private function generateProxyClass($className)
+    {
+        $proxyClassName = 'Doctrine\\Tests\\Common\\Proxy\\MagicMethodProxy\\__CG__\\' . $className;
+
+        if (class_exists($proxyClassName, false)) {
+            return $proxyClassName;
+        }
+
+        $metadata = $this->getMock('Doctrine\\Common\\Persistence\\Mapping\\ClassMetadata');
+
+        $metadata
+            ->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue($className));
+
+        $metadata
+            ->expects($this->any())
+            ->method('getIdentifier')
+            ->will($this->returnValue(array('id')));
+
+        $metadata
+            ->expects($this->any())
+            ->method('getReflectionClass')
+            ->will($this->returnValue(new ReflectionClass($className)));
+
+        $metadata
+            ->expects($this->any())
+            ->method('isIdentifier')
+            ->will($this->returnCallback(function ($fieldName) {
+                return 'id' === $fieldName;
+            }));
+
+        $metadata
+            ->expects($this->any())
+            ->method('hasField')
+            ->will($this->returnCallback(function ($fieldName) {
+                return in_array($fieldName, array('id', 'publicField'));
+            }));
+
+        $metadata
+            ->expects($this->any())
+            ->method('hasAssociation')
+            ->will($this->returnValue(false));
+
+        $metadata
+            ->expects($this->any())
+            ->method('getFieldNames')
+            ->will($this->returnValue(array('id', 'publicField')));
+
+        $metadata
+            ->expects($this->any())
+            ->method('getIdentifierFieldNames')
+            ->will($this->returnValue(array('id')));
+
+        $metadata
+            ->expects($this->any())
+            ->method('getAssociationNames')
+            ->will($this->returnValue(array()));
+
+        $metadata
+            ->expects($this->any())
+            ->method('getTypeOfField')
+            ->will($this->returnValue('string'));
+
+        $this->proxyGenerator->generateProxyClass($metadata, $this->proxyGenerator->getProxyFileName($className));
+        require_once $this->proxyGenerator->getProxyFileName($className);
+
+        return $proxyClassName;
     }
 }

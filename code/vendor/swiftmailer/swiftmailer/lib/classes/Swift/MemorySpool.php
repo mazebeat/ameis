@@ -18,6 +18,45 @@ class Swift_MemorySpool implements Swift_Spool
     protected $messages = array();
 
     /**
+     * Tests if this Transport mechanism has started.
+     *
+     * @return bool
+     */
+    public function isStarted()
+    {
+        return true;
+    }
+
+    /**
+     * Starts this Transport mechanism.
+     */
+    public function start()
+    {
+    }
+
+    /**
+     * Stops this Transport mechanism.
+     */
+    public function stop()
+    {
+    }
+
+    /**
+     * Stores a message in the queue.
+     *
+     * @param Swift_Mime_Message $message The message to store
+     *
+     * @return bool    Whether the operation has succeeded
+     */
+    public function queueMessage(Swift_Mime_Message $message)
+    {
+        //clone the message to make sure it is not changed while in the queue
+        $this->messages[] = clone $message;
+
+        return true;
+    }
+
+    /**
      * Sends messages using the given transport instance.
      *
      * @param Swift_Transport $transport        A transport instance
@@ -41,44 +80,5 @@ class Swift_MemorySpool implements Swift_Spool
         }
 
         return $count;
-    }
-
-    /**
-     * Tests if this Transport mechanism has started.
-     *
-     * @return bool
-     */
-    public function isStarted()
-    {
-        return true;
-    }
-
-    /**
-     * Stores a message in the queue.
-     *
-     * @param Swift_Mime_Message $message The message to store
-     *
-     * @return bool    Whether the operation has succeeded
-     */
-    public function queueMessage(Swift_Mime_Message $message)
-    {
-        //clone the message to make sure it is not changed while in the queue
-        $this->messages[] = clone $message;
-
-        return true;
-    }
-
-    /**
-     * Starts this Transport mechanism.
-     */
-    public function start()
-    {
-    }
-
-    /**
-     * Stops this Transport mechanism.
-     */
-    public function stop()
-    {
     }
 }

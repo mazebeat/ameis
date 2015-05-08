@@ -16,32 +16,30 @@
 class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
 {
     /**
-     * Clear all data in the namespace $nsKey if it exists.
+     * Set a string into the cache under $itemKey for the namespace $nsKey.
      *
-     * @param string $nsKey
+     * @see MODE_WRITE, MODE_APPEND
+     *
+     * @param string  $nsKey
+     * @param string  $itemKey
+     * @param string  $string
+     * @param int     $mode
      */
-    public function clearAll($nsKey)
+    public function setString($nsKey, $itemKey, $string, $mode)
     {
     }
 
     /**
-     * Clear data for $itemKey in the namespace $nsKey if it exists.
+     * Set a ByteStream into the cache under $itemKey for the namespace $nsKey.
      *
-     * @param string $nsKey
-     * @param string $itemKey
-     */
-    public function clearKey($nsKey, $itemKey)
-    {
-    }
-
-    /**
-     * Get data back out of the cache as a ByteStream.
+     * @see MODE_WRITE, MODE_APPEND
      *
-     * @param string                $nsKey
-     * @param string                $itemKey
-     * @param Swift_InputByteStream $is      to write the data to
+     * @param string                 $nsKey
+     * @param string                 $itemKey
+     * @param Swift_OutputByteStream $os
+     * @param int                    $mode
      */
-    public function exportToByteStream($nsKey, $itemKey, Swift_InputByteStream $is)
+    public function importFromByteStream($nsKey, $itemKey, Swift_OutputByteStream $os, $mode)
     {
     }
 
@@ -73,6 +71,17 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
     }
 
     /**
+     * Get data back out of the cache as a ByteStream.
+     *
+     * @param string                $nsKey
+     * @param string                $itemKey
+     * @param Swift_InputByteStream $is      to write the data to
+     */
+    public function exportToByteStream($nsKey, $itemKey, Swift_InputByteStream $is)
+    {
+    }
+
+    /**
      * Check if the given $itemKey exists in the namespace $nsKey.
      *
      * @param string $nsKey
@@ -86,30 +95,21 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
     }
 
     /**
-     * Set a ByteStream into the cache under $itemKey for the namespace $nsKey.
+     * Clear data for $itemKey in the namespace $nsKey if it exists.
      *
-     * @see MODE_WRITE, MODE_APPEND
-     *
-     * @param string                 $nsKey
-     * @param string                 $itemKey
-     * @param Swift_OutputByteStream $os
-     * @param int                    $mode
+     * @param string $nsKey
+     * @param string $itemKey
      */
-    public function importFromByteStream($nsKey, $itemKey, Swift_OutputByteStream $os, $mode)
+    public function clearKey($nsKey, $itemKey)
     {
     }
 
     /**
-     * Set a string into the cache under $itemKey for the namespace $nsKey.
+     * Clear all data in the namespace $nsKey if it exists.
      *
-     * @see MODE_WRITE, MODE_APPEND
-     *
-     * @param string  $nsKey
-     * @param string  $itemKey
-     * @param string  $string
-     * @param int     $mode
+     * @param string $nsKey
      */
-    public function setString($nsKey, $itemKey, $string, $mode)
+    public function clearAll($nsKey)
     {
     }
 }

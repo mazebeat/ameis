@@ -38,7 +38,7 @@ class CustomEvents
 	public function __construct()
 	{
 		$this->monolog     = new Logger('log');
-		$this->info_server = \App\Util\Functions::serverData();
+		$this->info_server = \Functions::serverData();
 		$this->now         = Carbon::now();
 	}
 

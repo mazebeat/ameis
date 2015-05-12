@@ -1,6 +1,10 @@
 <?php namespace App\Util;
 
-\HTML::macro('button', function ($type = 'button', $name, $options = array()) {
+use Illuminate\Support\Facades\Form;
+use Illuminate\Support\Facades\HTML;
+use Illuminate\Support\Facades\Request;
+
+HTML::macro('button', function ($type = 'button', $name, $options = array()) {
 	if (!isset($options['type'])) {
 		$options['type'] = $type;
 	}
@@ -9,26 +13,26 @@
 		return $options['id'];
 	}
 
-	return '<button ' . \HTML::attributes($options) . '>' . $name . '</button>';
+	return '<button ' . HTML::attributes($options) . '>' . $name . '</button>';
 });
 
-\HTML::macro('activeLink', function ($url) {
-	return \Request::is($url) ? 'active current' : '';
+HTML::macro('activeLink', function ($url) {
+	return Request::is($url) ? 'active' : '';
 });
 
-\HTML::macro('activeState', function ($urls = array()) {
+HTML::macro('activeState', function ($urls = array()) {
 	if (count($urls) > 0) {
 		for ($i = 0; $i < count($urls); $i++) {
-			if (\Request::path() == $urls[$i]) {
+			if (Request::path() == $urls[$i]) {
 				echo "active current";
 			}
 		}
 	}
 });
 
-\Form::macro('selectYear2', function ($name, $startYear = null, $endYear = null, $options = array()) {
+Form::macro('selectYear2', function ($name, $startYear = null, $endYear = null, $options = array()) {
 	if ($endYear == null) {
-		$endYear = \Carbon\Carbon::now()->year;
+		$endYear = Carbon::now()->year;
 	}
 	if ($endYear == null) {
 		$endYear = 1980;
@@ -48,7 +52,7 @@
 		$html[] = sprintf('<option value="%d">%d</option>', $value, $display);
 	}
 
-	$options = attributes($options);
+	$options = HTML::attributes($options);
 	$list    = implode('', $html);
 
 	return "<select{$options}>{$list}</select>";
@@ -64,7 +68,7 @@
 		$options['id'] = $name;
 	}
 
-	return sprintf($output, $class, \Form::checkbox($name, $value, $check, $options), \Form::label($name, $title, $options));
+	return sprintf($output, $class, Form::checkbox($name, $value, $check, $options), Form::label($name, $title, $options));
 });
 
 \HTML::macro('tableize', function ($structure, $data, $headers = true) {
@@ -108,28 +112,146 @@
 	return $html;
 });
 
-function attributes($attributes)
-{
+\HTML::macro('dateRange', function ($name, $options = array()) {
+	$months = array(
+		1 => 'Enero',
+		'Febrero',
+		'Marzo',
+		'Abril',
+		'Mayo',
+		'Junio',
+		'Julio',
+		'Agosto',
+		'Septiembre',
+		'Octubre',
+		'Noviembre',
+		'Diciembre'
+	);
+
+	if (!isset($options['name'])) {
+		$options['name'] = $name;
+	}
+
+	if (!isset($options['id'])) {
+		$options['id'] = $name;
+	}
+
 	$html = array();
+	//	$html[] = '<option value="">Seleccione una fecha</option>';
+	$html[] = '<option value=""> </option>';
 
-	foreach ((array)$attributes as $key => $value) {
-		$element = attributeElement($key, $value);
+	for ($i = 0; $i < 13; $i++) {
+		$month      = date("n", mktime(0, 0, 0, date("n") - $i, date("d"), date("Y")));
+		$month_word = $months[date("n", mktime(0, 0, 0, date("n") - $i, date("d"), date("Y")))];
+		$year       = date("Y", mktime(0, 0, 0, date("n") - $i, date("d"), date("Y")));
 
-		if (!is_null($element)) {
-			$html[] = $element;
+		if ($i == 0) {
+			$html[] = sprintf('<option value="%s" selected>%s</option>', ($month . '-' . $year), ($month_word . ' ' . $year));
+		}
+		else {
+			$html[] = sprintf('<option value="%s">%s</option>', ($month . '-' . $year), ($month_word . ' ' . $year));
 		}
 	}
 
-	return count($html) > 0 ? ' ' . implode(' ', $html) : '';
-}
+	$options = \HTML::attributes($options);
+	$list    = implode('', $html);
 
-function attributeElement($key, $value)
-{
-	if (is_numeric($key)) {
-		$key = $value;
-	}
+	return "<select{$options}>{$list}</select>";
+});
 
-	if (!is_null($value)) {
-		return $key . '="' . e($value) . '"';
+\HTML::macro('gentable', function ($name, array $list = array(), array $head = array(), $isSort = false, $sort = array(), $options = array()) {
+	try {
+		if (is_array($list) && count($list) <= 0) {
+			throw new \Exception('The list is empty.<br>');
+		}
+
+		if (is_array($list[0]) && is_array($head)) {
+			$b = count($head);
+			$c = count($list[0]);
+			if ($b > $c) {
+				throw new \Exception('The quantity of thead is more than of list quantity.<br>');
+			}
+
+			if ($b > $c) {
+				throw new \Exception('The quantity of list is more than of thead quantity.<br>');
+			}
+		}
+		else {
+			throw new \Exception('The content of the list should be an array.<br>');
+		}
+
+		if (!isset($options['name'])) {
+			$options['name'] = $name;
+		}
+
+		if (!isset($options['id'])) {
+			$options['id'] = $name;
+		}
+
+		$options = \HTML::attributes($options);
+
+		echo '<table ' . $options . '>';
+		echo '<thead>';
+		echo '<tr>';
+
+		$head = array_flatten(array_flatten($head));
+		foreach ($head as $h) {
+			echo '<th style="width: 10%; text-align: center">' . ($h) . '</th>';
+		}
+
+		echo '<th>Observaciones</th>';
+
+		$list = ($list);
+
+		echo '</tr>';
+		echo '</thead>';
+		echo '<tbody>';
+
+		if ($isSort) {
+			if (is_array($sort) && count($sort) == 4) {
+				$list = $this->arrayOrderBy($list, $sort[0], $sort[1], $sort[2], $sort[3]);
+			}
+			else {
+				if (is_array($list[0]) && count($list[0]) >= 2) {
+					$temp = array_keys($list[0]);
+					$list = $this->arrayOrderBy($list, $temp[0], SORT_ASC, $temp[1], SORT_ASC);
+				}
+			}
+		}
+
+		foreach ($list as $key => $value) {
+			echo '<tr>';
+
+			if (is_array($value)) {
+				foreach ($value as $k => $v) {
+					if (\Str::lower($v) == 'error') {
+						echo '<td style="text-align: center;"><h4><span class="label label-danger">' . \Str::upper(($v)) . '</span></h4></td>';
+					}
+					elseif (\Str::lower($v) == 'ok') {
+						echo '<td style="text-align: center;"><h4><span class="label label-success">' . \Str::upper(($v)) . '</span></h4></td>';
+					}
+					elseif (\Str::lower($v) == 'observacion') {
+						echo '<td style="text-align: center;"><h4><span class="label label-warning">' . \Str::upper(($v)) . '</span></h4></td>';
+					}
+					else {
+						echo '<td style="text-align: center;">' . ($v) . '</td>';
+					}
+				}
+				echo '<td style="text-align: center;">
+					  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalComment"><i class="fa fa-comment-o"></i></button>
+				      <button type="button" class="btn btn-info btn-sm"><i class="fa fa-arrow-circle-down"></i></button>
+					  </td>';
+			}
+
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
+	} catch (\Exception $e) {
+		echo 'ERROR: ' . ' ' . $e->getMessage() . ' <br>';
 	}
-}
+});
+
+\HTML::macro('listaPendientes', function ($list) {
+	//	var_dump($list);
+	return '<div class="alert alert-success"><button class="close" data-dismiss="alert"></button>No existen documentos pendientes.</div>';
+});

@@ -138,7 +138,7 @@
 			</div>
 		</li>
 		<li>
-		@include('layouts.modules.profile')
+			@include('layouts.modules.profile')
 		</li>
 
 	</ul>

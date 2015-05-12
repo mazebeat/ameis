@@ -28,7 +28,7 @@ return array(
 	|
 	*/
 
-	'model'    => 'Usuario',
+	'model'    => 'User',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return array(
 	|
 	*/
 
-	'table'    => 'AME_Mant_Usuarios',
+	'table'    => 'users',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -59,9 +59,13 @@ return array(
 	*/
 
 	'reminder' => array(
-		'email'  => 'emails.auth.reminder',
-		'table'  => 'password_reminders',
+
+		'email' => 'emails.auth.reminder',
+
+		'table' => 'password_reminders',
+
 		'expire' => 60,
+
 	),
 
 );

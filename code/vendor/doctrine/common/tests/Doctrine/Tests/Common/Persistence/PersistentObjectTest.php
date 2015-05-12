@@ -179,6 +179,16 @@ class TestObjectMetadata implements ClassMetadata
         return array('id');
     }
 
+	public function getIdentifierFieldNames()
+	{
+
+	}
+
+	public function getIdentifierValues($entity)
+	{
+
+	}
+
     public function getName()
     {
         return __NAMESPACE__ . '\TestObject';
@@ -223,16 +233,6 @@ class TestObjectMetadata implements ClassMetadata
     public function isSingleValuedAssociation($fieldName)
     {
         return $fieldName === 'parent';
-    }
-
-    public function getIdentifierValues($entity)
-    {
-
-    }
-
-    public function getIdentifierFieldNames()
-    {
-
     }
 
     public function initializeReflection(ReflectionService $reflService)

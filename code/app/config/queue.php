@@ -15,7 +15,7 @@ return array(
 	|
 	*/
 
-	'default' => 'async',
+	'default'     => 'sync',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -29,22 +29,17 @@ return array(
 	*/
 
 	'connections' => array(
-		'async' => array(
-			'driver' => 'async',
-			'binary' => 'php',
-			'binary_args' => '',
-			),
-		
+
 		'sync' => array(
 			'driver' => 'sync',
-			),
+		),
 
 		'beanstalkd' => array(
 			'driver' => 'beanstalkd',
 			'host'   => 'localhost',
 			'queue'  => 'default',
 			'ttr'    => 60,
-			),
+		),
 
 		'sqs' => array(
 			'driver' => 'sqs',
@@ -52,7 +47,7 @@ return array(
 			'secret' => 'your-secret-key',
 			'queue'  => 'your-queue-url',
 			'region' => 'us-east-1',
-			),
+		),
 
 		'iron' => array(
 			'driver'  => 'iron',
@@ -61,14 +56,14 @@ return array(
 			'project' => 'your-project-id',
 			'queue'   => 'your-queue-name',
 			'encrypt' => true,
-			),
+		),
 
 		'redis' => array(
 			'driver' => 'redis',
 			'queue'  => 'default',
-			),
-
 		),
+
+	),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -85,6 +80,6 @@ return array(
 
 		'database' => 'mysql', 'table' => 'failed_jobs',
 
-		),
+	),
 
-	);
+);

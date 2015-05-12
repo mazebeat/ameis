@@ -34,10 +34,6 @@
 
 							<div class="input-group">
 								<input type="text" class="form-control" placeholder="" name="nct" autofocus>
-								<span class="input-group-addon primary">
-									<span class="arrow"></span>
-									<i class="fa fa-ellipsis-h"></i>
-								</span>
 							</div>
 						</div>
 						<div class="col-md-2">
@@ -45,10 +41,6 @@
 
 							<div class="input-group">
 								<input type="text" class="form-control" placeholder="" name="nproy" autofocus>
-								<span class="input-group-addon primary">
-									<span class="arrow"></span>
-									<i class="fa fa-ellipsis-h"></i>
-								</span>
 							</div>
 						</div>
 
@@ -57,10 +49,6 @@
 
 							<div class="input-group">
 								<input type="text" class="form-control" placeholder="" name="rut" autofocus>
-								<span class="input-group-addon primary">
-									<span class="arrow"></span>
-									<i class="fa fa-ellipsis-h"></i>
-								</span>
 							</div>
 
 						</div>
@@ -70,10 +58,6 @@
 
 							<div class="input-group">
 								<input type="text" class="form-control" placeholder="" name="cliente" autofocus>
-								<span class="input-group-addon primary">
-									<span class="arrow"></span>
-									<i class="fa fa-ellipsis-h"></i>
-								</span>
 							</div>
 						</div>
 
@@ -253,7 +237,9 @@
 	{{-- END ACTION BUTTONS --}}
 @endsection
 
-
+@section('rightmenu')
+	{{ \HTML::listaPendientes($pendientes) }}
+@endsection
 
 @section('style')
 	<!-- BEGIN PLUGIN CSS -->

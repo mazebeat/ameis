@@ -38,7 +38,7 @@ use InvalidArgumentException;
 class Registry
 {
     /**
-     * List of all loggers in the registry (by named indexes)
+     * List of all loggers in the registry (ba named indexes)
      *
      * @var Logger[]
      */
@@ -104,31 +104,33 @@ class Registry
     }
 
     /**
-     * Gets Logger instance from the registry
+     * Gets Logger instance from the registry via static method call
      *
-     * @param  string                    $name Name of the requested Logger instance
-     * @return Logger                    Requested instance of Logger
+     * @param  string $name      Name of the requested Logger instance
+     * @param  array  $arguments Arguments passed to static method call
+     *
+*@return Logger                    Requested instance of Logger
      * @throws \InvalidArgumentException If named Logger instance is not in the registry
      */
-    public static function getInstance($name)
-    {
-        if (!isset(self::$loggers[$name])) {
-            throw new InvalidArgumentException(sprintf('Requested "%s" logger instance is not in the registry', $name));
-        }
-
-        return self::$loggers[$name];
+	public static function __callStatic($name, $arguments)
+	{
+		return self::getInstance($name);
     }
 
     /**
-     * Gets Logger instance from the registry via static method call
+     * Gets Logger instance from the registry
      *
-     * @param  string                    $name      Name of the requested Logger instance
-     * @param  array                     $arguments Arguments passed to static method call
-     * @return Logger                    Requested instance of Logger
+     * @param  string $name Name of the requested Logger instance
+     *
+*@return Logger                    Requested instance of Logger
      * @throws \InvalidArgumentException If named Logger instance is not in the registry
      */
-    public static function __callStatic($name, $arguments)
-    {
-        return self::getInstance($name);
+	public static function getInstance($name)
+	{
+		if (!isset(self::$loggers[$name])) {
+			throw new InvalidArgumentException(sprintf('Requested "%s" logger instance is not in the registry', $name));
+		}
+
+		return self::$loggers[$name];
     }
 }

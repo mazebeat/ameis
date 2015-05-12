@@ -24,7 +24,11 @@ class MenuController extends BaseController
 
 	public function getProyectos()
 	{
-		return View::make('proyectos');
+		$comunas    = Comuna::lists('Descripcion', 'Id_Comuna');
+		$unidades   = UnidadMedida::lists('Descripcion', 'Id_UnidadMedida');
+		$pendientes = Proyecto::pendiente()->get();
+
+		return View::make('proyectos')->withComunas($comunas)->withUnidades($unidades)->withPendientes($pendientes);
 	}
 
 	public function getKardex()
@@ -67,7 +71,15 @@ class MenuController extends BaseController
 
 	public function getCotizaciones()
 	{
-		return View::make('cotizaciones');
+		$comunas = Comuna::lists('Descripcion', 'Descripcion');
+		//		$comunas       = Comuna::lists('Descripcion', 'Id_Comuna');
+		//		$ciudades      = Ciudad::lists('Descripcion', 'Id_Ciudad');
+		$ciudades      = Ciudad::lists('Descripcion', 'Descripcion');
+		$tipoServicios = TipoServicio::lists('Nombre_TipoServicio', 'Id_TipoServicio');
+		$unidades      = UnidadMedida::lists('Descripcion', 'Id_UnidadMedida');
+		$pendientes    = Cotizacion::pendiente()->get();
+
+		return View::make('cotizaciones')->withComunas($comunas)->withCiudades($ciudades)->withTservicios($tipoServicios)->withUnidades($unidades)->withPendientes($pendientes);
 	}
 
 	public function getUsers()
@@ -93,14 +105,14 @@ class MenuController extends BaseController
 
 	}
 
-//	public function postCotizaciones()
-//	{
-//		$inputs = Input::all();
-//		$rules  = array();
-//
-//		if ($this->validateInputs($rules)) {
-//			dd($inputs);
-//		}
-//	}
+	//	public function postCotizaciones()
+	//	{
+	//		$inputs = Input::all();
+	//		$rules  = array();
+	//
+	//		if ($this->validateInputs($rules)) {
+	//			dd($inputs);
+	//		}
+	//	}
 
 }

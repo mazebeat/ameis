@@ -5,18 +5,13 @@
     * Generated on <?= date("Y-m-d") ?>.
     *
     * @author Barry vd. Heuvel <barryvdh@gmail.com>
-    * @see https://github.com/barryvdh/laravel-ide-helper
-    */
-
-    /** @noinspection PhpIllegalArrayKeyTypeInspection */
-    /** @noinspection PhpUnusedLocalVariableInspection */
-    /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-    $STATIC_METHOD_TYPES = array(
+    * @see https://github.com/barryvdh/laravel-ide-helper* @noinspection PhpUnusedLocalVariableInspection* @noinspection PhpIllegalArrayKeyTypeInspection
+    */$STATIC_METHOD_TYPES = [
 <?php foreach($methods as $method): ?>
-        <?= $method ?>('') => array(
+	<?= $method ?>('') => [
 <?php foreach($bindings as $abstract => $class): ?>
             '<?= $abstract ?>' instanceof \<?= $class ?>,
-<?php endforeach ?>        ),
+	<?php endforeach ?>        ],
 <?php endforeach ?>
-    );
+];
 }

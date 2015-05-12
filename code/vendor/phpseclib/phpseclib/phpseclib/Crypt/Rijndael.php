@@ -746,9 +746,7 @@ class Crypt_Rijndael extends Crypt_Base
      * Decrypts a block
      *
      * @access private
-     *
      * @param String $in
-     *
      * @return String
      */
 	function _decryptBlock($in)

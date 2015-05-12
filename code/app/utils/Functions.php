@@ -68,6 +68,7 @@ Class Functions
 
 	public static function generateXML($tag_in, $value_in = "", $attribute_in = "")
 	{
+		$return = "";
 		$attributes_out = "";
 		if (is_array($attribute_in)) {
 			if (count($attribute_in) != 0) {
@@ -99,7 +100,7 @@ Class Functions
 	{
 		$obj = new \stdClass();
 		foreach ($array as $key => $val) {
-			$key       = \Str::studly(trim($key));
+			$key = strtolower(trim($key));
 			$obj->$key = is_array($val) ? \Functions::toObject($val) : $val;
 			//			$obj->$key = $val;
 		}

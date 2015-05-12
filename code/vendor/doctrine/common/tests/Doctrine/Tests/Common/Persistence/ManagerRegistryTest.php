@@ -77,6 +77,11 @@ class TestManager
 
 class TestManagerRegistry extends AbstractManagerRegistry
 {
+	public function getAliasNamespace($alias)
+	{
+		return __NAMESPACE__;
+	}
+
     protected function getService($name)
     {
         return new TestManager();
@@ -88,10 +93,5 @@ class TestManagerRegistry extends AbstractManagerRegistry
     protected function resetService($name)
     {
 
-    }
-
-    public function getAliasNamespace($alias)
-    {
-        return __NAMESPACE__;
     }
 }

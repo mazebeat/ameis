@@ -28,6 +28,15 @@ class FileDriverTest extends DoctrineTestCase
         $this->assertEquals('stdGlobal', $element);
     }
 
+	private function newLocator()
+	{
+		$locator = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\FileLocator');
+		$locator->expects($this->any())->method('getFileExtension')->will($this->returnValue('.yml'));
+		$locator->expects($this->any())->method('getPaths')->will($this->returnValue(array(__DIR__ . "/_files")));
+
+		return $locator;
+	}
+
     public function testGetElementFromFile()
     {
         $locator = $this->newLocator();
@@ -114,14 +123,6 @@ class FileDriverTest extends DoctrineTestCase
         $driver = new TestFileDriver(__DIR__ . '/_files', '.yml');
         $this->assertTrue($driver->isTransient('stdClass2'));
         $this->assertFalse($driver->isTransient('stdClass'));
-    }
-
-    private function newLocator()
-    {
-        $locator = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\FileLocator');
-        $locator->expects($this->any())->method('getFileExtension')->will($this->returnValue('.yml'));
-        $locator->expects($this->any())->method('getPaths')->will($this->returnValue(array(__DIR__ . "/_files")));
-        return $locator;
     }
 }
 

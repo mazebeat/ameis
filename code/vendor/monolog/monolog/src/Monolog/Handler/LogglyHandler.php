@@ -11,8 +11,8 @@
 
 namespace Monolog\Handler;
 
-use Monolog\Logger;
 use Monolog\Formatter\LogglyFormatter;
+use Monolog\Logger;
 
 /**
  * Sends errors to Loggly.
@@ -51,9 +51,9 @@ class LogglyHandler extends AbstractProcessingHandler
         $this->tag = (strlen($this->tag) > 0) ? $this->tag .','. $tag : $tag;
     }
 
-    protected function write(array $record)
+	protected function getDefaultFormatter()
     {
-        $this->send($record["formatted"], self::ENDPOINT_SINGLE);
+	    return new LogglyFormatter();
     }
 
     public function handleBatch(array $records)
@@ -68,6 +68,11 @@ class LogglyHandler extends AbstractProcessingHandler
             $this->send($this->getFormatter()->formatBatch($records), self::ENDPOINT_BATCH);
         }
     }
+
+	protected function write(array $record)
+	{
+		$this->send($record["formatted"], self::ENDPOINT_SINGLE);
+	}
 
     protected function send($data, $endpoint)
     {
@@ -87,15 +92,7 @@ class LogglyHandler extends AbstractProcessingHandler
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        if (curl_exec($ch) === false) {
-            throw new \RuntimeException(sprintf('Curl error (code %s): %s', curl_errno($ch), curl_error($ch)));
-        }
-
+	    curl_exec($ch);
         curl_close($ch);
-    }
-
-    protected function getDefaultFormatter()
-    {
-        return new LogglyFormatter();
     }
 }

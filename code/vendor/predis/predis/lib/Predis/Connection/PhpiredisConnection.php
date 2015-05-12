@@ -328,7 +328,6 @@ class PhpiredisConnection extends AbstractConnection
      * Gets the address from the connection parameters.
      *
      * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
-     *
      * @return string
      */
 	protected static function getAddress(ConnectionParametersInterface $parameters)

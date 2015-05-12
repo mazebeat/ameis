@@ -110,8 +110,7 @@ class SQLite3Cache extends CacheProvider
     {
 	    list($idField) = $this->getFields();
 
-        $statement = $this->sqlite->prepare(sprintf('DELETE FROM %s WHERE %s = :id',
-            $this->table, $idField
+	    $statement = $this->sqlite->prepare(sprintf('DELETE FROM %s WHERE %s = :id', $this->table, $idField
         ));
 
         $statement->bindValue(':id', $id);

@@ -14,27 +14,27 @@ $(document).ready(function () {
         effect: "fadeIn"
     });
 
-    $('#login-form').validate({
+    $('#frm_login').validate({
 
-        focusInvalid: false,
+        focusInvalid: true,
         ignore: "",
         rules: {
-            txtusername: {
-                minlength: 9,
+            username: {
+                minlength: 8,
                 required: true
             },
-            txtpassword: {
+            password: {
                 required: true
             }
         },
         messages: {
-            txtusername: {
+            username: {
                 required: "Campo obligatorio",
                 minlength: function (p, element) {
                     return "Tiene que tener un minimo de " + p + " digitos";
                 }
             },
-            txtpassword: {
+            password: {
                 required: "Campo obligatorio"
             }
         },

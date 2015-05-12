@@ -26,16 +26,14 @@ class Location
 
     /** @var int Column where the DocBlock text starts. */
     protected $columnNumber = 0;
-    
-    public function __construct($lineNumber = 0, $columnNumber = 0)
-    {
+
+	public function __construct($lineNumber = 0, $columnNumber = 0)
+	{
         $this->setLineNumber($lineNumber)->setColumnNumber($columnNumber);
     }
 
     /**
-     * Returns the line number that is covered by this location.
-     *
-     * @return integer
+     * @return int Line where the DocBlock text starts.
      */
     public function getLineNumber()
     {
@@ -43,11 +41,10 @@ class Location
     }
 
     /**
-     * Registers which line number is covered by this location object.
      *
-     * @param integer $lineNumber
+     * @param type $lineNumber
      *
-     * @return $this
+*@return $this
      */
     public function setLineNumber($lineNumber)
     {
@@ -57,9 +54,7 @@ class Location
     }
 
     /**
-     * Returns the column number (character position on a line) for this location object.
-     *
-     * @return integer
+     * @return int Column where the DocBlock text starts.
      */
     public function getColumnNumber()
     {
@@ -67,11 +62,10 @@ class Location
     }
 
     /**
-     * Registers the column number (character position on a line) for this location object.
      *
-     * @param integer $columnNumber
+     * @param int $columnNumber
      *
-     * @return $this
+*@return $this
      */
     public function setColumnNumber($columnNumber)
     {

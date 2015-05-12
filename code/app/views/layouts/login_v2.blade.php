@@ -16,11 +16,11 @@
 	<!-- END CORE CSS FRAMEWORK --><!-- BEGIN CSS TEMPLATE -->
 	{{ HTML::style('assets/css/style.css') }}
 	{{ HTML::style('assets/css/responsive.css') }}
-	{{ HTML::style('ass ets/css/custom-icon-set.css') }}
+	{{ HTML::style('assets/css/custom-icon-set.css') }}
 	<!-- END CSS TEMPLATE -->
 </head>
 <!-- END HEAD --><!-- BEGIN BODY -->
-<body class="error-body no-top lazy" data-original="assets/img/work.jpg" style="background-image: url('{{ public_path() }}/assets/img/work.jpg')">
+<body class="error-body no-top lazy" data-original="assets/img/work.jpg" style="background-image: url('{{ URL::asset("assets/img/work.jpg") }}')">
 <div class="container">
 	@yield('content')
 </div>
@@ -35,7 +35,7 @@
 {{ HTML::script('assets/js/login_v2.js' ) }}
 <!-- BEGIN CORE TEMPLATE JS -->
 
-@include('layouts.modules.angularjs')
+{{-- @include('layouts.modules.angularjs') --}}
 <!-- END CORE TEMPLATE JS -->
 </body>
 

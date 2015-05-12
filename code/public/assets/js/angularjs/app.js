@@ -2,13 +2,13 @@
 
 /* Init app */
 var ameis = angular.module('ameis', [
-    'ngGrid',
-    'LocalStorageModule'
-],
-function ($interpolateProvider) {
-    $interpolateProvider.startSymbol('[[');
-    $interpolateProvider.endSymbol(']]');
-});
+        'LocalStorageModule',
+        'ui.bootstrap-slider'
+    ],
+    function ($interpolateProvider) {
+        $interpolateProvider.startSymbol('[[');
+        $interpolateProvider.endSymbol(']]');
+    });
 
 /* Config app */
 ameis.config(['$httpProvider', 'localStorageServiceProvider', function ($httpProvider, localStorageServiceProvider) {

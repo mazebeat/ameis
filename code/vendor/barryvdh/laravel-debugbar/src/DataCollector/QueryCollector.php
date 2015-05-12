@@ -27,17 +27,6 @@ class QueryCollector extends PDOCollector
     }
 
     /**
-     * Renders the SQL of traced statements with params embedded
-     *
-     * @param boolean $enabled
-     * @param string $quotationChar NOT USED
-     */
-    public function setRenderSqlWithParams($enabled = true, $quotationChar = "'")
-    {
-        $this->renderSqlWithParams = $enabled;
-    }
-
-    /**
      * Show or hide the hints in the parameters
      *
      * @param boolean $enabled
@@ -117,43 +106,12 @@ class QueryCollector extends PDOCollector
             'time' => $time,
             'source' => $source,
             'explain' => $explainResults,
-            'connection' => $connection->getDatabaseName(),
             'hints' => $this->showHints ? $hints : null,
         );
 
         if ($this->timeCollector !== null) {
             $this->timeCollector->addMeasure($query, $startTime, $endTime);
         }
-    }
-
-    /**
-     * Check bindings for illegal (non UTF-8) strings, like Binary data.
-     *
-     * @param $bindings
-     * @return mixed
-     */
-    protected function checkBindings($bindings)
-    {
-        foreach ($bindings as &$binding) {
-            if (is_string($binding) && !mb_check_encoding($binding, 'UTF-8')) {
-                $binding = '[BINARY DATA]';
-            }
-        }
-        return $bindings;
-    }
-
-    /**
-     * Make the bindings safe for outputting.
-     *
-     * @param array $bindings
-     * @return array
-     */
-    protected function escapeBindings($bindings)
-    {
-        foreach ($bindings as &$binding) {
-            $binding = htmlentities($binding, ENT_QUOTES, 'UTF-8', false);
-        }
-        return $bindings;
     }
 
     /**
@@ -195,8 +153,25 @@ class QueryCollector extends PDOCollector
         }
         return implode("<br />", $hints);
     }
-    
+
     /**
+     * Check bindings for illegal (non UTF-8) strings, like Binary data.
+     *
+     * @param $bindings
+     * @return mixed
+     */
+	protected function checkBindings($bindings)
+	{
+		foreach ($bindings as &$binding) {
+			if (is_string($binding) && !mb_check_encoding($binding, 'UTF-8')) {
+				$binding = '[BINARY DATA]';
+			}
+		}
+
+		return $bindings;
+	}
+
+	/**
      * Use a backtrace to search for the origin of the query.
      */
     protected function findSource()
@@ -245,7 +220,7 @@ class QueryCollector extends PDOCollector
         return array($file, -1);
     }
 
-    /**
+	/**
      * Shorten the path by removing the relative links and base dir
      *
      * @param string $path
@@ -260,6 +235,21 @@ class QueryCollector extends PDOCollector
     }
 
     /**
+     * Make the bindings safe for outputting.
+     *
+     * @param array $bindings
+     * @return array
+     */
+	protected function escapeBindings($bindings)
+	{
+		foreach ($bindings as &$binding) {
+			$binding = htmlentities($binding, ENT_QUOTES, 'UTF-8', false);
+		}
+
+		return $bindings;
+	}
+
+	/**
      * {@inheritDoc}
      */
     public function collect()
@@ -282,7 +272,6 @@ class QueryCollector extends PDOCollector
                 'duration' => $query['time'],
                 'duration_str' => $this->formatDuration($query['time']),
                 'stmt_id' => $query['source'],
-                'connection' => $query['connection'],
             );
 
             //Add the results from the explain as new rows
@@ -304,17 +293,6 @@ class QueryCollector extends PDOCollector
             'statements' => $statements
         );
         return $data;
-    }
-
-    /**
-     * Removes extra spaces at the beginning and end of the SQL query and its lines.
-     *
-     * @param string $sql
-     * @return string
-     */
-    protected function formatSql($sql)
-    {
-        return trim(preg_replace("/\s*\n\s*/", "\n", $sql));
     }
 
     /**
@@ -342,5 +320,28 @@ class QueryCollector extends PDOCollector
                 "default" => 0
             )
         );
+    }
+
+	/**
+	 * Renders the SQL of traced statements with params embedded
+	 *
+	 * @param boolean $enabled
+	 * @param string  $quotationChar NOT USED
+	 */
+	public function setRenderSqlWithParams($enabled = true, $quotationChar = "'")
+	{
+		$this->renderSqlWithParams = $enabled;
+	}
+
+	/**
+	 * Removes extra spaces at the beginning and end of the SQL query and its lines.
+	 *
+	 * @param string $sql
+	 *
+	 * @return string
+	 */
+	protected function formatSql($sql)
+	{
+		return trim(preg_replace("/\s*\n\s*/", "\n", $sql));
     }
 }

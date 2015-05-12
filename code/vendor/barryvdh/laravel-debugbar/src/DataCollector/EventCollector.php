@@ -1,9 +1,9 @@
 <?php
 namespace Barryvdh\Debugbar\DataCollector;
 
+use Barryvdh\Debugbar\DataCollector\Util\ValueExporter;
 use DebugBar\DataCollector\TimeDataCollector;
 use Illuminate\Events\Dispatcher;
-use Barryvdh\Debugbar\DataCollector\Util\ValueExporter;
 
 class EventCollector extends TimeDataCollector
 {
@@ -23,12 +23,6 @@ class EventCollector extends TimeDataCollector
         $this->addMeasure($name, $time, $time, $this->prepareParams($args) );
     }
 
-    public function subscribe(Dispatcher $events)
-    {
-        $this->events = $events;
-        $events->listen('*', array($this, 'onWildcardEvent'));
-    }
-
     protected function getCurrentEvent($args)
     {
         if(method_exists($this->events, 'firing')){
@@ -43,9 +37,18 @@ class EventCollector extends TimeDataCollector
     {
         $data = array();
         foreach ($params as $key => $value) {
-            $data[$key] = htmlentities($this->exporter->exportValue($value), ENT_QUOTES, 'UTF-8', false);
+	        $data[$key] = $this->exporter->exportValue($value);
         }
         return $data;
+    }
+
+	public function subscribe(Dispatcher $events)
+	{
+		$this->events = $events;
+		$events->listen('*', array(
+			$this,
+			'onWildcardEvent'
+		));
     }
 
     public function collect()

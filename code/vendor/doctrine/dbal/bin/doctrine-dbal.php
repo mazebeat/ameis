@@ -20,7 +20,7 @@
 use Doctrine\DBAL\Tools\Console\ConsoleRunner;
 use Symfony\Component\Console\Helper\HelperSet;
 
-$files       = array(
+$files = array(
 	__DIR__ . '/../vendor/autoload.php',
 	__DIR__ . '/../../../autoload.php'
 );

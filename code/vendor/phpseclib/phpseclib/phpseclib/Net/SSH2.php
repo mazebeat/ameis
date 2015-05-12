@@ -1485,7 +1485,7 @@ class Net_SSH2
 		return $payload;
 	}
 
-	/**
+    /**
      * Key Exchange
      *
      * @param String $kexinit_payload_server
@@ -2199,7 +2199,6 @@ class Net_SSH2
 	 *
 	 * @param String $data
 	 * @param        optional String $logged
-	 *
 	 * @see    Net_SSH2::_get_binary_packet()
      * @return Boolean
 	 * @access private
@@ -2237,7 +2236,7 @@ class Net_SSH2
 			$packet = $this->encrypt->encrypt($packet);
 		}
 
-		$packet .= $hmac;
+		$packet.= $hmac;
 
 		$start  = strtok(microtime(), ' ') + strtok(''); // http://php.net/microtime#61838
 		$result = strlen($packet) == fputs($this->fsock, $packet);
@@ -2258,8 +2257,8 @@ class Net_SSH2
 	 * Disconnect
 	 *
 	 * @param Integer $reason
-     *
-*@return Boolean
+	 *
+	 * @return Boolean
      * @access private
 	 */
 	function _disconnect($reason)
@@ -2670,7 +2669,7 @@ class Net_SSH2
 		}
 
 		return $this->_keyboard_interactive_process($password);
-	}
+    }
 
     /**
      * Set Timeout
@@ -3107,8 +3106,8 @@ class Net_SSH2
 				return $response ? $this->_string_shift($this->interactiveBuffer, strlen($this->interactiveBuffer)) : false;
 			}
 
-			$this->interactiveBuffer .= $response;
-		}
+			$this->interactiveBuffer.= $response;
+        }
     }
 
     /**
@@ -3212,13 +3211,13 @@ class Net_SSH2
 	/**
 	 * Inputs a command into an interactive shell.
 	 *
-	 * @see    Net_SSH2::read()
+	 * @see Net_SSH2::read()
 	 *
 	 * @param String $cmd
-     *
-*@return Boolean
+	 *
+	 * @return Boolean
 	 * @access public
-	 */
+     */
     function write($cmd)
     {
         if (!($this->bitmap & NET_SSH2_MASK_LOGIN)) {
@@ -3241,7 +3240,7 @@ class Net_SSH2
 	 * Spans multiple SSH_MSG_CHANNEL_DATAs if appropriate
 	 *
 	 * @param Integer $client_channel
-     * @param String  $data
+	 * @param String  $data
 	 *
 	 * @return Boolean
 	 * @access private
@@ -3267,7 +3266,7 @@ class Net_SSH2
 			$this->window_size_client_to_server[$client_channel] -= strlen($temp);
 			if (!$this->_send_binary_packet($packet)) {
 				return false;
-			}
+            }
         }
 
         return true;
@@ -3868,9 +3867,8 @@ class Net_SSH2
 
 	/**
 	 * Sets the number of columns for the terminal window size.
-	 *
-     * @param Integer $value
-	 *
+     *
+	 * @param Integer $value
 	 * @access public
 	 */
 	function setWindowColumns($value)
@@ -3880,12 +3878,12 @@ class Net_SSH2
 
 	/**
 	 * Returns the number of rows for the terminal window size.
-     *
-     * @return Integer
+	 *
+	 * @return Integer
 	 * @access public
 	 */
 	function getWindowRows()
-	{
+    {
         return $this->windowRows;
     }
 

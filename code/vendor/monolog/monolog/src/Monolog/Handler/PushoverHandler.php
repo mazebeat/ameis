@@ -30,7 +30,6 @@ class PushoverHandler extends SocketHandler
 
     private $highPriorityLevel;
     private $emergencyLevel;
-    private $useFormattedMessage = false;
 
     /**
      * All parameters that can be sent to Pushover
@@ -93,6 +92,16 @@ class PushoverHandler extends SocketHandler
         $this->expire = $expire;
     }
 
+	public function setHighPriorityLevel($value)
+	{
+		$this->highPriorityLevel = $value;
+	}
+
+	public function setEmergencyLevel($value)
+	{
+		$this->emergencyLevel = $value;
+	}
+
     protected function generateDataStream($record)
     {
         $content = $this->buildContent($record);
@@ -100,14 +109,23 @@ class PushoverHandler extends SocketHandler
         return $this->buildHeader($content) . $content;
     }
 
+	protected function write(array $record)
+	{
+		foreach ($this->users as $user) {
+			$this->user = $user;
+
+			parent::write($record);
+			$this->closeSocket();
+		}
+
+		$this->user = null;
+	}
+
     private function buildContent($record)
     {
         // Pushover has a limit of 512 characters on title and message combined.
         $maxMessageLength = 512 - strlen($this->title);
-
-        $message = ($this->useFormattedMessage) ? $record['formatted'] : $record['message'];
-        $message = substr($message, 0, $maxMessageLength);
-
+	    $message = substr($record['message'], 0, $maxMessageLength);
         $timestamp = $record['datetime']->getTimestamp();
 
         $dataArray = array(
@@ -150,36 +168,5 @@ class PushoverHandler extends SocketHandler
         $header .= "\r\n";
 
         return $header;
-    }
-
-    protected function write(array $record)
-    {
-        foreach ($this->users as $user) {
-            $this->user = $user;
-
-            parent::write($record);
-            $this->closeSocket();
-        }
-
-        $this->user = null;
-    }
-
-    public function setHighPriorityLevel($value)
-    {
-        $this->highPriorityLevel = $value;
-    }
-
-    public function setEmergencyLevel($value)
-    {
-        $this->emergencyLevel = $value;
-    }
-
-    /**
-     * Use the formatted message?
-     * @param boolean $value
-     */
-    public function useFormattedMessage($value)
-    {
-        $this->useFormattedMessage = (boolean) $value;
     }
 }

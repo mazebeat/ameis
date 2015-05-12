@@ -26,22 +26,21 @@ class ApiController extends \BaseController
 		try {
 			if ($sql != '') {
 
-				$sql = 'EXEC dbo.AMEIS_RetornaClientesPorRut 15890302, 0, "OK"';
-
-				$pdo  = \DB::connection()->getPdo();
+				$pdo = \DB::connection()->getPdo();
 				try {
 					$stmt = $pdo->query($sql);
+
 					do {
 						$rowset = $stmt->fetchAll(PDO::FETCH_NAMED);
+
 						if ($rowset) {
 							foreach ($rowset as $row) {
-								$var = \Functions::toObject($row);
-								array_push($result, $var);
+								array_push($result, $row);
 							}
 						}
 					} while ($stmt->nextRowset());
 
-				} catch(PDOException $ex) {
+				} catch (PDOException $ex) {
 					$data['message'] = 'Error: ' . $pdo->errorInfo() . ' | ' . $pdo->errorCode();
 				}
 				if (count($result) <= 0) {

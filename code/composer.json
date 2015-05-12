@@ -1,11 +1,9 @@
 {
-	"name": "mazebaet/ameis",
-	"description": "The Ameis Project.",
+	"name": "laravel/laravel",
+	"description": "The Laravel Framework.",
 	"keywords": [
-		"project",
-		"amies",
-		"mazebeat",
-		"2015"
+		"framework",
+		"laravel"
 	],
 	"license": "MIT",
 	"require": {
@@ -25,7 +23,6 @@
 			"app/commands",
 			"app/controllers",
 			"app/models",
-			"app/utils",
 			"app/database/migrations",
 			"app/database/seeds",
 			"app/tests/TestCase.php"
@@ -48,5 +45,5 @@
 	"config": {
 		"preferred-install": "dist"
 	},
-	"minimum-stability": "dev"
+	"minimum-stability": "stable"
 }

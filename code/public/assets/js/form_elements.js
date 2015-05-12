@@ -3,24 +3,24 @@
 -----------------------------------------------------------------*/	
 //Cool ios7 switch - Beta version
 //Done using pure Javascript
-if(!$('html').hasClass('lte9')) { 
-var Switch = require('ios7-switch')
+if(!$('html').hasClass('lte9')) {
+    var Switch = require('ios7-switch')
         , checkbox = document.querySelector('.ios')
         , mySwitch = new Switch(checkbox);
- mySwitch.toggle();
-      mySwitch.el.addEventListener('click', function(e){
+    mySwitch.toggle();
+    mySwitch.el.addEventListener('click', function (e) {
         e.preventDefault();
         mySwitch.toggle();
-      }, false);
+    }, false);
 //creating multiple instances
 var Switch2 = require('ios7-switch')
-        , checkbox = document.querySelector('.iosblue')
-        , mySwitch2 = new Switch2(checkbox);
+    , checkbox = document.querySelector('.iosblue')
+    , mySwitch2 = new Switch2(checkbox);
 
-      mySwitch2.el.addEventListener('click', function(e){
+    mySwitch2.el.addEventListener('click', function (e) {
         e.preventDefault();
         mySwitch2.toggle();
-      }, false);
+    }, false);
 }
 $(document).ready(function(){
 	  //Dropdown menu - select2 plug-in
@@ -31,34 +31,34 @@ $(document).ready(function(){
 	  
 	  //Date Pickers
 	  $('.input-append.date').datepicker({
-				autoclose: true,
-				todayHighlight: true
-	   });
-	 
-	 $('#dp5').datepicker();
-	 
-	 $('#sandbox-advance').datepicker({
-			format: "dd/mm/yyyy",
-			startView: 1,
-			daysOfWeekDisabled: "3,4",
-			autoclose: true,
-			todayHighlight: true
+          autoclose: true,
+          todayHighlight: true
+      });
+
+    $('#dp5').datepicker();
+
+    $('#sandbox-advance').datepicker({
+        format: "dd/mm/yyyy",
+        startView: 1,
+        daysOfWeekDisabled: "3,4",
+        autoclose: true,
+        todayHighlight: true
     });
-	
+	  
 	//Time pickers
 	$('.clockpicker ').clockpicker({
         autoclose: true
     });
-    
+	
 	//Color pickers
 	$('.my-colorpicker-control').colorpicker()
 	
 	//Input mask - Input helper
 	$(function($){
-	   $("#date").mask("99/99/9999");
-	   $("#phone").mask("(999) 999-9999");
-	   $("#tin").mask("99-9999999");
-	   $("#ssn").mask("999-99-9999");
+        $("#date").mask("99/99/9999");
+        $("#phone").mask("(999) 999-9999");
+        $("#tin").mask("99-9999999");
+        $("#ssn").mask("999-99-9999");
 	});
 	
 	//Autonumeric plug-in - automatic addition of dollar signs,etc controlled by tag attributes

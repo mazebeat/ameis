@@ -81,7 +81,7 @@ class Store implements StoreInterface
 			$response = $this->restoreResponse($entry[1]);
 			if ($response->isFresh()) {
 				$response->expire();
-				$modified  = true;
+				$modified = true;
 				$entries[] = array(
 					$entry[0],
 					$this->persistResponse($response)

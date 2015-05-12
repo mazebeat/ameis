@@ -1,6 +1,7 @@
 <?php
 
-class Clientes extends Eloquent {
+class Cliente extends Eloquent
+{
 
 	public $timestamps = false;
 	protected $table = 'AME_Mant_Clientes';

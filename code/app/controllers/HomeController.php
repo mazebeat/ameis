@@ -2,45 +2,58 @@
 
 class HomeController extends BaseController
 {
+	public function index()
+	{
+		if (Auth::check()) {
+			if (Auth::viaRemember()) {
+				return Redirect::to('admin')->with('rememberMe', 1);
+			}
+			else {
+				return Redirect::to('admin');
+			}
+		}
+		else {
+			return View::make('index');
+		}
+	}
 
-	public function doLogin()
+	public function login()
 	{
 
-		Config::set('auth.username', 'usuario');
-		Config::set('auth.password', 'contraseña');
-
-		$rules = array(
-			'username' => 'required',
-			'password' => 'required'
-		);
-
-		$messages = array(
-			'username' => 'Campo usuario es requerido',
-			'password' => 'Campo contraseña es requerido'
-		);
-
-		$validator = Validator::make(Input::all(), $rules, $messages);
-
+		$validator = User::validate(Input::all());
 		if ($validator->fails()) {
-			return Redirect::to('/')->withErrors($validator)->withInput(Input::except('password'));
-		} else {
-			$credentials = array(
-				'username' => Input::get('username'),
+			return Redirect::back()->withErrors($validator->messages())->withInput(Input::except(array(
+				                                                                                     'password',
+				                                                                                     '_token'
+			                                                                                     )));
+		}
+		else {
+			$userdata = array(
+				'Usuario' => Input::get('username'),
 				'password' => Input::get('password')
 			);
 
-			if (Auth::attempt($credentials)) {
-				return Redirect::to('graficosCorreos');
-			} else {
+			if (Input::get('persist') == 'on') {
+				$isAuth = Auth::attempt($userdata, true);
+			}
+			else {
+				$isAuth = Auth::attempt($userdata);
+			}
+
+			if ($isAuth) {
 				return Redirect::to('/');
 			}
+
+			return Redirect::to('/')->withInput(Input::except(array(
+				                                                  'password',
+				                                                  '_token'
+			                                                  )));
 		}
 	}
 
 	public function logout()
 	{
 		Auth::logout();
-
 		return Redirect::to('/');
 	}
 

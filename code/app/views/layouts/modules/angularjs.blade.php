@@ -5,7 +5,7 @@
 
 {{-- BEGIN APP --}}
 {{ HTML::script('assets/js/angularjs/app.js') }}
-{{ HTML::script('assets/js/angularjs/angular-local-storage.js') }}
+{{ HTML::script('assets/js/angularjs/angular-local-storage.js') }}{{ HTML::script('assets/js/angularjs/slider.js') }}
 
 <script>
 	ameis.factory('rootFactory', function () {

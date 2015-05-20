@@ -4,7 +4,8 @@ use Illuminate\Routing\UrlGenerator;
 use Illuminate\Session\Store as Session;
 use Illuminate\Support\Traits\MacroableTrait;
 
-class FormBuilder {
+class FormBuilder
+{
 
 	use MacroableTrait;
 
@@ -18,7 +19,7 @@ class FormBuilder {
 	/**
 	 * The URL generator instance.
 	 *
-	 * @var \Illuminate\Routing\UrlGenerator  $url
+	 * @var \Illuminate\Routing\UrlGenerator $url
 	 */
 	protected $url;
 
@@ -55,33 +56,52 @@ class FormBuilder {
 	 *
 	 * @var array
 	 */
-	protected $reserved = array('method', 'url', 'route', 'action', 'files');
+	protected $reserved
+		= array(
+			'method',
+			'url',
+			'route',
+			'action',
+			'files'
+		);
 
 	/**
 	 * The form methods that should be spoofed, in uppercase.
 	 *
 	 * @var array
 	 */
-	protected $spoofedMethods = array('DELETE', 'PATCH', 'PUT');
+	protected $spoofedMethods
+		= array(
+			'DELETE',
+			'PATCH',
+			'PUT'
+		);
 
 	/**
 	 * The types of inputs to not fill values on by default.
 	 *
 	 * @var array
 	 */
-	protected $skipValueTypes = array('file', 'password', 'checkbox', 'radio');
+	protected $skipValueTypes
+		= array(
+			'file',
+			'password',
+			'checkbox',
+			'radio'
+		);
 
 	/**
 	 * Create a new form builder instance.
 	 *
-	 * @param  \Illuminate\Routing\UrlGenerator  $url
-	 * @param  \Illuminate\Html\HtmlBuilder  $html
-	 * @param  string  $csrfToken
+	 * @param  \Illuminate\Routing\UrlGenerator $url
+	 * @param  \Illuminate\Html\HtmlBuilder     $html
+	 * @param  string                           $csrfToken
+	 *
 	 * @return void
 	 */
 	public function __construct(HtmlBuilder $html, UrlGenerator $url, $csrfToken)
 	{
-		$this->url = $url;
+		$this->url  = $url;
 		$this->html = $html;
 		$this->csrfToken = $csrfToken;
 	}
@@ -91,6 +111,7 @@ class FormBuilder {
 	 *
 	 * @param  mixed $model
 	 * @param  array $options
+	 *
 	 * @return string
 	 */
 	public function model($model, array $options = array())
@@ -103,7 +124,8 @@ class FormBuilder {
 	/**
 	 * Open up a new HTML form.
 	 *
-	 * @param  array   $options
+	 * @param  array $options
+	 *
 	 * @return string
 	 */
 	public function open(array $options = array())
@@ -124,8 +146,7 @@ class FormBuilder {
 		// different method than it actually is, for convenience from the forms.
 		$append = $this->getAppendage($method);
 
-		if (isset($options['files']) && $options['files'])
-		{
+		if (isset($options['files']) && $options['files']) {
 			$options['enctype'] = 'multipart/form-data';
 		}
 
@@ -143,7 +164,7 @@ class FormBuilder {
 		// extra value for the hidden _method field if it's needed for the form.
 		$attributes = $this->html->attributes($attributes);
 
-		return '<form'.$attributes.'>'.$append;
+		return '<form' . $attributes . '>' . $append;
 	}
 
 	/**
@@ -151,7 +172,7 @@ class FormBuilder {
 	 *
 	 * @param  string $method
 	 *
-*@return string
+	 * @return string
 	 */
 	protected function getMethod($method)
 	{
@@ -195,7 +216,7 @@ class FormBuilder {
 	 *
 	 * @param  array|string $options
 	 *
-*@return string
+	 * @return string
 	 */
 	protected function getUrlAction($options)
 	{
@@ -227,7 +248,7 @@ class FormBuilder {
 	 *
 	 * @param  array|string $options
 	 *
-*@return string
+	 * @return string
 	 */
 	protected function getControllerAction($options)
 	{
@@ -243,7 +264,7 @@ class FormBuilder {
 	 *
 	 * @param  string $method
 	 *
-*@return string
+	 * @return string
 	 */
 	protected function getAppendage($method)
 	{
@@ -276,7 +297,7 @@ class FormBuilder {
 	 * @param  string $value
 	 * @param  array  $options
 	 *
-*@return string
+	 * @return string
 	 */
 	public function hidden($name, $value = null, $options = array())
 	{
@@ -286,23 +307,25 @@ class FormBuilder {
 	/**
 	 * Create a form input field.
 	 *
-	 * @param  string  $type
-	 * @param  string  $name
-	 * @param  string  $value
-	 * @param  array   $options
+	 * @param  string $type
+	 * @param  string $name
+	 * @param  string $value
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function input($type, $name, $value = null, $options = array())
 	{
-		if ( ! isset($options['name'])) $options['name'] = $name;
+		if (!isset($options['name'])) {
+			$options['name'] = $name;
+		}
 
 		// We will get the appropriate value for the given field. We will look for the
 		// value in the session for the value in the old input data then we'll look
 		// in the model instance if one is set. Otherwise we will just use empty.
 		$id = $this->getIdAttribute($name, $options);
 
-		if ( ! in_array($type, $this->skipValueTypes))
-		{
+		if (!in_array($type, $this->skipValueTypes)) {
 			$value = $this->getValueAttribute($name, $value);
 		}
 
@@ -313,7 +336,7 @@ class FormBuilder {
 
 		$options = array_merge($options, $merge);
 
-		return '<input'.$this->html->attributes($options). '>';
+		return '<input' . $this->html->attributes($options) . '>';
 	}
 
 	/**
@@ -321,6 +344,7 @@ class FormBuilder {
 	 *
 	 * @param  string $name
 	 * @param  array  $attributes
+	 *
 	 * @return string
 	 */
 	public function getIdAttribute($name, $attributes)
@@ -337,8 +361,9 @@ class FormBuilder {
 	/**
 	 * Get the value that should be assigned to the field.
 	 *
-	 * @param  string  $name
-	 * @param  string  $value
+	 * @param  string $name
+	 * @param  string $value
+	 *
 	 * @return string
 	 */
 	public function getValueAttribute($name, $value = null)
@@ -364,6 +389,7 @@ class FormBuilder {
 	 * Get a value from the session's old input.
 	 *
 	 * @param  string $name
+	 *
 	 * @return string
 	 */
 	public function old($name)
@@ -451,9 +477,10 @@ class FormBuilder {
 	/**
 	 * Create a form label element.
 	 *
-	 * @param  string  $name
-	 * @param  string  $value
-	 * @param  array   $options
+	 * @param  string $name
+	 * @param  string $value
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function label($name, $value = null, $options = array())
@@ -464,7 +491,7 @@ class FormBuilder {
 
 		$value = e($this->formatLabel($name, $value));
 
-		return '<label for="' . $name . '"' . $options.'>'.$value . '</label>';
+		return '<label for="' . $name . '"' . $options . '>' . $value . '</label>';
 	}
 
 	/**
@@ -472,6 +499,7 @@ class FormBuilder {
 	 *
 	 * @param  string      $name
 	 * @param  string|null $value
+	 *
 	 * @return string
 	 */
 	protected function formatLabel($name, $value)
@@ -482,9 +510,10 @@ class FormBuilder {
 	/**
 	 * Create a text input field.
 	 *
-	 * @param  string  $name
-	 * @param  string  $value
-	 * @param  array   $options
+	 * @param  string $name
+	 * @param  string $value
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function text($name, $value = null, $options = array())
@@ -508,9 +537,10 @@ class FormBuilder {
 	/**
 	 * Create an e-mail input field.
 	 *
-	 * @param  string  $name
-	 * @param  string  $value
-	 * @param  array   $options
+	 * @param  string $name
+	 * @param  string $value
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function email($name, $value = null, $options = array())
@@ -521,9 +551,10 @@ class FormBuilder {
 	/**
 	 * Create a url input field.
 	 *
-	 * @param  string  $name
-	 * @param  string  $value
-	 * @param  array   $options
+	 * @param  string $name
+	 * @param  string $value
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function url($name, $value = null, $options = array())
@@ -534,8 +565,9 @@ class FormBuilder {
 	/**
 	 * Create a file input field.
 	 *
-	 * @param  string  $name
-	 * @param  array   $options
+	 * @param  string $name
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function file($name, $options = array())
@@ -546,14 +578,17 @@ class FormBuilder {
 	/**
 	 * Create a textarea input field.
 	 *
-	 * @param  string  $name
-	 * @param  string  $value
-	 * @param  array   $options
+	 * @param  string $name
+	 * @param  string $value
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function textarea($name, $value = null, $options = array())
 	{
-		if ( ! isset($options['name'])) $options['name'] = $name;
+		if (!isset($options['name'])) {
+			$options['name'] = $name;
+		}
 
 		// Next we will look for the rows and cols attributes, as each of these are put
 		// on the textarea element definition. If they are not present, we will just
@@ -562,7 +597,7 @@ class FormBuilder {
 
 		$options['id'] = $this->getIdAttribute($name, $options);
 
-		$value = (string) $this->getValueAttribute($name, $value);
+		$value = (string)$this->getValueAttribute($name, $value);
 
 		unset($options['size']);
 
@@ -571,19 +606,19 @@ class FormBuilder {
 		// the element. Then we'll create the final textarea elements HTML for us.
 		$options = $this->html->attributes($options);
 
-		return '<textarea'.$options.'>'.e($value).'</textarea>';
+		return '<textarea' . $options . '>' . e($value) . '</textarea>';
 	}
 
 	/**
 	 * Set the text area size on the attributes.
 	 *
-	 * @param  array  $options
+	 * @param  array $options
+	 *
 	 * @return array
 	 */
 	protected function setTextAreaSize($options)
 	{
-		if (isset($options['size']))
-		{
+		if (isset($options['size'])) {
 			return $this->setQuickTextAreaSize($options);
 		}
 
@@ -600,22 +635,27 @@ class FormBuilder {
 	/**
 	 * Set the text area size using the quick "size" attribute.
 	 *
-	 * @param  array  $options
+	 * @param  array $options
+	 *
 	 * @return array
 	 */
 	protected function setQuickTextAreaSize($options)
 	{
 		$segments = explode('x', $options['size']);
 
-		return array_merge($options, array('cols' => $segments[0], 'rows' => $segments[1]));
+		return array_merge($options, array(
+			'cols' => $segments[0],
+			'rows' => $segments[1]
+		));
 	}
 
 	/**
 	 * Create a number input field.
 	 *
-	 * @param  string  $name
-	 * @param  string|null  $value
-	 * @param  array  $options
+	 * @param  string      $name
+	 * @param  string|null $value
+	 * @param  array       $options
+	 *
 	 * @return string
 	 */
 	public function number($name, $value = null, $options = array())
@@ -626,10 +666,11 @@ class FormBuilder {
 	/**
 	 * Create a select box field.
 	 *
-	 * @param  string  $name
-	 * @param  array   $list
-	 * @param  string  $selected
-	 * @param  array   $options
+	 * @param  string $name
+	 * @param  array  $list
+	 * @param  string $selected
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function select2($name, $list = array(), $selected = null, $options = array())
@@ -641,7 +682,9 @@ class FormBuilder {
 
 		$options['id'] = $this->getIdAttribute($name, $options);
 
-		if ( ! isset($options['name'])) $options['name'] = $name;
+		if (!isset($options['name'])) {
+			$options['name'] = $name;
+		}
 
 		// We will simply loop through the options and build an HTML value for each of
 		// them until we have an array of HTML declarations. Then we will join them
@@ -649,8 +692,7 @@ class FormBuilder {
 		$html   = array();
 		$html[] = '<option value=""></option>';
 
-		foreach ($list as $value => $display)
-		{
+		foreach ($list as $value => $display) {
 			$html[] = $this->getSelectOption($display, $value, $selected);
 		}
 
@@ -667,15 +709,15 @@ class FormBuilder {
 	/**
 	 * Get the select option for the given value.
 	 *
-	 * @param  string  $display
-	 * @param  string  $value
-	 * @param  string  $selected
+	 * @param  string $display
+	 * @param  string $value
+	 * @param  string $selected
+	 *
 	 * @return string
 	 */
 	public function getSelectOption($display, $value, $selected)
 	{
-		if (is_array($display))
-		{
+		if (is_array($display)) {
 			return $this->optionGroup($display, $value, $selected);
 		}
 
@@ -685,65 +727,69 @@ class FormBuilder {
 	/**
 	 * Create an option group form element.
 	 *
-	 * @param  array   $list
-	 * @param  string  $label
-	 * @param  string  $selected
+	 * @param  array  $list
+	 * @param  string $label
+	 * @param  string $selected
+	 *
 	 * @return string
 	 */
 	protected function optionGroup($list, $label, $selected)
 	{
 		$html = array();
 
-		foreach ($list as $value => $display)
-		{
+		foreach ($list as $value => $display) {
 			$html[] = $this->option($display, $value, $selected);
 		}
 
-		return '<optgroup label="'.e($label).'">'.implode('', $html).'</optgroup>';
+		return '<optgroup label="' . e($label) . '">' . implode('', $html) . '</optgroup>';
 	}
 
 	/**
 	 * Create a select element option.
 	 *
-	 * @param  string  $display
-	 * @param  string  $value
-	 * @param  string  $selected
+	 * @param  string $display
+	 * @param  string $value
+	 * @param  string $selected
+	 *
 	 * @return string
 	 */
 	protected function option($display, $value, $selected)
 	{
 		$selected = $this->getSelectedValue($value, $selected);
 
-		$options = array('value' => e($value), 'selected' => $selected);
+		$options = array(
+			'value'    => e($value),
+			'selected' => $selected
+		);
 
-		return '<option'.$this->html->attributes($options).'>'.e($display).'</option>';
+		return '<option' . $this->html->attributes($options) . '>' . e($display) . '</option>';
 	}
 
 	/**
 	 * Determine if the value is selected.
 	 *
-	 * @param  string  $value
-	 * @param  string  $selected
+	 * @param  string $value
+	 * @param  string $selected
+	 *
 	 * @return string
 	 */
 	protected function getSelectedValue($value, $selected)
 	{
-		if (is_array($selected))
-		{
+		if (is_array($selected)) {
 			return in_array($value, $selected) ? 'selected' : null;
 		}
 
-		return ((string) $value == (string) $selected) ? 'selected' : null;
+		return ((string)$value == (string)$selected) ? 'selected' : null;
 	}
 
 	/**
 	 * Create a select range field.
 	 *
-	 * @param  string  $name
-	 * @param  string  $begin
-	 * @param  string  $end
-	 * @param  string  $selected
-	 * @param  array   $options
+	 * @param  string $name
+	 * @param  string $begin
+	 * @param  string $end
+	 * @param  string $selected
+	 * @param  array  $options
 	 *
 	 * @return string
 	 */
@@ -761,6 +807,7 @@ class FormBuilder {
 	 * @param  array  $list
 	 * @param  string $selected
 	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function select($name, $list = array(), $selected = null, $options = array())
@@ -838,10 +885,11 @@ class FormBuilder {
 	/**
 	 * Create a checkbox input field.
 	 *
-	 * @param  string  $name
-	 * @param  mixed   $value
-	 * @param  bool    $checked
-	 * @param  array $options
+	 * @param  string $name
+	 * @param  mixed  $value
+	 * @param  bool   $checked
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function checkbox($name, $value = 1, $checked = null, $options = array())
@@ -852,18 +900,21 @@ class FormBuilder {
 	/**
 	 * Create a checkable input field.
 	 *
-	 * @param  string  $type
-	 * @param  string  $name
-	 * @param  mixed   $value
-	 * @param  bool    $checked
-	 * @param  array   $options
+	 * @param  string $type
+	 * @param  string $name
+	 * @param  mixed  $value
+	 * @param  bool   $checked
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	protected function checkable($type, $name, $value, $checked, $options)
 	{
 		$checked = $this->getCheckedState($type, $name, $value, $checked);
 
-		if ($checked) $options['checked'] = 'checked';
+		if ($checked) {
+			$options['checked'] = 'checked';
+		}
 
 		return $this->input($type, $name, $value, $options);
 	}
@@ -871,16 +922,16 @@ class FormBuilder {
 	/**
 	 * Get the check state for a checkable input.
 	 *
-	 * @param  string  $type
-	 * @param  string  $name
-	 * @param  mixed   $value
-	 * @param  bool    $checked
+	 * @param  string $type
+	 * @param  string $name
+	 * @param  mixed  $value
+	 * @param  bool   $checked
+	 *
 	 * @return bool
 	 */
 	protected function getCheckedState($type, $name, $value, $checked)
 	{
-		switch ($type)
-		{
+		switch ($type) {
 			case 'checkbox':
 				return $this->getCheckboxCheckedState($name, $value, $checked);
 
@@ -895,16 +946,21 @@ class FormBuilder {
 	/**
 	 * Get the check state for a checkbox input.
 	 *
-	 * @param  string  $name
+	 * @param  string $name
 	 * @param  mixed  $value
-	 * @param  bool  $checked
+	 * @param  bool   $checked
+	 *
 	 * @return bool
 	 */
 	protected function getCheckboxCheckedState($name, $value, $checked)
 	{
-		if (isset($this->session) && ! $this->oldInputIsEmpty() && is_null($this->old($name))) return false;
+		if (isset($this->session) && !$this->oldInputIsEmpty() && is_null($this->old($name))) {
+			return false;
+		}
 
-		if ($this->missingOldAndModel($name)) return $checked;
+		if ($this->missingOldAndModel($name)) {
+			return $checked;
+		}
 
 		$posted = $this->getValueAttribute($name);
 
@@ -936,14 +992,17 @@ class FormBuilder {
 	/**
 	 * Get the check state for a radio input.
 	 *
-	 * @param  string  $name
+	 * @param  string $name
 	 * @param  mixed  $value
-	 * @param  bool  $checked
+	 * @param  bool   $checked
+	 *
 	 * @return bool
 	 */
 	protected function getRadioCheckedState($name, $value, $checked)
 	{
-		if ($this->missingOldAndModel($name)) return $checked;
+		if ($this->missingOldAndModel($name)) {
+			return $checked;
+		}
 
 		return $this->getValueAttribute($name) == $value;
 	}
@@ -970,8 +1029,9 @@ class FormBuilder {
 	/**
 	 * Create a HTML reset input element.
 	 *
-	 * @param  string  $value
-	 * @param  array   $attributes
+	 * @param  string $value
+	 * @param  array  $attributes
+	 *
 	 * @return string
 	 */
 	public function reset($value, $attributes = array())
@@ -982,9 +1042,10 @@ class FormBuilder {
 	/**
 	 * Create a HTML image input element.
 	 *
-	 * @param  string  $url
-	 * @param  string  $name
-	 * @param  array   $attributes
+	 * @param  string $url
+	 * @param  string $name
+	 * @param  array  $attributes
+	 *
 	 * @return string
 	 */
 	public function image($url, $name = null, $attributes = array())
@@ -997,8 +1058,9 @@ class FormBuilder {
 	/**
 	 * Create a submit button element.
 	 *
-	 * @param  string  $value
-	 * @param  array   $options
+	 * @param  string $value
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function submit($value = null, $options = array())
@@ -1009,18 +1071,18 @@ class FormBuilder {
 	/**
 	 * Create a button element.
 	 *
-	 * @param  string  $value
-	 * @param  array   $options
+	 * @param  string $value
+	 * @param  array  $options
+	 *
 	 * @return string
 	 */
 	public function button($value = null, $options = array())
 	{
-		if ( ! array_key_exists('type', $options))
-		{
+		if (!array_key_exists('type', $options)) {
 			$options['type'] = 'button';
 		}
 
-		return '<button'.$this->html->attributes($options).'>'.$value.'</button>';
+		return '<button' . $this->html->attributes($options) . '>' . $value . '</button>';
 	}
 
 	/**
@@ -1036,7 +1098,8 @@ class FormBuilder {
 	/**
 	 * Set the session store implementation.
 	 *
-	 * @param  \Illuminate\Session\Store  $session
+	 * @param  \Illuminate\Session\Store $session
+	 *
 	 * @return $this
 	 */
 	public function setSessionStore(Session $session)

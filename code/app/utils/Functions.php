@@ -7,19 +7,32 @@
  */
 Class Functions
 {
+	/**
+	 * @param $data
+	 *
+	 * @return string
+	 */
 	public static function printr($data)
 	{
 		return "<pre>" . htmlspecialchars(print_r($data, true)) . "</pre>";
 	}
 
+	/**
+	 * @param $class
+	 *
+	 * @return \ReflectionMethod[]
+	 */
 	public static function getMethods($class)
 	{
-		$class   = new ReflectionClass($class);
+		$class = new \ReflectionClass($class);
 		$methods = $class->getMethods();
 
 		return $methods;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public static function array_orderby()
 	{
 		$args = func_get_args();
@@ -39,9 +52,50 @@ Class Functions
 		return array_pop($args);
 	}
 
-	public static function arrayToXML($array_in)
+	/**
+	 * @param        $array_in
+	 * @param string $version
+	 * @param string $encoding
+	 *
+	 * @return string
+	 */
+	public static function toXML($array_in, $version = '1.0', $encoding = 'ISO-8859-1')
 	{
-		$return     = "";
+		if (!array_key_exists('cabecera', $array_in)) {
+			return 'No se encontro $key: Cabecera';
+		}
+
+		if (!array_key_exists('detalle', $array_in)) {
+			return 'No se encontro $key: Detalle';
+		}
+
+		$array = '<?xml version="' . $version . '" encoding="' . $encoding . '" ?>' . PHP_EOL;
+		$array .= '<Documento>' . PHP_EOL;
+		$array .= '<Cabecera>' . PHP_EOL;
+		$array .= static::arrayToXML($array_in['cabecera']);
+		$array .= '</Cabecera>' . PHP_EOL;
+
+		foreach ($array_in['detalle'] as $key => $value) {
+			$array .= '<Detalle>' . PHP_EOL;
+			$array .= static::arrayToXML($value);
+			$array .= '</Detalle>' . PHP_EOL;
+		}
+
+		$array .= '</Documento>' . PHP_EOL;
+
+		return $array;
+	}
+
+	/**
+	 * @param        $array_in
+	 * @param string $version
+	 * @param string $encoding
+	 *
+	 * @return string
+	 */
+	public static function arrayToXML($array_in, $version = '1.0', $encoding = 'ISO-8859-1')
+	{
+		$return = '';
 		$attributes = array();
 		foreach ($array_in as $k => $v) {
 			if ($k[0] == "@") {
@@ -49,15 +103,15 @@ Class Functions
 			}
 			else {
 				if (is_array($v)) {
-					$return .= \Functions::generateXML($k, \Functions::arrayToXML($v), $attributes);
+					$return .= \Functions::generateXML($k, \Functions::arrayToXML($v), $attributes) . PHP_EOL;
 					$attributes = array();
 				}
 				else if (is_bool($v)) {
-					$return .= \Functions::generateXML($k, (($v == true) ? "true" : "false"), $attributes);
+					$return .= \Functions::generateXML($k, (($v == true) ? "true" : "false"), $attributes) . PHP_EOL;
 					$attributes = array();
 				}
 				else {
-					$return .= \Functions::generateXML($k, $v, $attributes);
+					$return .= \Functions::generateXML($k, $v, $attributes) . PHP_EOL;
 					$attributes = array();
 				}
 			}
@@ -66,6 +120,13 @@ Class Functions
 		return $return;
 	}
 
+	/**
+	 * @param        $tag_in
+	 * @param string $value_in
+	 * @param string $attribute_in
+	 *
+	 * @return string
+	 */
 	public static function generateXML($tag_in, $value_in = "", $attribute_in = "")
 	{
 		$return = "";
@@ -81,21 +142,41 @@ Class Functions
 		return "<" . $tag_in . "" . $attributes_out . ((trim($value_in) == "") ? "/>" : ">" . $value_in . "</" . $tag_in . ">");
 	}
 
+	/**
+	 * @param $data
+	 *
+	 * @return string
+	 */
 	public static function base64urlEncode($data)
 	{
 		return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
 	}
 
+	/**
+	 * @param $data
+	 *
+	 * @return string
+	 */
 	public static function base64urlDecode($data)
 	{
 		return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
 	}
 
+	/**
+	 * @param $object
+	 *
+	 * @return mixed
+	 */
 	public static function objectToArray($object)
 	{
 		return json_decode(json_encode($object), true);
 	}
 
+	/**
+	 * @param $array
+	 *
+	 * @return \stdClass
+	 */
 	public static function toObject($array)
 	{
 		$obj = new \stdClass();
@@ -108,6 +189,12 @@ Class Functions
 		return $obj;
 	}
 
+	/**
+	 * @param $array
+	 * @param $limit
+	 *
+	 * @return int
+	 */
 	public static function count_recursive($array, $limit)
 	{
 		$count = 0;
@@ -123,6 +210,9 @@ Class Functions
 		return $count;
 	}
 
+	/**
+	 * @return mixed|string
+	 */
 	public static function getRealIP()
 	{
 		if ($_SERVER['HTTP_X_FORWARDED_FOR'] != '') {
@@ -160,6 +250,9 @@ Class Functions
 
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public static function serverData()
 	{
 		$data['IP'] = $_SERVER['REMOTE_ADDR'];
@@ -191,6 +284,11 @@ Class Functions
 		return $data;
 	}
 
+	/**
+	 * @param $number
+	 *
+	 * @return array|mixed|string
+	 */
 	public static function convNumberToMonth($number)
 	{
 		$month = array(
@@ -213,6 +311,13 @@ Class Functions
 		return $month;
 	}
 
+	/**
+	 * @param null   $url
+	 * @param null   $postFields
+	 * @param string $requestType
+	 *
+	 * @return mixed|string
+	 */
 	public static function curlRequest($url = null, $postFields = null, $requestType = 'GET')
 	{
 		if (!isset($url)) {
@@ -235,5 +340,35 @@ Class Functions
 		curl_close($client);
 
 		return $result;
+	}
+
+	/**
+	 * @param $arr
+	 * @param $root
+	 *
+	 * @return mixed
+	 */
+	function array2XML($arr, $root)
+	{
+		$xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"utf-8\" ?><{$root}></{$root}>");
+		$f   = create_function('$f,$c,$a', '
+        foreach($a as $v) {
+            if(isset($v["@text"])) {
+                $ch = $c->addChild($v["@tag"],$v["@text"]);
+            } else {
+                $ch = $c->addChild($v["@tag"]);
+                if(isset($v["@items"])) {
+                    $f($f,$ch,$v["@items"]);
+                }
+            }
+            if(isset($v["@attr"])) {
+                foreach($v["@attr"] as $attr => $val) {
+                    $ch->addAttribute($attr,$val);
+                }
+            }
+        }');
+		$f($f, $xml, $arr);
+
+		return $xml->asXML();
 	}
 }

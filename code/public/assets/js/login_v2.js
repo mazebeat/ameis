@@ -19,19 +19,22 @@ $(document).ready(function () {
         focusInvalid: true,
         ignore: "",
         rules: {
-            username: {
-                minlength: 8,
+            mail: {
+                maxlength: 100,
+                email: true,
                 required: true
             },
             password: {
+                maxlength: 100,
                 required: true
             }
         },
         messages: {
-            username: {
+            mail: {
                 required: "Campo obligatorio",
-                minlength: function (p, element) {
-                    return "Tiene que tener un minimo de " + p + " digitos";
+                email: "Porfavor ingrese un direccion email valida",
+                maxlength: function (p, element) {
+                    return "Tiene que tener un máximo de " + p + " digitos";
                 }
             },
             password: {

@@ -7,19 +7,10 @@
 <ul>
 	<!-- BEGIN ACTIVE LINK -->
 	<li class="start active">
-		<a href="{{ URL::to('/')  }}"><i class="icon-custom-home"></i> <span class="title">Inicio</span> <span class="selected"></span></a>
+		<a href="{{ URL::to('admin')  }}"><i class="icon-custom-home"></i> <span class="title">Inicio</span> <span class="selected"></span></a>
 		{{--<a href="{{ URL::to('/')  }}"><i class="icon-custom-home"></i> <span class="title">Inicio</span> <span class="selected"></span><span class="badge badge-important pull-right">5</span></a>--}}
 	</li>
 	<!-- END ACTIVE LINK -->
-
-	<!-- BEGIN ADMINISTRACION LEVEL MENU -->
-	<li class="">
-		<a href="javascript:;"><i class="fa fa-users"></i><span class="title">Administración</span> <span class="arrow"></span></a>
-		<ul class="sub-menu">
-			<li><a href="#"><i class="fa fa-file-text-o fa-fw"></i>&nbsp;Informes</a></li>
-		</ul>
-	</li>
-	<!-- END ADMINISTRACION LEVEL MENU -->
 
 	<!-- BEGIN OPERACIONES LEVEL MENU -->
 	<li class="">
@@ -42,7 +33,7 @@
 	</li>
 	<!-- END BODEGA LEVEL MENU -->
 
-	<!-- BEGIN BODEGA LEVEL MENU -->
+	<!-- BEGIN MANTENEDORES LEVEL MENU -->
 	<li class="">
 		<a href="javascript:;"> <i class="icon-custom-ui"></i> <span class="title">Mantenedor</span> <span class="arrow"></span></a>
 		<ul class="sub-menu">
@@ -52,7 +43,17 @@
 			<li class=""><a href="#"><i class="fa fa-flag"></i>&nbsp;<span class="title">Cargos</span></a></li>
 		</ul>
 	</li>
-	<!-- END BODEGA LEVEL MENU -->
+	<!-- END MANTENEDORES LEVEL MENU -->
+
+	<!-- BEGIN ADMINISTRACION LEVEL MENU -->
+	<li class="">
+		<a href="javascript:;"><i class="fa fa-users"></i><span class="title">Administración</span> <span class="arrow"></span></a>
+		<ul class="sub-menu">
+			<li><a href="#"><i class="fa fa-file-text-o fa-fw"></i>&nbsp;Informes</a></li>
+		</ul>
+	</li>
+	<!-- END ADMINISTRACION LEVEL MENU -->
+
 
 	<!-- BEGIN BADGE LINK -->
 	{{--<li class="">--}}

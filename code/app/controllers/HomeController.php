@@ -5,6 +5,7 @@ class HomeController extends BaseController
 	public function index()
 	{
 		if (Auth::check()) {
+			//		dd('dasda');
 			if (Auth::viaRemember()) {
 				return Redirect::to('admin')->with('rememberMe', 1);
 			}
@@ -29,7 +30,7 @@ class HomeController extends BaseController
 		}
 		else {
 			$userdata = array(
-				'Usuario' => Input::get('username'),
+				'Mail' => Input::get('mail'),
 				'password' => Input::get('password')
 			);
 
@@ -54,6 +55,7 @@ class HomeController extends BaseController
 	public function logout()
 	{
 		Auth::logout();
+
 		return Redirect::to('/');
 	}
 

@@ -1,6 +1,6 @@
 <!-- BEGIN LOGO -->
 <a href="#">
-	{{ HTML::image('assets/img/logo.png', 'logo', array('class' => 'logo', 'data-src' => URL::asset('assets/img/logo.png'), 'data-src-retina' => URL::asset('assets/img/logo2x.png'), 'width' => '160', 'height' => '40')) }}
+	{{ HTML::image('assets/img/logo.png', 'logo', array('class' => 'logo', 'data-src' => URL::asset('assets/img/logo.png'), 'data-src-retina' => URL::asset('assets/img/logo.png'), 'width' => '160', 'height' => '40')) }}
 </a>
 <!-- END LOGO -->
 

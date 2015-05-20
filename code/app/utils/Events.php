@@ -38,8 +38,39 @@ class CustomEvents
 	public function __construct()
 	{
 		$this->monolog     = new Logger('log');
-		$this->info_server = \Functions::serverData();
+		$this->info_server = self::serverData();
 		$this->now         = Carbon::now();
+	}
+
+	public static function serverData()
+	{
+		$data['IP'] = $_SERVER['REMOTE_ADDR'];
+		if (preg_match('/' . "Netscape" . '/', $_SERVER["HTTP_USER_AGENT"])) {
+			$data['BROWSER'] = "Netscape";
+		}
+		elseif (preg_match('/' . "Firefox" . '/', $_SERVER["HTTP_USER_AGENT"])) {
+			$data['BROWSER'] = "FireFox";
+		}
+		elseif (preg_match('/' . "MSIE" . '/', $_SERVER["HTTP_USER_AGENT"])) {
+			$data['BROWSER'] = "MSIE";
+		}
+		elseif (preg_match('/' . "Opera" . '/', $_SERVER["HTTP_USER_AGENT"])) {
+			$data['BROWSER'] = "Opera";
+		}
+		elseif (preg_match('/' . "Konqueror" . '/', $_SERVER["HTTP_USER_AGENT"])) {
+			$data['BROWSER'] = "Konqueror";
+		}
+		elseif (preg_match('/' . "Chrome" . '/', $_SERVER["HTTP_USER_AGENT"])) {
+			$data['BROWSER'] = "Chrome";
+		}
+		elseif (preg_match('/' . "Safari" . '/', $_SERVER["HTTP_USER_AGENT"])) {
+			$data['BROWSER'] = "Safari";
+		}
+		else {
+			$data['BROWSER'] = "UNKNOWN";
+		}
+
+		return $data;
 	}
 
 	/**
@@ -83,7 +114,13 @@ class CustomEvents
 	public function database($sql, $bindings, $time)
 	{
 		$this->logFile = storage_path() . '/logs/database.log';
-		$sql           = str_replace(array('%', '?'), array('%%', '%s'), $sql);
+		$sql = str_replace(array(
+			                   '%',
+			                   '?'
+		                   ), array(
+			                   '%%',
+			                   '%s'
+		                   ), $sql);
 		$sql           = vsprintf($sql, $bindings);
 		$this->logMsg  = 'DATE ' . Carbon::now() . ' | QUERY ' . $sql . ' | TIME ' . $time . 'ms' . PHP_EOL;
 		$this->monolog->pushHandler(new StreamHandler($this->logFile), Logger::INFO);
@@ -91,9 +128,9 @@ class CustomEvents
 	}
 }
 
-\Event::listen('auth.login', '\App\Util\CustomEvents@login');
-\Event::listen('user.login.failed', '\App\Util\CustomEvents@loginFailed');
-\Event::listen('auth.logout', '\App\Util\CustomEvents@logout');
-if (\Config::get('database.debug', false)) {
-	\Event::listen('illuminate.query', '\App\Util\CustomEvents@database');
-}
+//\Event::listen('auth.login', '\App\Util\CustomEvents@login');
+//\Event::listen('user.login.failed', '\App\Util\CustomEvents@loginFailed');
+//\Event::listen('auth.logout', '\App\Util\CustomEvents@logout');
+//if (\Config::get('database.debug', false)) {
+//	\Event::listen('illuminate.query', '\App\Util\CustomEvents@database');
+//}

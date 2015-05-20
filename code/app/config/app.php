@@ -198,8 +198,7 @@ return array(
 		// 
 		'Carbon'      => 'Carbon\Carbon',
 		'Debugbar'          => 'Barryvdh\Debugbar\Facade',
-		'Functions'         => 'App\Util\Functions',
-
+		'Functions'   => 'App\Util\Functions'
 	),
 
 );

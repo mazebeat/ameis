@@ -71,10 +71,8 @@ class MenuController extends BaseController
 
 	public function getCotizaciones()
 	{
-		$comunas = Comuna::lists('Descripcion', 'Descripcion');
-		//		$comunas       = Comuna::lists('Descripcion', 'Id_Comuna');
-		//		$ciudades      = Ciudad::lists('Descripcion', 'Id_Ciudad');
-		$ciudades      = Ciudad::lists('Descripcion', 'Descripcion');
+		$comunas  = Comuna::lists('Descripcion', 'Id_Comuna');
+		$ciudades = Ciudad::lists('Descripcion', 'Id_Ciudad');
 		$tipoServicios = TipoServicio::lists('Nombre_TipoServicio', 'Id_TipoServicio');
 		$unidades      = UnidadMedida::lists('Descripcion', 'Id_UnidadMedida');
 		$pendientes    = Cotizacion::pendiente()->get();

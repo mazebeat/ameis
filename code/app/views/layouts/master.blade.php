@@ -20,11 +20,18 @@
 	{{ HTML::style('assets/plugins/jquery-scrollbar/jquery.scrollbar.css') }}
 	<!-- END CORE CSS FRAMEWORK -->
 
+	{{-- BEGIN SWEET ALERT --}}
+	{{ HTML::script('assets/plugins/sweetalert/dist/sweetalert.min.js') }}
+	{{ HTML::style('assets/plugins/sweetalert/dist/sweetalert.css') }}
+	{{-- END SWEET ALERT --}}
+
 	<!-- BEGIN CSS TEMPLATE -->
 	{{ HTML::style('assets/css/style.css') }}
 	{{ HTML::style('assets/css/responsive.css') }}
 	{{ HTML::style('assets/css/custom-icon-set.css') }}
 	<!-- END CSS TEMPLATE -->
+
+
 </head>
 <body class="" ng-app="ameis">
 
@@ -137,7 +144,6 @@
 <!-- END CORE TEMPLATE JS -->
 
 @include('layouts.modules.angularjs')
-
 <!-- END NEED TO WORK ON -->
 
 <!-- END JAVASCRIPTS -->

@@ -121,12 +121,6 @@ ameis
 
         };
 
-        //$scope.$watch('cliente.ciudad', function (newVal, oldVal) {
-        //    console.log(newVal, oldVal)
-        //    //if (oldVal == newVal) return;
-        //    //alert('here');
-        //}, true);
-
         $scope.changeCiudades = function () {
             $http.post('/returnComunas', {Id_Ciudad: $scope.cliente.ciudad})
                 .then(function (response) {
@@ -164,7 +158,7 @@ ameis
         };
 
         $scope.searchCliente = function () {
-            if ($scope.cliente.rut != '' || !$scope.cliente.rut.empty() || $scope.cliente.rut != undefined) {
+            if ($scope.cliente.rut != '' && !$scope.cliente.rut.length > 0 && $scope.cliente.rut != undefined) {
                 $http.post('/returnClient', {rut: $scope.cliente.rut})
                     .then(function (response) {
                         console.log(response)

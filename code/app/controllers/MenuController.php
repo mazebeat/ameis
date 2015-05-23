@@ -112,5 +112,4 @@ class MenuController extends BaseController
 	//			dd($inputs);
 	//		}
 	//	}
-
 }

@@ -1,12 +1,10 @@
 {{-- BEGIN ANGULARJS MAIN --}}{{ HTML::script('assets/js/angularjs/angular.min.js') }}{{ HTML::script('assets/js/angularjs/i18n/angular-locale_es-cl.js') }}{{-- END ANGULARJS MAIN --}}
 
-{{-- BEGIN APP --}}{{ HTML::script('assets/js/angularjs/app.js') }}{{ HTML::script('assets/js/angularjs/angular-local-storage.js') }}{{ HTML::script('assets/js/angularjs/slider.js') }}
+{{-- BEGIN APP --}}{{ HTML::script('assets/js/angularjs/app.js') }}{{ HTML::script('assets/js/angularjs/angular-messages.min.js') }}{{ HTML::script('assets/js/angularjs/angular-local-storage.js') }}{{ HTML::script('assets/js/angularjs/slider.js') }}{{ HTML::script('assets/js/angularjs/ngrut.js') }}
 
 <script>
 	ameis.service('rootFactory', function () {
-		this.root = "{{ Request::root() }}";
-		this.store = "{{ storage_path() }}";
-		this.public = "{{ public_path() }}";
+		this.root = "{{ Request::root() }}/";
 		this.auth = {{ json_encode(Auth::user()) }};
 	});
 </script>

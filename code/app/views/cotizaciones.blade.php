@@ -16,9 +16,8 @@
 
 @section('content')
 	<div ng-controller="CotizacionesController">
-
 		{{--BEGIN FORM --}}
-		<form name="cotizForm" novalidate ng-submit="cotizForm.$valid && saveCotizacion(cotizForm)" class="css-form" id="form-condensed" class="form-no-horizontal-spacing">
+		<form name="cotizForm" novalidate ng-submit="cotizForm.$valid && saveCotizacion(cotizForm)" class="css-form has-feedback" id="form-condensed" class="form-no-horizontal-spacing">
 
 			{{-- BEGIN MAIN DATA --}}
 			<div class="row">
@@ -31,8 +30,9 @@
 						</div>
 						<div class="col-md-3">
 							<div class="input-group">
-								<input name="form3Cotiz" id="form3Cotiz" type="text" class="form-control" placeholder="N° Cotización" ng-model="cotizacion.numero">
-								<span class="input-group-addon primary" data-toggle="modal" data-target="#modalCotizacion" required>
+								<input name="form3Cotiz" id="form3Cotiz" type="text" class="form-control" placeholder="N° Cotización" ng-model="cotizacion.numero" required>
+								{{--<span class="input-group-addon primary" data-toggle="modal1" data-target="#modalCotizacion1">--}}
+								<span class="input-group-addon primary" ng-click="searchCotizacion()">
 									<span class="arrow"></span>
 									<i class="fa fa-ellipsis-h"></i>
 								</span>
@@ -64,24 +64,32 @@
 									<label for="">RUT</label>
 
 									<div class="input-group">
-										<input name="form3Rut" id="form3Rut" type="text" class="form-control" placeholder="" ng-model="cliente.rut" required>
-										<span class="input-group-addon primary" ng-click="searchCliente()">
+										<input name="form3Rut" id="form3Rut" type="text" class="form-control" placeholder="" ng-model="cliente.rut" minlength="8" maxlength="10" required>
+										<span class="input-group-addon primary" sglclick="searchCliente()" ng-dblclick="modalCliente()" ng-click-options="{preventDoubleClick: true}">
 											<span class="arrow"></span>
-											<i class="fa fa-ellipsis-h"></i>
+											<i class="fa fa-ellipsis-h" ng-show="!loads.cliente.rut"></i>
+											<i class="fa fa-circle-o-notch fa-spin" ng-show="loads.cliente.rut"></i>
 										</span>
 									</div>
+
+									<div ng-messages="cotizForm.form3Rut.$error" role="alert">
+										<span class="help-inline text-error" ng-message="required">Requerido</span> <span class="help-inline text-error" ng-message="minlength">Min. 8 digitos</span>
+										<span class="help-inline text-error" ng-message="maxlength">Min. 10 digitos</span>
+									</div>
+									<span class="help-inline text-error" ng-show="errors.cliente.rut">[[ errors.cliente.rut ]]</span>
 								</div>
 
 								<div class="col-md-4">
 									<label for="">Nombre</label>
 
-									{{--<div class="input-group">--}}
-									<input name="form3FirstName" id="form3FirstName" type="text" class="form-control" placeholder="" ng-model="cliente.nombre" required>
-									{{--<span class="input-group-addon primary" data-toggle="modal" data-target="#modalCliente" ng-click="searchCliente">--}}
-									{{--<span class="arrow"></span>--}}
-									{{--<i class="fa fa-ellipsis-h"></i>--}}
-									{{--</span>--}}
-									{{--</div>--}}
+									<div class="input-group">
+										<input name="form3FirstName" id="form3FirstName" type="text" class="form-control" placeholder="" ng-model="cliente.nombre" required>
+										<span class="input-group-addon primary" data-toggle="modal" data-target="#modalCliente" ng-click="searchCliente">
+											<span class="arrow"></span>
+											<i class="fa fa-ellipsis-h" ng-show="!loads.cliente.nombre"></i>
+											<i class="fa fa-circle-o-notch fa-spin" ng-show="loads.cliente.nombre"></i>
+										</span>
+									</div>
 								</div>
 
 								<div class="col-md-5">
@@ -115,7 +123,8 @@
 								<div class="col-md-6">
 									<label for="">Comuna</label>
 
-									{{ Form::select2('comunas', $comunas, Input::old('comunas'), array('select2', 'class' => 'form-control select2', 'data-ng-model' => 'cliente.comuna', 'ng-options' =>'c.Id_Comuna as c.Descripcion for c in comunas', 'select-selection' => 'cliente.comuna')) }}
+									{{--									{{ Form::select2('comunas', $comunas, Input::old('comunas'), array('select2', 'class' => 'form-control select2', 'data-ng-model' => 'cliente.comuna', 'ng-options' =>'c.Id_Comuna as c.Descripcion for c in comunas', 'select-selection' => 'cliente.comuna')) }}--}}
+									{{ Form::select2('comunas', $comunas, Input::old('comunas'), array('select2', 'class' => 'form-control select2', 'data-ng-model' => 'cliente.comuna', 'select-selection' => 'cliente.comuna')) }}
 
 									{{--<div class="input-group">--}}
 									{{--<input name="form3Comuna" id="form3Comuna" type="text" class="form-control" placeholder="" readonly ng-model="cliente.comuna" required>--}}
@@ -206,12 +215,12 @@
 							</span>
 							</div>
 						</div>
-						<div class="col-md-1">
+						<div class="col-md-2">
 							<label for="formPrecio">Precio</label>
 
 							<input type="text" class="form-control auto" data-a-sep="," data-a-dec="." placeholder="$" name="formPrecio" value="0" readonly ng-model="servicio.precio">
 						</div>
-						<div class="col-md-2">
+						<div class="col-md-1">
 							<div class="form-group">
 								<label for="formUnidad">U.N</label>
 								<input type="text" class="form-control" name="formUnidad" id="formUnidad" value="{{ Input::old('formUnidad') }}" readonly ng-model="servicio.unidad">
@@ -311,7 +320,7 @@
 														<div class="modal-header">
 															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 															<br> <i class="fa fa-outdent fa-7x"></i>
-															<h4 id="myModalLabel" class="semi-bold">Descripción del Servicio.</h4>
+															<h4 id="myModalLabel" class="semi-bold">[[ d.nombreTipoServicio ]] - [[ d.servicio ]]</h4>
 
 															<p class="no-margin"></p><br>
 														</div>
@@ -327,7 +336,6 @@
 										</td>
 									</tr>
 									{{-- END RESULT LOOP --}}
-
 									</tbody>
 								</table>
 								{{-- END TABLE --}}

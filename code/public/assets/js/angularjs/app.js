@@ -2,6 +2,7 @@
 
 /* Init app */
 var ameis = angular.module('ameis', [
+        'ngMessages',
         'LocalStorageModule',
         'ui.bootstrap-slider'
     ],

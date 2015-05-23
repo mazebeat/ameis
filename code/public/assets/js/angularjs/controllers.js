@@ -47,11 +47,27 @@ ameis
             descripcion: ''
         };
         $scope.servicios = [];
-        $scope.detalle = []
+        $scope.detalle = [];
         $scope.detalleTotal = {
             subtotal: 0,
             iva: 0,
             total: 0
+        };
+        $scope.loads = {
+            cliente: {
+                rut: false,
+                nombre: false,
+                direccion: false
+            }
+        };
+        $scope.errors = {
+            cliente: {
+                rut: '',
+                nombre: '',
+                direccion: '',
+                comuna: '',
+                ciudad: ''
+            }
         };
 
         $scope.cleanServicio = function () {
@@ -124,13 +140,13 @@ ameis
         $scope.changeCiudades = function () {
             $http.post('/returnComunas', {Id_Ciudad: $scope.cliente.ciudad})
                 .then(function (response) {
-                    //console.log(response)
+                    console.log(response)
                     if (response.status == 200) {
                         response = response.data;
-                        //$timeout(function() {
-                        $scope.cliente.comuna = '';
-                        $scope.comunas = response;
-                        //}, 1000);
+                        $timeout(function () {
+                            $scope.cliente.comuna = '';
+                            $scope.comunas = response;
+                        }, 1000);
                     }
                 });
         };
@@ -158,25 +174,82 @@ ameis
         };
 
         $scope.searchCliente = function () {
-            if ($scope.cliente.rut != '' && !$scope.cliente.rut.length > 0 && $scope.cliente.rut != undefined) {
-                $http.post('/returnClient', {rut: $scope.cliente.rut})
-                    .then(function (response) {
-                        console.log(response)
-                        if (response.status == 200) {
-                            response = response.data;
-                            var c = response[0];
-                            var d = response[1];
-                            $scope.cliente = {
-                                Id_Cliente: c.Id_Cliente,
-                                rut: c.Rut_Cliente + '-' + c.Dv_Cliente,
-                                nombre: c.Nombres + ' ' + c.ApellidoPat,
-                                direccion: d.Direcion,
-                                comuna: d.Id_Comuna,
-                                ciudad: d.Id_Ciudad
-                            };
-                        }
-                    });
+            //console.log($scope.cliente.rut)
+            var rut = $scope.cliente.rut;
+            if (!rut.$error) {
+                //console.log(rut != "" || rut.length > 0 && rut != undefined)
+                if ($scope.cliente.rut != "" || $scope.cliente.rut.length > 0 && $scope.cliente.rut != undefined
+                ) {
+                    $scope.cliente.load = true;
+                    $http.post('/returnClient', {rut: $scope.cliente.rut})
+                        .then(function (response) {
+                            if (response.status == 200) {
+                                response = response.data;
+                                var index = parseInt(response.length - 1);
+                                if (response[index].hasOwnProperty('Mensaje')) {
+                                    if (response[index].Mensaje == "Ok") {
+                                        var c = response[0];
+                                        var d = response[1];
+                                        $scope.cliente = {
+                                            Id_Cliente: c.Id_Cliente,
+                                            rut: c.Rut_Cliente + '-' + c.Dv_Cliente,
+                                            nombre: c.Nombres + ' ' + c.ApellidoPat,
+                                            direccion: d.Direcion,
+                                            comuna: d.Id_Comuna,
+                                            ciudad: d.Id_Ciudad
+                                        };
+                                        swalService.success('Correcto', 'Cliente Cargado con Exito!');
+                                        $scope.errors.cliente.rut = '';
+                                    } else {
+                                        $scope.errors.cliente.rut = response[index].Mensaje;
+                                    }
+                                }
+                                $scope.cliente.load = false;
+
+                            }
+                        });
+                }
             }
+        };
+
+        $scope.modalCliente = function () {
+            swalService.custom({
+                title: "Buscar Cliente",
+                text: "Ingrese el RUT del Cliente a buscar...",
+                type: "input",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                animation: "slide-from-top",
+                inputPlaceholder: "RUT"
+            }, function (inputValue) {
+                if (inputValue === false) return false;
+                if (inputValue === "") {
+                    swal.showInputError("Debes ingresar algún valor!");
+                    return false
+                }
+                if (inputValue != "" || inputValue > 0 && inputValue != undefined) {
+                    $scope.cliente.load = true;
+                    $http.post('/returnClient', {rut: inputValue})
+                        .then(function (response) {
+                            console.log(response)
+                            if (response.status == 200) {
+                                response = response.data;
+                                var c = response[0];
+                                var d = response[1];
+                                $scope.cliente = {
+                                    Id_Cliente: c.Id_Cliente,
+                                    rut: c.Rut_Cliente + '-' + c.Dv_Cliente,
+                                    nombre: c.Nombres + ' ' + c.ApellidoPat,
+                                    direccion: d.Direcion,
+                                    comuna: d.Id_Comuna,
+                                    ciudad: d.Id_Ciudad
+                                };
+                                swalService.success('Correcto', 'Cliente Cargado con Exito!');
+                                $scope.cliente.load = false;
+                            }
+                        });
+                }
+            });
         };
 
         $scope.addService = function () {
@@ -236,6 +309,19 @@ ameis
                 cabecera: $cabecera,
                 detalle: $detalle
             };
+        };
+
+        $scope.searchCotizacion = function () {
+            var nroCotiz = $scope.cotizacion.numero;
+
+            $http.post('/returnCotizacion', {nroCotiz: nroCotiz})
+                .then(function (response) {
+                    if (response.status == 200) {
+                        response = response.data;
+
+                        console.log(response);
+                    }
+                });
         };
 
         $scope.saveCotizacion = function () {

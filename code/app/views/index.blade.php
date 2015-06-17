@@ -16,11 +16,11 @@
 			{{ Form::open(array('url' => '/', 'id' => 'frm_login', 'method' => 'POST', 'autocomplete' => 'off')) }}
 			<div class="row">
 				<div class="form-group col-md-12">
-					<label class="form-label">Usuario</label>
+					<label class="form-label">Correo</label>
 
 					<div class="controls">
 						<div class="input-with-icon right">
-							<i class=""></i> <input type="text" name="mail" id="mail" class="form-control" autocomplete="off"> <span class="help-inline text-error">{{ $errors->first('mail') }}</span>
+							<i class=""></i> <input type="email" name="mail" id="mail" class="form-control" autocomplete="off"> <span class="help-inline text-error">{{ $errors->first('mail') }}</span>
 						</div>
 					</div>
 				</div>

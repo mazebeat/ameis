@@ -64,20 +64,20 @@
 			<li class="quicklinks">
 				<a id="chat-menu-toggle" href="#sidr" class="chat-menu-toggle">
 					<div class="iconset top-tiles">
-						<span class="badge badge-important hide" id="chat-message-count">0</span>
+						{{--<span class="badge badge-important hide" id="chat-message-count">0</span>--}}
 					</div>
 				</a>
 
 				<!-- BEGIN OPTIONAL RECENT POP UP NOTIFICATION -->
-				<div class="simple-chat-popup chat-menu-toggle hide">
-					<div class="simple-chat-popup-arrow"></div>
-					<div class="simple-chat-popup-inner">
-						<div style="width:100px">
-							<div class="semi-bold">Atención!</div>
-							<div class="message">No hay documentos inconclusos</div>
-						</div>
-					</div>
-				</div>
+				{{--<div class="simple-chat-popup chat-menu-toggle hide">--}}
+					{{--<div class="simple-chat-popup-arrow"></div>--}}
+					{{--<div class="simple-chat-popup-inner">--}}
+						{{--<div style="width:100px">--}}
+							{{--<div class="semi-bold">Atención!</div>--}}
+							{{--<div class="message">No hay documentos inconclusos</div>--}}
+						{{--</div>--}}
+					{{--</div>--}}
+				{{--</div>--}}
 				<!-- END OPTIONAL RECENT POP UP NOTIFICATION -->
 			</li>
 			<!-- END RIGHT SIDEBAR TOGGLE -->

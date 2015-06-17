@@ -9,9 +9,9 @@
 			<span class="semi-bold">{{ Auth::user()->Apellido_Pat }}</span>
 		</div>
 
-		<div class="status">Estado<a href="#">
-				<div class="status-icon green"></div>
-				<Activo></Activo>
-			</a></div>
+		<div class="status">
+			Estado <a href="#"> <span class="status-icon green"></span> Activo </a>
+		</div>
 	</div>
+
 </div>

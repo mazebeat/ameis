@@ -118,7 +118,7 @@ class ApiController extends \BaseController
 		$tipoServicio = Input::get('tipoServicio');
 
 		if (isset($tipoServicio) && $tipoServicio != '') {
-			$query   = 'EXEC dbo.AMEIS_RetornaServicio "' . $tipoServicio . '", 0, "OK"';
+			$query   = "EXEC dbo.AMEIS_RetornaServicio '" . $tipoServicio . "', 0, 'OK'";
 			$resulta = \ApiController::exec_sp($query);
 			$data    = $resulta['data'];
 
@@ -144,7 +144,6 @@ class ApiController extends \BaseController
 
 					do {
 						$rowset = $stmt->fetchAll(PDO::FETCH_NAMED);
-
 						if ($rowset) {
 							foreach ($rowset as $row) {
 								array_push($result, $row);
@@ -179,16 +178,25 @@ class ApiController extends \BaseController
 	 */
 	public function returnClient()
 	{
-		$rut = Input::get('rut');
+		$rut    = Input::get('rut', null);
+		$nombre = Input::get('nombre', null);
 
 		if (isset($rut) && $rut != '') {
 			if (Str::contains($rut, '-')) {
 				$rut   = explode('-', $rut);
-				$query = 'EXEC dbo.AMEIS_RetornaClientesPorRut ' . $rut[0] . ', 0, "OK"';
+				$query = "EXEC dbo.AMEIS_RetornaClientesPorRut " . $rut[0] . ", 0, 'OK'";
 			}
 			else {
-				$query = 'EXEC dbo.AMEIS_RetornaClientesPorRut ' . $rut . ', 0, "OK"';
+				$query = "EXEC dbo.AMEIS_RetornaClientesPorRut " . $rut . ", 0, 'OK'";
 			}
+			$resulta = ApiController::exec_sp($query);
+			$data    = $resulta['data'];
+
+			return Response::json($data);
+		}
+
+		if (isset($nombre) && $nombre != '') {
+			$query   = "EXEC dbo.AMEIS_RetornaClientesPorNombre '" . $nombre . "', 0, 'OK'";
 			$resulta = ApiController::exec_sp($query);
 			$data    = $resulta['data'];
 
@@ -204,7 +212,7 @@ class ApiController extends \BaseController
 		$xml = Input::get('xml');
 		$xml = \Functions::toXML($xml);
 
-		$query   = 'EXEC dbo.AMEIS_GeneraCotizacion "' . $xml . '", 0, "OK"';
+		$query   = "EXEC dbo.AMEIS_GeneraCotizacion '" . $xml . "', 0, 'OK'";
 		$resulta = \ApiController::exec_sp($query);
 
 		return Response::json($resulta);
@@ -218,7 +226,7 @@ class ApiController extends \BaseController
 		$nroCotiz = Input::get('nroCotiz');
 
 		if (isset($nroCotiz) && $nroCotiz != '') {
-			$query   = 'EXEC dbo.AMEIS_RetornaCotizacion ' . $nroCotiz . ', 0, "OK"';
+			$query   = "EXEC dbo.AMEIS_RetornaCotizacion " . $nroCotiz . ", 0, 'OK'";
 			$resulta = ApiController::exec_sp($query);
 			$data    = $resulta['data'];
 

@@ -74,8 +74,8 @@ class MenuController extends BaseController
 		$comunas  = Comuna::lists('Descripcion', 'Id_Comuna');
 		$ciudades = Ciudad::lists('Descripcion', 'Id_Ciudad');
 		$tipoServicios = TipoServicio::lists('Nombre_TipoServicio', 'Id_TipoServicio');
-		$unidades      = UnidadMedida::lists('Descripcion', 'Id_UnidadMedida');
-		$pendientes    = Cotizacion::pendiente()->get();
+		$unidades      = UnidadMedida::lists('Descripcion', 'Descripcion');
+		$pendientes    = Cotizacion::pendiente();
 
 		return View::make('cotizaciones')->withComunas($comunas)->withCiudades($ciudades)->withTservicios($tipoServicios)->withUnidades($unidades)->withPendientes($pendientes);
 	}

@@ -9,6 +9,6 @@ class Cotizacion extends Eloquent
 
 	public function scopePendiente($query)
 	{
-		return $query->whereEstado('P');
+			return $query->whereEstado('P')->lists('Descripcion', 'Id_Cot');
 	}
 }

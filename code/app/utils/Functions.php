@@ -83,6 +83,7 @@ Class Functions
 
 		$array .= '</Documento>' . PHP_EOL;
 
+		$array = str_replace(PHP_EOL, '', $array);
 		return $array;
 	}
 

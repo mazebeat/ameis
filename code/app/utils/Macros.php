@@ -113,20 +113,18 @@ Form::macro('selectYear2', function ($name, $startYear = null, $endYear = null, 
 });
 
 \HTML::macro('dateRange', function ($name, $options = array()) {
-	$months = array(
-		1 => 'Enero',
-		'Febrero',
-		'Marzo',
-		'Abril',
-		'Mayo',
-		'Junio',
-		'Julio',
-		'Agosto',
-		'Septiembre',
-		'Octubre',
-		'Noviembre',
-		'Diciembre'
-	);
+	$months = array(1 => 'Enero',
+	                'Febrero',
+	                'Marzo',
+	                'Abril',
+	                'Mayo',
+	                'Junio',
+	                'Julio',
+	                'Agosto',
+	                'Septiembre',
+	                'Octubre',
+	                'Noviembre',
+	                'Diciembre');
 
 	if (!isset($options['name'])) {
 		$options['name'] = $name;
@@ -251,7 +249,19 @@ Form::macro('selectYear2', function ($name, $startYear = null, $endYear = null, 
 	}
 });
 
-\HTML::macro('listaPendientes', function ($list) {
-	//	var_dump($list);
-	return '<div class="alert alert-success"><button class="close" data-dismiss="alert"></button>No existen documentos pendientes.</div>';
+\HTML::macro('listaPendientes', function ($list, $type = '') {
+	if (!isset($list) && count($list <= 0) || $type == '') {
+		return '<div class="alert alert-success"><button class="close" data-dismiss="alert"></button>No existen documentos pendientes.</div>';
+	}
+
+	if (\Str::lower($type) == 'cotiz') {
+		$out = '<ul style="color: #FFFFFF;">';
+		foreach ($list as $k => $v) {
+			$out .= '<li><a href="' . \URL::to('#') . '" class="btn btn-link">' . \Str::upper($v) . '</a></li>';
+		}
+		$out .= '</ul>';
+
+		return $out;
+	}
+
 });

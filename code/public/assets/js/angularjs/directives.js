@@ -64,3 +64,61 @@ ameis
             }
         };
     }])
+    .directive('stringToNumber', function () {
+        return {
+            require: 'ngModel',
+            link: function (scope, element, attrs, ngModel) {
+                ngModel.$parsers.push(function (value) {
+                    return '' + value;
+                });
+                ngModel.$formatters.push(function (value) {
+                    return parseFloat(value, 10);
+                });
+            }
+        };
+    })
+    .directive('appClick', function () {
+        return {
+            restrict: 'A',
+            scope: true,
+            template: '<button ng-click="click()">Click me</button> Clicked {{clicked}} times',
+            controller: function ($scope, $element) {
+                $scope.clicked = 0;
+                $scope.click = function () {
+                    $scope.clicked++
+                }
+            }
+        }
+    })
+    .directive('clickme', function () {
+        return function (scope, element, attrs) {
+            var clickingCallback = function () {
+                alert('clicked!')
+            };
+            element.bind('click', clickingCallback);
+        }
+    })
+    .directive('photo', function () {
+        //<photo photo-src="{{photo.url}}"  caption="Taken on: {{photo.date}}"/>7
+        return {
+            // required to make it work as an element
+            restrict: 'E',
+
+            // replace <photo> with this html
+            template: '<figure><img/><figcaption/></figure>',
+            replace: true,
+
+            // observe and manipulate the DOM
+            link: function ($scope, element, attrs) {
+                attrs.$observe('caption', function (value) {
+                    element.find('figcaption').text(value)
+                })
+
+                // attribute names change to camel case
+                attrs.$observe('photoSrc', function (value) {
+                    element.find('img').attr('src', value)
+                })
+            }
+        }
+    })
+

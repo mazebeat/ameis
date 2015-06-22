@@ -11,7 +11,7 @@
 /**
  * Writes data to a KeyCache using a stream.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_KeyCache_SimpleKeyCacheInputStream implements Swift_KeyCache_KeyCacheInputStream
 {
@@ -28,49 +28,12 @@ class Swift_KeyCache_SimpleKeyCacheInputStream implements Swift_KeyCache_KeyCach
     private $_writeThrough = null;
 
     /**
-     * Set the KeyCache to wrap.
-     *
-     * @param Swift_KeyCache $keyCache
+     * Any implementation should be cloneable, allowing the clone to access a
+     * separate $nsKey and $itemKey.
      */
-    public function setKeyCache(Swift_KeyCache $keyCache)
+    public function __clone()
     {
-        $this->_keyCache = $keyCache;
-    }
-
-    /**
-     * Specify a stream to write through for each write().
-     *
-     * @param Swift_InputByteStream $is
-     */
-    public function setWriteThroughStream(Swift_InputByteStream $is)
-    {
-        $this->_writeThrough = $is;
-    }
-
-    /**
-     * Writes $bytes to the end of the stream.
-     *
-     * @param string                $bytes
-     * @param Swift_InputByteStream $is    optional
-     */
-    public function write($bytes, Swift_InputByteStream $is = null)
-    {
-        $this->_keyCache->setString(
-            $this->_nsKey, $this->_itemKey, $bytes, Swift_KeyCache::MODE_APPEND
-            );
-        if (isset($is)) {
-            $is->write($bytes);
-        }
-        if (isset($this->_writeThrough)) {
-            $this->_writeThrough->write($bytes);
-        }
-    }
-
-    /**
-     * Not used.
-     */
-    public function commit()
-    {
+        $this->_writeThrough = null;
     }
 
     /**
@@ -83,7 +46,7 @@ class Swift_KeyCache_SimpleKeyCacheInputStream implements Swift_KeyCache_KeyCach
     /**
      * Not used.
      */
-    public function unbind(Swift_InputByteStream $is)
+    public function commit()
     {
     }
 
@@ -97,16 +60,6 @@ class Swift_KeyCache_SimpleKeyCacheInputStream implements Swift_KeyCache_KeyCach
     }
 
     /**
-     * Set the nsKey which will be written to.
-     *
-     * @param string $nsKey
-     */
-    public function setNsKey($nsKey)
-    {
-        $this->_nsKey = $nsKey;
-    }
-
-    /**
      * Set the itemKey which will be written to.
      *
      * @param string $itemKey
@@ -117,11 +70,56 @@ class Swift_KeyCache_SimpleKeyCacheInputStream implements Swift_KeyCache_KeyCach
     }
 
     /**
-     * Any implementation should be cloneable, allowing the clone to access a
-     * separate $nsKey and $itemKey.
+     * Set the KeyCache to wrap.
+     *
+     * @param Swift_KeyCache $keyCache
      */
-    public function __clone()
+    public function setKeyCache(Swift_KeyCache $keyCache)
     {
-        $this->_writeThrough = null;
+        $this->_keyCache = $keyCache;
+    }
+
+    /**
+     * Set the nsKey which will be written to.
+     *
+     * @param string $nsKey
+     */
+    public function setNsKey($nsKey)
+    {
+        $this->_nsKey = $nsKey;
+    }
+
+    /**
+     * Specify a stream to write through for each write().
+     *
+     * @param Swift_InputByteStream $is
+     */
+    public function setWriteThroughStream(Swift_InputByteStream $is)
+    {
+        $this->_writeThrough = $is;
+    }
+
+    /**
+     * Not used.
+     */
+    public function unbind(Swift_InputByteStream $is)
+    {
+    }
+
+    /**
+     * Writes $bytes to the end of the stream.
+     *
+     * @param string                $bytes
+     * @param Swift_InputByteStream $is optional
+     */
+    public function write($bytes, Swift_InputByteStream $is = null)
+    {
+        $this->_keyCache->setString($this->_nsKey, $this->_itemKey, $bytes, Swift_KeyCache::MODE_APPEND);
+        if (isset($is)) {
+            $is->write($bytes);
+        }
+        if (isset($this->_writeThrough)) {
+            $this->_writeThrough->write($bytes);
+        }
     }
 }

@@ -62,29 +62,26 @@ class KernelTest extends \PHPUnit_Framework_TestCase
         $kernel->boot();
     }
 
-	/**
-	 * Returns a mock for the abstract kernel.
-	 *
-	 * @param array $methods Additional methods to mock (besides the abstract ones)
-	 * @param array $bundles Bundles to register
-	 *
-	 * @return Kernel
-	 */
-	protected function getKernel(array $methods = array(), array $bundles = array())
-	{
-		$methods[] = 'registerBundles';
+    /**
+     * Returns a mock for the abstract kernel.
+     *
+     * @param array $methods Additional methods to mock (besides the abstract ones)
+     * @param array $bundles Bundles to register
+     *
+     * @return Kernel
+     */
+    protected function getKernel(array $methods = array(), array $bundles = array())
+    {
+        $methods[] = 'registerBundles';
 
-		$kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\Kernel')->setMethods($methods)->setConstructorArgs(array(
-			                                                                                                                 'test',
-			                                                                                                                 false
-		                                                                                                                 ))->getMockForAbstractClass();
-		$kernel->expects($this->any())->method('registerBundles')->will($this->returnValue($bundles));
-		$p = new \ReflectionProperty($kernel, 'rootDir');
-		$p->setAccessible(true);
-		$p->setValue($kernel, __DIR__ . '/Fixtures');
+        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\Kernel')->setMethods($methods)->setConstructorArgs(array('test', false))->getMockForAbstractClass();
+        $kernel->expects($this->any())->method('registerBundles')->will($this->returnValue($bundles));
+        $p = new \ReflectionProperty($kernel, 'rootDir');
+        $p->setAccessible(true);
+        $p->setValue($kernel, __DIR__ . '/Fixtures');
 
-		return $kernel;
-	}
+        return $kernel;
+    }
 
     public function testBootSetsTheContainerToTheBundles()
     {
@@ -109,18 +106,15 @@ class KernelTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($kernel->isBooted());
     }
 
-	protected function getKernelForTest(array $methods = array())
-	{
-		$kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\Tests\Fixtures\KernelForTest')->setConstructorArgs(array(
-			                                                                                                                 'test',
-			                                                                                                                 false
-		                                                                                                                 ))->setMethods($methods)->getMock();
-		$p      = new \ReflectionProperty($kernel, 'rootDir');
-		$p->setAccessible(true);
-		$p->setValue($kernel, __DIR__ . '/Fixtures');
+    protected function getKernelForTest(array $methods = array())
+    {
+        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\Tests\Fixtures\KernelForTest')->setConstructorArgs(array('test', false))->setMethods($methods)->getMock();
+        $p      = new \ReflectionProperty($kernel, 'rootDir');
+        $p->setAccessible(true);
+        $p->setValue($kernel, __DIR__ . '/Fixtures');
 
-		return $kernel;
-	}
+        return $kernel;
+    }
 
     public function testClassCacheIsLoaded()
     {
@@ -356,15 +350,15 @@ EOF;
         $this->assertFalse($kernel->isClassInActiveBundle('Not\In\Active\Bundle'));
     }
 
-	protected function getKernelMockForIsClassInActiveBundleTest()
-	{
-		$bundle = new FooBarBundle();
+    protected function getKernelMockForIsClassInActiveBundleTest()
+    {
+        $bundle = new FooBarBundle();
 
-		$kernel = $this->getKernel(array('getBundles'));
-		$kernel->expects($this->once())->method('getBundles')->will($this->returnValue(array($bundle)));
+        $kernel = $this->getKernel(array('getBundles'));
+        $kernel->expects($this->once())->method('getBundles')->will($this->returnValue(array($bundle)));
 
-		return $kernel;
-	}
+        return $kernel;
+    }
 
     public function testIsClassInActiveBundleFalseNoNamespace()
     {
@@ -450,33 +444,29 @@ EOF;
         $kernel->locateResource('@Bundle1Bundle/config/routing.xml');
     }
 
-	/**
-	 * Returns a mock for the BundleInterface
-	 *
-	 * @return BundleInterface
-	 */
-	protected function getBundle($dir = null, $parent = null, $className = null, $bundleName = null)
-	{
-		$bundle = $this->getMockBuilder('Symfony\Component\HttpKernel\Bundle\BundleInterface')->setMethods(array(
-			                                                                                                   'getPath',
-			                                                                                                   'getParent',
-			                                                                                                   'getName'
-		                                                                                                   ))->disableOriginalConstructor();
+    /**
+     * Returns a mock for the BundleInterface
+     *
+     * @return BundleInterface
+     */
+    protected function getBundle($dir = null, $parent = null, $className = null, $bundleName = null)
+    {
+        $bundle = $this->getMockBuilder('Symfony\Component\HttpKernel\Bundle\BundleInterface')->setMethods(array('getPath', 'getParent', 'getName'))->disableOriginalConstructor();
 
-		if ($className) {
-			$bundle->setMockClassName($className);
-		}
+        if ($className) {
+            $bundle->setMockClassName($className);
+        }
 
-		$bundle = $bundle->getMockForAbstractClass();
+        $bundle = $bundle->getMockForAbstractClass();
 
-		$bundle->expects($this->any())->method('getName')->will($this->returnValue(null === $bundleName ? get_class($bundle) : $bundleName));
+        $bundle->expects($this->any())->method('getName')->will($this->returnValue(null === $bundleName ? get_class($bundle) : $bundleName));
 
-		$bundle->expects($this->any())->method('getPath')->will($this->returnValue($dir));
+        $bundle->expects($this->any())->method('getPath')->will($this->returnValue($dir));
 
-		$bundle->expects($this->any())->method('getParent')->will($this->returnValue($parent));
+        $bundle->expects($this->any())->method('getParent')->will($this->returnValue($parent));
 
-		return $bundle;
-	}
+        return $bundle;
+    }
 
     public function testLocateResourceReturnsTheFirstThatMatches()
     {

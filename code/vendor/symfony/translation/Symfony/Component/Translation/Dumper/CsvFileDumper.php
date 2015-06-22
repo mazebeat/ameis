@@ -44,12 +44,12 @@ class CsvFileDumper extends FileDumper
     /**
      * {@inheritdoc}
      */
-	protected function getExtension()
-	{
-		return 'csv';
-	}
+    protected function getExtension()
+    {
+        return 'csv';
+    }
 
-	/**
+    /**
      * Sets the delimiter and escape character for CSV.
      *
      * @param string $delimiter delimiter character

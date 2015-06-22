@@ -231,20 +231,20 @@ class FileProfilerStorage implements ProfilerStorageInterface
         return '' === $line ? null : $line;
     }
 
-	/**
-	 * Gets filename to store data, associated to the token.
-	 *
-	 * @param string $token
-	 *
-	 * @return string The profile filename
-	 */
-	protected function getFilename($token)
-	{
-		// Uses 4 last characters, because first are mostly the same.
-		$folderA = substr($token, -2, 2);
-		$folderB = substr($token, -4, 2);
+    /**
+     * Gets filename to store data, associated to the token.
+     *
+     * @param string $token
+     *
+     * @return string The profile filename
+     */
+    protected function getFilename($token)
+    {
+        // Uses 4 last characters, because first are mostly the same.
+        $folderA = substr($token, -2, 2);
+        $folderB = substr($token, -4, 2);
 
-		return $this->folder . '/' . $folderA . '/' . $folderB . '/' . $token;
+        return $this->folder . '/' . $folderA . '/' . $folderB . '/' . $token;
     }
 
     protected function createProfileFromData($token, $data, $parent = null)

@@ -13,14 +13,22 @@ class MimeEntityFixture implements Swift_Mime_MimeEntity
         $this->contentType = $contentType;
     }
 
-    public function getNestingLevel()
+    public function charsetChanged($charset)
     {
-        return $this->level;
     }
 
-    public function toString()
+    public function encoderChanged(Swift_Mime_ContentEncoder $encoder)
     {
-        return $this->string;
+    }
+
+    public function getBody()
+    {
+    }
+
+    // These methods are here to account for the implemented interfaces
+
+    public function getChildren()
+    {
     }
 
     public function getContentType()
@@ -28,14 +36,33 @@ class MimeEntityFixture implements Swift_Mime_MimeEntity
         return $this->contentType;
     }
 
-    // These methods are here to account for the implemented interfaces
-    public function getId() {}
-    public function getHeaders() {}
-    public function getBody() {}
-    public function setBody($body, $contentType = null) {}
-    public function toByteStream(Swift_InputByteStream $is) {}
-    public function charsetChanged($charset) {}
-    public function encoderChanged(Swift_Mime_ContentEncoder $encoder) {}
-    public function getChildren() {}
-    public function setChildren(array $children) {}
+    public function getHeaders()
+    {
+    }
+
+    public function getId()
+    {
+    }
+
+    public function getNestingLevel()
+    {
+        return $this->level;
+    }
+
+    public function setBody($body, $contentType = null)
+    {
+    }
+
+    public function setChildren(array $children)
+    {
+    }
+
+    public function toByteStream(Swift_InputByteStream $is)
+    {
+    }
+
+    public function toString()
+    {
+        return $this->string;
+    }
 }

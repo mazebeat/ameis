@@ -49,17 +49,14 @@ class TestMultipleHttpKernel extends HttpKernel implements ControllerResolverInt
         return parent::handle($request, $type, $catch);
     }
 
-	public function getArguments(Request $request, $controller)
+    public function getArguments(Request $request, $controller)
     {
-	    return array($request);
+        return array($request);
     }
 
-	public function getController(Request $request)
+    public function getController(Request $request)
     {
-	    return array(
-		    $this,
-		    'callController'
-	    );
+        return array($this, 'callController');
     }
 
     public function callController(Request $request)

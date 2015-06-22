@@ -89,7 +89,7 @@ class EventDispatcher implements EventDispatcherInterface
     /**
      * @see EventDispatcherInterface::getListeners()
      */
-	public function getListeners($eventName = null)
+    public function getListeners($eventName = null)
     {
         if (null !== $eventName) {
             if (!isset($this->sorted[$eventName])) {

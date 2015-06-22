@@ -219,11 +219,11 @@ class ContainerAwareEventDispatcherTest extends AbstractEventDispatcherTest
         $this->assertFalse($dispatcher->hasListeners('onEvent'));
     }
 
-	protected function createEventDispatcher()
-	{
-		$container = new Container();
+    protected function createEventDispatcher()
+    {
+        $container = new Container();
 
-		return new ContainerAwareEventDispatcher($container);
+        return new ContainerAwareEventDispatcher($container);
     }
 }
 

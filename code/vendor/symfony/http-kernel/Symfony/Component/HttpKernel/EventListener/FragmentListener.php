@@ -64,7 +64,7 @@ class FragmentListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        if ($this->fragmentPath !== rawurldecode($request->getPathInfo())) {
+        if ($request->attributes->has('_controller') || $this->fragmentPath !== rawurldecode($request->getPathInfo())) {
             return;
         }
 

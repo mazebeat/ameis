@@ -71,29 +71,29 @@ class UsernamePasswordToken extends AbstractToken
     /**
      * {@inheritdoc}
      */
-	public function getCredentials()
-	{
-		return $this->credentials;
-	}
+    public function getCredentials()
+    {
+        return $this->credentials;
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
+    /**
+     * {@inheritdoc}
+     */
     public function serialize()
     {
         return serialize(array($this->credentials, $this->providerKey, parent::serialize()));
     }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setAuthenticated($isAuthenticated)
-	{
-		if ($isAuthenticated) {
-			throw new \LogicException('Cannot set this token to trusted after instantiation.');
-		}
+    /**
+     * {@inheritdoc}
+     */
+    public function setAuthenticated($isAuthenticated)
+    {
+        if ($isAuthenticated) {
+            throw new \LogicException('Cannot set this token to trusted after instantiation.');
+        }
 
-		parent::setAuthenticated(false);
+        parent::setAuthenticated(false);
     }
 
     /**

@@ -11,7 +11,7 @@
 /**
  * Standard factory for creating CharacterReaders.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_CharacterReaderFactory_SimpleCharacterReaderFactory implements Swift_CharacterReaderFactory
 {
@@ -33,11 +33,6 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactory implements Swift
      * Creates a new CharacterReaderFactory.
      */
     public function __construct()
-    {
-        $this->init();
-    }
-
-    public function __wakeup()
     {
         $this->init();
     }
@@ -92,6 +87,11 @@ class Swift_CharacterReaderFactory_SimpleCharacterReaderFactory implements Swift
 
         // Fallback
         self::$_map['.*'] = $singleByte;
+    }
+
+    public function __wakeup()
+    {
+        $this->init();
     }
 
     /**

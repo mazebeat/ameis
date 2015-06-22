@@ -20,10 +20,11 @@
 		{{--BEGIN FORM --}}
 		<form name="proyeForm" novalidate ng-submit="proyeForm.$valid && saveProyectos(proyeForm)" class="css-form" id="form-condensed" class="form-no-horizontal-spacing">
 
-		{{-- BEGIN PROYECTO --}}
+			{{-- BEGIN CLIENTE --}}
 		<div class="grid simple vertical green">
 			<div class="grid-title no-border">
 				<h4>Información <span class="semi-bold">Cliente</span></h4>
+				<button class="btn btn-link pull-right" ng-click="clean('client')">Limpiar<i class="fa fa-eraser"></i></button>
 
 				{{--<div class="tools">
 				{{--<a class="collapse" href="javascript:;"></a> <a class="config" data-toggle="modal" href="#grid-config"></a> <a class="reload" href="javascript:;"></a>
@@ -49,19 +50,20 @@
 									<label for="">RUT</label>
 
 									<div class="input-group">
-										<input name="form3Rut" id="form3Rut" type="text" class="form-control" placeholder="" ng-model="cliente.rut" minlength="8" maxlength="10" required>
-										<span class="input-group-addon primary" sglclick="searchCliente()" ng-dblclick="modalCliente()" ng-click-options="{preventDoubleClick: true}">
+										<input name="form3Rut" id="form3Rut" type="text" class="form-control" placeholder="" ng-model="cliente.rut" minlength="8" maxlength="10" required ng-disabled="disableCli" ng-change="isNew()">
+
+										<span class="input-group-addon primary" sglclick="searchClienteRut()" ng-dblclick="modalCliente()" ng-click-options="{preventDoubleClick: true}">
 											<span class="arrow"></span>
-											<i class="fa fa-ellipsis-h" ng-show="!loads.cliente.rut"></i>
-											<i class="fa fa-circle-o-notch fa-spin" ng-show="loads.cliente.rut"></i>
+											<i class="fa fa-ellipsis-h" ng-if="!loads.cliente.rutname"></i>
+											<i class="fa fa-circle-o-notch fa-spin" ng-if="loads.cliente.rutname"></i>
 										</span>
 									</div>
 
-									<div ng-messages="proForm.form3Rut.$error" role="alert">
+									<div ng-messages="proyeForm.form3Rut.$error" role="alert">
 										<span class="help-inline text-error" ng-message="required">Requerido</span> <span class="help-inline text-error" ng-message="minlength">Min. 8 digitos</span>
 										<span class="help-inline text-error" ng-message="maxlength">Min. 10 digitos</span>
 									</div>
-									<span class="help-inline text-error" ng-show="errors.cliente.rut">[[ errors.cliente.rut ]]</span>
+									<span class="help-inline text-error" ng-if="errors.cliente.rut">[[ errors.cliente.rut ]]</span>
 								</div>
 
 
@@ -72,34 +74,7 @@
 						</div>
 
 						<div class="row form-row">
-								<div class="col-md-3">
-									<label for="finventario">Fecha</label> 
-
-									<div class="input-append primary date col-xs-11 col-sm-11 col-md-11 col-lg-11 no-padding">
-										<input type="text" class="form-control" placeholder="Fecha" name="fecha">
-										<span class="add-on">
-											<span class="arrow"></span>
-											<i class="fa fa-th"></i>
-										</span>
-										<div class="clearfix"></div>
-									</div>
-								</div>
-								<div class="col-md-2">
-									<label for="formVigencia">Vigencia</label>
-
-									<input type="number" min="0" max="30" ng-pattern="integerval" name="formVigencia2" id="formVigencia2" class="form-control" ng-model="proyecto.vigencia" ng-change="changeVigencia()" step="1" required>
-									<span class="help-inline text-error" ng-show="cotizForm.formVigencia2.$error.number">Solo números</span>
-									<span class="help-inline text-error" ng-show="cotizForm.formVigencia2.$error.max">Máximo 30 días</span>
-									{{--<div class="slider primary">--}}
-									{{--<input type="text" id="formVigencia" name="formVigencia" class="form-control" data-slider-max="30" data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="after">--}}
-									{{--</div>--}}
-
-									{{--<input type="hidden" name="formVigencia2" id="formVigencia2" ng-model="proyecto.vigencia">--}}
-								</div>
-						</div>
-
-						<div class="row form-row">
-							<div class="col-md-6">
+							<div class="col-md-7">
 								<label for="direccion">Dirección</label>
 
 								<div class="input-group">
@@ -110,11 +85,24 @@
 									</span>
 								</div>
 							</div>
+						</div>
 
-								<div class="col-md-5">
+						<div class="row form-row">
+
+							<div class="col-md-5">
+								<label for="">Ciudad</label>
+								{{--{{ Form::select2('ciudades', $ciudades, Input::old('ciudades'), array('select2', 'class' => 'form-control select2', 'data-ng-model' => 'cliente.ciudad', 'ng-change' => 'changeCiudades(cliente.ciudad)', 'select-selection' => 'cliente.comuna', 'required')) }}--}}
+								{{ Form::select('ciudades', $ciudades, Input::old('ciudades'), array('select', 'class' => 'form-control select', 'data-ng-model' => 'cliente.ciudad', 'ng-change' => 'changeCiudades(cliente.ciudad)', 'select-selection' => 'cliente.comuna', 'required', 'disabled')) }}
+								{{--<input name="form3City" id="form3City" type="text" class="form-control" placeholder="" ng-model="cliente.ciudad" required disabled ng-change="changeCiudades(cliente.ciudad)">--}}
+								<div ng-messages="proyeForm.ciudades.$error" role="alert">
+									<span class="help-inline text-error" ng-message="required">Requerido</span>
+								</div>
+								<span class="help-inline text-error" ng-if="errors.cliente.ciudad">[[ errors.cliente.ciudad ]]</span>
+							</div>
+							<div class="col-md-5">
 									<label for="">Comuna</label>
 
-									{{--									{{ Form::select2('comunas', $comunas, Input::old('comunas'), array('select2', 'class' => 'form-control select2', 'data-ng-model' => 'cliente.comuna', 'ng-options' =>'c.Id_Comuna as c.Descripcion for c in comunas', 'select-selection' => 'cliente.comuna')) }}--}}
+								{{--{{ Form::select2('comunas', $comunas, Input::old('comunas'), array('select2', 'class' => 'form-control select2', 'data-ng-model' => 'cliente.comuna', 'ng-options' =>'c.Id_Comuna as c.Descripcion for c in comunas', 'select-selection' => 'cliente.comuna')) }}--}}
 									{{ Form::select2('comunas', $comunas, Input::old('comunas'), array('select2', 'class' => 'form-control select2', 'data-ng-model' => 'cliente.comuna', 'select-selection' => 'cliente.comuna')) }}
 
 									{{--<div class="input-group">--}}
@@ -132,114 +120,227 @@
 				{{-- END GRID BODY --}}
 			</div>
 		</div>
-		{{-- END PROYECTO --}}
+			{{-- END CLIENTE --}}
 
-		{{-- BEGIN CLIENTE --}}
-		<div class="grid simple vertical blue">
-			<div class="grid-title no-border">
-				<h4>Información <span class="semi-bold">Proyecto</span></h4>
-
-				<div class="tools">
-					<a class="collapse" href="javascript:;"></a> <a class="config" data-toggle="modal" href="#grid-config"></a> <a class="reload" href="javascript:;"></a>
-					<a class="remove" href="javascript:;"></a>
+			{{-- BEGIN PROJECT --}}
+			<div class="grid simple vertical blue">
+				<div class="grid-title no-border">
+					<h4>Información <span class="semi-bold">Proyecto</span></h4>
+					<button class="btn btn-link pull-right" ng-click="clean('proyect')">Limpiar<i class="fa fa-eraser"></i></button>
 				</div>
-			</div>
-			<div class="grid-body no-border">
-				<div class="row">
-					<div class="col-md-12">
-						<div class="row form-row">
-							<div class="col-md-12">
-								<label for="descripcion">Nombre Proyecto</label>
+				<div class="grid-body no-border">
+					{{-- BEGIN GRID BODY --}}
+					<div class="row">
+						<div class="col-md-12">
+							<div class="row form-row">
+								<div class="col-md-8">
+									<label for="formProyecto">Nombre Proyecto</label>
 
-								<input type="text" class="form-control" placeholder="" name="descripcion" autofocus>
-							</div>
-						</div>
+									<input type="text" class="form-control" placeholder="" name="formProyecto" ng-model="proyecto.nombre" required>
+								</div>
+								<div class="col-md-2">
+									<label for="formVigencia">Vigencia</label>
 
-						<div class="row form-row">
-							<div class="col-md-6">
-								<label for="descripcion">Descripcion Especificaciones</label> <input type="text" class="form-control" placeholder="" name="descripcion" autofocus>
-							</div>
+									<input type="number" min="0" max="30" ng-pattern="integerval" name="formVigencia2" id="formVigencia2" class="form-control" ng-model="proyecto.vigencia" ng-change="changeVigencia()" step="1" required>
+									<span class="help-inline text-error" ng-show="proyeForm.formVigencia2.$error.number">Solo números</span>
+									<span class="help-inline text-error" ng-show="proyeForm.formVigencia2.$error.max">Máximo 30 días</span>
+								</div>
+								<div class="col-md-2">
+									<label for="formVencimiento">Fecha Vencimiento</label>
 
-						<div class="col-md-1">
-							<div class="form-group">
-								<label for="formUnidad">U.N</label>
-								<input type="text" class="form-control" name="formUnidad" id="formUnidad" value="{{ Input::old('formUnidad') }}" readonly ng-model="servicio.unidad">
-								{{-- 							{{ Form::select2('formUnidad', $unidades, Input::old('formUnidad'), array('id' => 'formUnidad', 'class' => 'select2 form-control', 'style' => 'width:100%', 'ng-model' => 'servicio.unidad')) }} --}}
-							</div>
-						</div>
-							<div class="col-md-2">
-								<label for="cantidad">Cantidad</label> <input type="text" class="form-control" placeholder="" name="cantidad" autofocus>
-							</div>
-							<div class="col-md-2">
-								<label for="total">Total</label> <input type="text" class="form-control" placeholder="" name="total" autofocus>
+									<input type="text" class="form-control" placeholder="Fecha Vencimiento" name="formVencimiento" id="formVencimiento" now="{{ Carbon::now()->toDateString() }}" readonly ng-model="proyecto.fechaVencimiento" required>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		{{-- END CLIENTE --}}
+			{{-- END PROJECT --}}
 
-		{{-- BEGIN DETAIL --}}
-		<div class="grid simple horizontal red">
-			<div class="grid-title no-border">
-				<h4>Detalle <span class="semi-bold">Proyecto</span></h4>
+			{{-- BEGIN SERVICES --}}
+			<div class="grid simple vertical blue">
+				<div class="grid-title no-border">
+					<h4>Información <span class="semi-bold">Servicio</span></h4>
+					<button class="btn btn-link pull-right" ng-click="clean('service')">Limpiar<i class="fa fa-eraser"></i></button>
+				</div>
+				<div class="grid-body no-border">
+					<div class="row form-row">
+						<div class="col-md-2">
+							<label for="formTipoServicio">Tipo Servicio</label>
 
-				<div class="tools">
-					<a class="collapse" href="javascript:;"></a> <a class="config" data-toggle="modal" href="#grid-config"></a> <a class="reload" href="javascript:;"></a>
-					<a class="remove" href="javascript:;"></a>
+							{{ Form::select2('formTipoServicios', $tservicios, Input::old('formTipoServicios'), array('id' => 'formTipoServicio', 'class' => 'select22 form-control', 'style' => 'width:100%', 'ng-model' => 'servicio.Id_TipoServicio', 'ng-change' => 'changeServicio()')) }}
+						</div>
+						<div class="col-md-2">
+							<label for="formServicio">Servicio</label>
+
+							<div class="input-group">
+								<input name="form3Servicio" id="form3Servicio" type="text" class="form-control" placeholder="" ng-model="servicio.Descripcion_Servicio">
+							<span class="input-group-addon primary" data-toggle="modal" data-target="#modalServicio">
+								<span class="arrow"></span>
+								<i class="fa fa-ellipsis-h"></i>
+							</span>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<label for="formPrecio">Precio</label>
+
+							<input type="text" class="form-control auto" data-a-sep="," data-a-dec="." placeholder="$" name="formPrecio" value="0" readonly ng-model="servicio.Precio">
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="formUnidad">U.N</label>
+								{{--<input type="text" class="form-control" name="formUnidad" id="formUnidad" value="{{ Input::old('formUnidad') }}" readonly ng-model="servicio.UnidadMedida">--}}
+								{{ Form::select2('formUnidad', $unidades, Input::old('formUnidad'), array('id' => 'formUnidad', 'class' => 'select2 form-control', 'style' => 'width:100%', 'ng-model' => 'servicio.UnidadMedida')) }}
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="formCantidad">Cantidad</label>
+
+								<input type="number" class="form-control" placeholder="" name="formCantidad" value="" ng-model="servicio.Cantidad" min="0" ng-change="changeCantidad()">
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="formTotal">Total</label>
+
+								<input type="text" class="form-control auto" data-a-sep="," data-a-dec="." placeholder="$" name="formTotal" value="0" readonly ng-model="servicio.Total">
+							</div>
+						</div>
+					</div>
+					<div class="row form-row">
+						<div class="col-md-12">
+							<label for="formDescripcion">Descripción</label>
+
+							<textarea id="formDescripcion" name="formDescripcion" placeholder="..." class="form-control" rows="3" ng-model="servicio.Observaciones"></textarea>
+						</div>
+					</div>
+					<div class="form-actions">
+						<div class="pull-left"></div>
+						<div class="pull-right">
+							<button class="btn btn-success btn-cons" type="button" ng-click="addService()">Agregar</button>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="grid-body no-border">
+			{{-- END SERVICES --}}
 
-				{{-- BEGIN GRID BODY --}}
-				<div class="table-responsive">
+			{{-- BEGIN DETAIL --}}
+			<div class="grid simple horizontal red" ng-if="detalle.length > 0">
+				<div class="grid-title no-border">
+					<h4>Detalle <span class="semi-bold">Proyecto</span></h4>
+					<button class="btn btn-link pull-right" ng-click="clean('detail')">Limpiar<i class="fa fa-eraser"></i></button>
+				</div>
+				<div class="grid-body no-border">
+					<div class="row">
+						<div class="col-md-12">
+							{{-- BEGIN GRID BODY --}}
+							<div class="table-responsive">
 
-					{{-- BEGIN TABLE --}}
-					<table class="table table-bordered no-more-tables">
-						<thead>
-						<tr>
-							<th style="width:1%">
-								<div class="checkbox check-default">
-									<input id="checkboxMain" type="checkbox" value="1" class="checkall"> <label for="checkboxMain"></label>
-								</div>
-							</th>
-							<th class="text-center" style="width:5%; vertical-align:middle;">N° Linea</th>
-							<th class="text-center" style="width:30%; vertical-align:middle;">Especificaciones</th>
-							<th class="text-center" style="width:2%; vertical-align:middle;">Unidad</th>
-							<th class="text-center" style="width:2%;  vertical-align:middle;">Cantidad</th>
-							<th class="text-center" style="width:6%;  vertical-align:middle;">Unitario</th>
-							<th class="text-center" style="width:6%;  vertical-align:middle;">Total</th>
-						</tr>
-						</thead>
-						<tbody>
+								{{-- BEGIN TABLE --}}
+								<table class="table table-bordered no-more-tables">
+									<thead>
+									<tr>
+										<th style="width:1%">
+											<div class="checkbox check-default">
+												<input id="checkboxMain" type="checkbox" value="1" class="checkall"> <label for="checkboxMain"></label>
+											</div>
+										</th>
+										<th class="text-center" style="width:15%; vertical-align:middle;">Tipo Servicio</th>
+										<th class="text-center" style="width:22%; vertical-align:middle;">Servicio</th>
+										<th class="text-center" style="width:10%; vertical-align:middle;">Precio</th>
+										<th class="text-center" style="width:6%;  vertical-align:middle;">Unidad</th>
+										<th class="text-center" style="width:6%;  vertical-align:middle;">Cantidad</th>
+										<th class="text-center" style="width:6%;  vertical-align:middle;">Total</th>
+										<th class="text-center" style="width:2%;  vertical-align:middle;">Descrip.</th>
+										<th class="text-center" style="width:9%;  vertical-align:middle;"></th>
+									</tr>
+									</thead>
+									<tbody>
 
-						{{-- BEGIN RESULT LOOP --}}
-						<tr>
-							<td>
-								<div class="checkbox check-default">
-									<input id="checkbox1" type="checkbox" value="1"> <label for="checkbox1"></label>
-								</div>
-							</td>
-							<td class="text-center">2</td>
-							<td class="text-left">Provisiones Tabiques</td>
-							<td class="text-center">m2</td>
-							<td class="text-center">1</td>
-							<td class="text-right">$ 50,000.00</td>
-							<td class="text-right">$ 50,000.00</td>
-						</tr>
-						{{-- END RESULT LOOP --}}
+									{{-- BEGIN RESULT LOOP --}}
+									<tr ng-repeat="d in detalle">
+										<td>
+											<div class="checkbox check-default">
+												<input id="checkbox_[[ $index ]]" type="checkbox" value="1"> <label for="checkbox_[[ $index ]]"></label>
+											</div>
+										</td>
+										<td class="text-center">[[ d.Nombre_TipoServicio ]]</td>
+										<td class="text-center">[[ d.Descripcion_Servicio ]]</td>
+										<td class="text-center">[[ d.Precio | currency ]]</td>
+										<td class="text-center">[[ d.UnidadMedida ]]</td>
+										<td class="text-center">[[ d.Cantidad ]]</td>
+										<td class="text-center">[[ d.Total | currency ]]</td>
+										<td class="text-center">
+											<a class="btn btn-info btn-sm btn-small" data-toggle="modal" data-target="#tableDetalle_[[ $index ]]"><i class="fa fa-outdent"></i></a>
 
-						</tbody>
-					</table>
-					{{-- END TABLE --}}
+											{{-- BEGIN MODAL --}}
+											<div class="modal fade" id="tableDetalle_[[ $index ]]" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+												<div class="modal-dialog">
+
+													{{-- BEGIN MODAL-CONTENT --}}
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+															<br> <i class="fa fa-outdent fa-7x"></i>
+															<h4 id="myModalLabel" class="semi-bold">Descripción del Servicio.</h4>
+
+															<p class="no-margin">[[ d.Descripcion_Servicio ]]</p><br>
+														</div>
+														<div class="modal-body">
+															<p>[[ d.Observaciones ]]</p>
+														</div>
+														<div class="modal-footer">
+															<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</td>
+										<td class="text-center">
+											<button class="btn btn-warning btn-sm btn-small pull-left" data-ng-click="editItem($index)"><i class="fa fa-pencil"></i></button>
+											<button class="btn btn-danger btn-sm btn-small pull-right" data-ng-click="removeItem($index)"><i class="fa fa-trash-o"></i></button>
+										</td>
+									</tr>
+									{{-- END RESULT LOOP --}}
+
+									</tbody>
+								</table>
+								{{-- END TABLE --}}
+							</div>
+						</div>
+					</div>
 
 				</div>
-				{{-- END GRID BODY --}}
-
 			</div>
-		</div>
-		{{-- END DETAIL --}}
+			{{-- END DETAIL --}}
+
+			<div class="grid simple transparent no-padding no-margin" ng-if="detalleTotal.total != 0">
+				<div class="grid-body">
+					<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-4  pull-right">
+							<table class="table no-more-tables">
+								<tbody>
+								<tr>
+									<td class="text-left">Subtotal</td>
+									<td class="text-right semi-bold"><span>[[ detalleTotal.subtotal | currency ]]</span></td>
+								</tr>
+								<tr>
+									<td class="text-left">IVA</td>
+									<td class="text-right semi-bold"><span>[[ detalleTotal.iva | currency ]]</span></td>
+								</tr>
+								<tr>
+									<td class="text-left">Total</td>
+									<td class="text-right semi-bold"><span>[[ detalleTotal.total | currency ]]</span></td>
+								</tr>
+								</tbody>
+							</table>
+							{{-- END GRID BODY --}}
+						</div>
+					</div>
+				</div>
+			</div>
+
 		{{-- BEGIN ACTION BUTTONS --}}
 		<div class="form-actions">
 			<div class="pull-left">
@@ -254,7 +355,41 @@
 
 		</form>
 		{{--END FORM--}}
-	  
+
+		{{-- BEGIN MODAL CLIENTE --}}
+		<div class="modal fade" id="modalCliente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="myModalLabel">Buscar Cliente</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-striped">
+							<thead class="cf">
+							<tr>
+								<th>Clientes encontrados:</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr ng-repeat="c in clientes">
+								<td class="radio radio-success">
+									<input id="radio_[[ $index ]]" type="radio" name="service" value="[[ $index ]]" ng-model="$parent.clienteSelect">
+									<label for="radio_[[ $index ]]">[[ c.Nombres ]] [[ c.ApellidoPat ]]</label>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="button" class="btn btn-primary" ng-click="selectCliente()">Cargar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		{{--END MODAL CLIENTE--}}
+
 		{{-- BEGIN MODAL COMUNA --}}
 		<div class="modal fade" id="modalComuna" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
@@ -274,6 +409,39 @@
 			</div>
 		</div>
 		{{--END MODAL COMUNA--}}
+		{{--BEGIN MODAL SERVICIO--}}
+		<div class="modal fade" id="modalServicio" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="myModalLabel">Seleccionar un Servicio</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-striped table-flip-scroll cf" ng-show="servicios.length >= 1">
+							<thead class="cf">
+							<tr>
+								<th>Servicio</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr ng-repeat="s in servicios">
+								<td class="radio radio-success">
+									<input id="radio_[[ $index ]]" type="radio" name="service" value="[[ $index ]]" ng-model="$parent.servicioSelect">
+									<label for="radio_[[ $index ]]" ng-bind="s.Descripcion_Servicio"></label>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="button" class="btn btn-primary" ng-click="selectServicio()">Cargar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		{{--END MODAL SERVICIO--}}
 
 	</div>
 	{{-- <input type="text" class="span12 auto" data-a-sep="," data-a-dec="."> --}}

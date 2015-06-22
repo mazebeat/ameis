@@ -11,7 +11,7 @@
 /**
  * Handles binary/7/8-bit Transfer Encoding in Swift Mailer.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_ContentEncoder
 {
@@ -32,8 +32,8 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
     /**
      * Creates a new PlainContentEncoder with $name (probably 7bit or 8bit).
      *
-     * @param string  $name
-     * @param bool    $canonical If canonicalization transformation should be done.
+     * @param string $name
+     * @param bool   $canonical If canonicalization transformation should be done.
      */
     public function __construct($name, $canonical = false)
     {
@@ -42,21 +42,10 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
     }
 
     /**
-     * Encode a given string to produce an encoded string.
-     *
-     * @param string  $string
-     * @param int     $firstLineOffset ignored
-     * @param int     $maxLineLength   - 0 means no wrapping will occur
-     *
-     * @return string
+     * Not used.
      */
-    public function encodeString($string, $firstLineOffset = 0, $maxLineLength = 0)
+    public function charsetChanged($charset)
     {
-        if ($this->_canonical) {
-            $string = $this->_canonicalize($string);
-        }
-
-        return $this->_safeWordWrap($string, $maxLineLength, "\r\n");
     }
 
     /**
@@ -88,6 +77,24 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
     }
 
     /**
+     * Encode a given string to produce an encoded string.
+     *
+     * @param string $string
+     * @param int    $firstLineOffset ignored
+     * @param int    $maxLineLength   - 0 means no wrapping will occur
+     *
+     * @return string
+     */
+    public function encodeString($string, $firstLineOffset = 0, $maxLineLength = 0)
+    {
+        if ($this->_canonical) {
+            $string = $this->_canonicalize($string);
+        }
+
+        return $this->_safeWordWrap($string, $maxLineLength, "\r\n");
+    }
+
+    /**
      * Get the name of this encoding scheme.
      *
      * @return string
@@ -98,18 +105,23 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
     }
 
     /**
-     * Not used.
+     * Canonicalize string input (fix CRLF).
+     *
+     * @param string $string
+     *
+     * @return string
      */
-    public function charsetChanged($charset)
+    private function _canonicalize($string)
     {
+        return str_replace(array("\r\n", "\r", "\n"), array("\n", "\n", "\r\n"), $string);
     }
 
     /**
      * A safer (but weaker) wordwrap for unicode.
      *
-     * @param string  $string
-     * @param int     $length
-     * @param string  $le
+     * @param string $string
+     * @param int    $length
+     * @param string $le
      *
      * @return string
      */
@@ -126,7 +138,7 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
 
         foreach ($originalLines as $originalLine) {
             $lines[] = '';
-            $currentLine = & $lines[$lineCount++];
+            $currentLine = &$lines[$lineCount++];
 
             //$chunks = preg_split('/(?<=[\ \t,\.!\?\-&\+\/])/', $originalLine);
             $chunks = preg_split('/(?<=\s)/', $originalLine);
@@ -135,28 +147,12 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
                 if (0 != strlen($currentLine)
                     && strlen($currentLine.$chunk) > $length) {
                     $lines[] = '';
-                    $currentLine = & $lines[$lineCount++];
+                    $currentLine = &$lines[$lineCount++];
                 }
                 $currentLine .= $chunk;
             }
         }
 
         return implode("\r\n", $lines);
-    }
-
-    /**
-     * Canonicalize string input (fix CRLF).
-     *
-     * @param string $string
-     *
-     * @return string
-     */
-    private function _canonicalize($string)
-    {
-        return str_replace(
-            array("\r\n", "\r", "\n"),
-            array("\n", "\n", "\r\n"),
-            $string
-            );
     }
 }

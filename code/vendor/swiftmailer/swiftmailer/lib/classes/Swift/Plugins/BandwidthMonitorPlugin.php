@@ -11,7 +11,7 @@
 /**
  * Reduces network flooding when sending large amounts of mail.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Plugins_BandwidthMonitorPlugin implements Swift_Events_SendListener, Swift_Events_CommandListener, Swift_Events_ResponseListener, Swift_InputByteStream
 {
@@ -73,26 +73,6 @@ class Swift_Plugins_BandwidthMonitorPlugin implements Swift_Events_SendListener,
     }
 
     /**
-     * Called when a message is sent so that the outgoing counter can be increased.
-     *
-     * @param string $bytes
-     */
-    public function write($bytes)
-    {
-        $this->_out += strlen($bytes);
-        foreach ($this->_mirrors as $stream) {
-            $stream->write($bytes);
-        }
-    }
-
-    /**
-     * Not used.
-     */
-    public function commit()
-    {
-    }
-
-    /**
      * Attach $is to this stream.
      *
      * The stream acts as an observer, receiving all data that is written.
@@ -103,6 +83,23 @@ class Swift_Plugins_BandwidthMonitorPlugin implements Swift_Events_SendListener,
     public function bind(Swift_InputByteStream $is)
     {
         $this->_mirrors[] = $is;
+    }
+
+    /**
+     * Not used.
+     */
+    public function commit()
+    {
+    }
+
+    /**
+     * Not used.
+     */
+    public function flushBuffers()
+    {
+        foreach ($this->_mirrors as $stream) {
+            $stream->flushBuffers();
+        }
     }
 
     /**
@@ -124,12 +121,15 @@ class Swift_Plugins_BandwidthMonitorPlugin implements Swift_Events_SendListener,
     }
 
     /**
-     * Not used.
+     * Called when a message is sent so that the outgoing counter can be increased.
+     *
+     * @param string $bytes
      */
-    public function flushBuffers()
+    public function write($bytes)
     {
+        $this->_out += strlen($bytes);
         foreach ($this->_mirrors as $stream) {
-            $stream->flushBuffers();
+            $stream->write($bytes);
         }
     }
 

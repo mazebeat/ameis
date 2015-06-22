@@ -13,7 +13,6 @@ namespace Monolog\Handler;
 
 use Monolog\Logger;
 use Monolog\TestCase;
-use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 

@@ -11,7 +11,7 @@
 /**
  * An abstract base MIME Header.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Mime_Headers_ParameterizedHeader extends Swift_Mime_Headers_UnstructuredHeader implements Swift_Mime_ParameterizedHeader
 {
@@ -51,29 +51,17 @@ class Swift_Mime_Headers_ParameterizedHeader extends Swift_Mime_Headers_Unstruct
     }
 
     /**
-     * Get the type of Header that this instance represents.
+     * Get the value of $parameter.
      *
-     * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
-     * @see TYPE_DATE, TYPE_ID, TYPE_PATH
+     * @param string $parameter
      *
-     * @return int
+     * @return string
      */
-    public function getFieldType()
+    public function getParameter($parameter)
     {
-        return self::TYPE_PARAMETERIZED;
-    }
+        $params = $this->getParameters();
 
-    /**
-     * Set the character set used in this Header.
-     *
-     * @param string $charset
-     */
-    public function setCharset($charset)
-    {
-        parent::setCharset($charset);
-        if (isset($this->_paramEncoder)) {
-            $this->_paramEncoder->charsetChanged($charset);
-        }
+        return array_key_exists($parameter, $params) ? $params[$parameter] : null;
     }
 
     /**
@@ -85,22 +73,6 @@ class Swift_Mime_Headers_ParameterizedHeader extends Swift_Mime_Headers_Unstruct
     public function setParameter($parameter, $value)
     {
         $this->setParameters(array_merge($this->getParameters(), array($parameter => $value)));
-    }
-
-    /**
-     * Get the value of $parameter.
-     *
-     * @param string $parameter
-     *
-     * @return string
-     */
-    public function getParameter($parameter)
-    {
-        $params = $this->getParameters();
-
-        return array_key_exists($parameter, $params)
-            ? $params[$parameter]
-            : null;
     }
 
     /**
@@ -143,6 +115,32 @@ class Swift_Mime_Headers_ParameterizedHeader extends Swift_Mime_Headers_Unstruct
     }
 
     /**
+     * Get the type of Header that this instance represents.
+     *
+     * @see TYPE_TEXT, TYPE_PARAMETERIZED, TYPE_MAILBOX
+     * @see TYPE_DATE, TYPE_ID, TYPE_PATH
+     *
+     * @return int
+     */
+    public function getFieldType()
+    {
+        return self::TYPE_PARAMETERIZED;
+    }
+
+    /**
+     * Set the character set used in this Header.
+     *
+     * @param string $charset
+     */
+    public function setCharset($charset)
+    {
+        parent::setCharset($charset);
+        if (isset($this->_paramEncoder)) {
+            $this->_paramEncoder->charsetChanged($charset);
+        }
+    }
+
+    /**
      * Generate a list of all tokens in the final header.
      *
      * This doesn't need to be overridden in theory, but it is for implementation
@@ -160,7 +158,7 @@ class Swift_Mime_Headers_ParameterizedHeader extends Swift_Mime_Headers_Unstruct
         foreach ($this->_params as $name => $value) {
             if (!is_null($value)) {
                 // Add the semi-colon separator
-                $tokens[count($tokens)-1] .= ';';
+                $tokens[count($tokens) - 1] .= ';';
                 $tokens = array_merge($tokens, $this->generateTokenLines(
                     ' '.$this->_createParameter($name, $value)
                     ));
@@ -235,9 +233,9 @@ class Swift_Mime_Headers_ParameterizedHeader extends Swift_Mime_Headers_Unstruct
     /**
      * Returns the parameter value from the "=" and beyond.
      *
-     * @param string  $value     to append
-     * @param bool    $encoded
-     * @param bool    $firstLine
+     * @param string $value to append
+     * @param bool   $encoded
+     * @param bool   $firstLine
      *
      * @return string
      */

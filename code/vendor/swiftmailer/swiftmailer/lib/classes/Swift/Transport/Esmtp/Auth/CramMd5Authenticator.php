@@ -11,20 +11,10 @@
 /**
  * Handles CRAM-MD5 authentication.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Transport_Esmtp_Auth_CramMd5Authenticator implements Swift_Transport_Esmtp_Authenticator
 {
-    /**
-     * Get the name of the AUTH mechanism this Authenticator handles.
-     *
-     * @return string
-     */
-    public function getAuthKeyword()
-    {
-        return 'CRAM-MD5';
-    }
-
     /**
      * Try to authenticate the user with $username and $password.
      *
@@ -53,6 +43,16 @@ class Swift_Transport_Esmtp_Auth_CramMd5Authenticator implements Swift_Transport
     }
 
     /**
+     * Get the name of the AUTH mechanism this Authenticator handles.
+     *
+     * @return string
+     */
+    public function getAuthKeyword()
+    {
+        return 'CRAM-MD5';
+    }
+
+    /**
      * Generate a CRAM-MD5 response from a server challenge.
      *
      * @param string $secret
@@ -73,7 +73,7 @@ class Swift_Transport_Esmtp_Auth_CramMd5Authenticator implements Swift_Transport
         $k_ipad = substr($secret, 0, 64) ^ str_repeat(chr(0x36), 64);
         $k_opad = substr($secret, 0, 64) ^ str_repeat(chr(0x5C), 64);
 
-        $inner  = pack('H32', md5($k_ipad.$challenge));
+        $inner = pack('H32', md5($k_ipad . $challenge));
         $digest = md5($k_opad.$inner);
 
         return $digest;

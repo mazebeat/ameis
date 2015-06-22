@@ -83,12 +83,12 @@ class AnnotationException extends \Exception
      *
      * @return AnnotationException
      */
-	public static function semanticalError($message)
-	{
-		return new self('[Semantical Error] ' . $message);
-	}
+    public static function semanticalError($message)
+    {
+        return new self('[Semantical Error] ' . $message);
+    }
 
-	/**
+    /**
      * Creates a new AnnotationException describing an type error of an attribute.
      *
      * @since 2.2
@@ -113,18 +113,18 @@ class AnnotationException extends \Exception
         ));
     }
 
-	/**
-	 * Creates a new AnnotationException describing a type error.
-	 *
-	 * @since 1.1
-	 *
-	 * @param string $message
-	 *
-	 * @return AnnotationException
-	 */
-	public static function typeError($message)
-	{
-		return new self('[Type Error] ' . $message);
+    /**
+     * Creates a new AnnotationException describing a type error.
+     *
+     * @since 1.1
+     *
+     * @param string $message
+     *
+     * @return AnnotationException
+     */
+    public static function typeError($message)
+    {
+        return new self('[Type Error] ' . $message);
     }
 
     /**

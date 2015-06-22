@@ -97,9 +97,9 @@ class ImmutableEventDispatcherTest extends \PHPUnit_Framework_TestCase
         $this->dispatcher->removeSubscriber($subscriber);
     }
 
-	protected function setUp()
-	{
-		$this->innerDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
-		$this->dispatcher      = new ImmutableEventDispatcher($this->innerDispatcher);
+    protected function setUp()
+    {
+        $this->innerDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $this->dispatcher      = new ImmutableEventDispatcher($this->innerDispatcher);
     }
 }

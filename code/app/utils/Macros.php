@@ -254,14 +254,15 @@ Form::macro('selectYear2', function ($name, $startYear = null, $endYear = null, 
 		return '<div class="alert alert-success"><button class="close" data-dismiss="alert"></button>No existen documentos pendientes.</div>';
 	}
 
-	if (\Str::lower($type) == 'cotiz') {
-		$out = '<ul style="color: #FFFFFF;">';
-		foreach ($list as $k => $v) {
-			$out .= '<li><a href="' . \URL::to('#') . '" class="btn btn-link">' . \Str::upper($v) . '</a></li>';
-		}
-		$out .= '</ul>';
+	switch (\Str::lower($type)) {
+		case 'cotiz':
+			$out = '<ul class="list-unstyled">';
+			foreach ($list as $k => $v) {
+				$out .= '<li><a href="' . \URL::to('#') . '" class="btn btn-link" style="color: #eee;">' . '<strong>' . $v->Nro_Cot . '.-</strong> ' . \Str::upper($v->Descripcion) . '</a></li>';
+			}
+			$out .= '</ul>';
 
-		return $out;
+			return $out;
+			break;
 	}
-
 });

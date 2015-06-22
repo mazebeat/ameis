@@ -11,7 +11,7 @@
 /**
  * Contains a list of redundant Transports so when one fails, the next is used.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Transport_FailoverTransport extends Swift_Transport_LoadBalancedTransport
 {
@@ -28,6 +28,21 @@ class Swift_Transport_FailoverTransport extends Swift_Transport_LoadBalancedTran
     public function __construct()
     {
         parent::__construct();
+    }
+
+    protected function _getNextTransport()
+    {
+        if (!isset($this->_currentTransport)) {
+            $this->_currentTransport = parent::_getNextTransport();
+        }
+
+        return $this->_currentTransport;
+    }
+
+    protected function _killCurrentTransport()
+    {
+        $this->_currentTransport = null;
+        parent::_killCurrentTransport();
     }
 
     /**
@@ -66,20 +81,5 @@ class Swift_Transport_FailoverTransport extends Swift_Transport_LoadBalancedTran
         }
 
         return $sent;
-    }
-
-    protected function _getNextTransport()
-    {
-        if (!isset($this->_currentTransport)) {
-            $this->_currentTransport = parent::_getNextTransport();
-        }
-
-        return $this->_currentTransport;
-    }
-
-    protected function _killCurrentTransport()
-    {
-        $this->_currentTransport = null;
-        parent::_killCurrentTransport();
     }
 }

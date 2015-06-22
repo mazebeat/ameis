@@ -175,15 +175,13 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
             ->once()
             ->with(1)
             ->andReturn("250 SIZE=123456\r\n");
-        $buf->shouldReceive('write')
-            ->once()->with("MAIL FROM: <me@domain> FOO ZIP\r\n")
+        $buf->shouldReceive('write')->once()->with("MAIL FROM:<me@domain> FOO ZIP\r\n")
             ->andReturn(2);
         $buf->shouldReceive('readLine')
             ->once()
             ->with(2)
             ->andReturn("250 OK\r\n");
-        $buf->shouldReceive('write')
-            ->once()->with("RCPT TO: <foo@bar>\r\n")
+        $buf->shouldReceive('write')->once()->with("RCPT TO:<foo@bar>\r\n")
             ->andReturn(3);
         $buf->shouldReceive('readLine')
             ->once()
@@ -259,15 +257,13 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
             ->once()
             ->with(1)
             ->andReturn("250 SIZE=123456\r\n");
-        $buf->shouldReceive('write')
-            ->once()->with("MAIL FROM: <me@domain>\r\n")
+        $buf->shouldReceive('write')->once()->with("MAIL FROM:<me@domain>\r\n")
             ->andReturn(2);
         $buf->shouldReceive('readLine')
             ->once()
             ->with(2)
             ->andReturn("250 OK\r\n");
-        $buf->shouldReceive('write')
-            ->once()->with("RCPT TO: <foo@bar> FOO ZIP\r\n")
+        $buf->shouldReceive('write')->once()->with("RCPT TO:<foo@bar> FOO ZIP\r\n")
             ->andReturn(3);
         $buf->shouldReceive('readLine')
             ->once()
@@ -410,7 +406,7 @@ class Swift_Transport_EsmtpTransport_ExtensionSupportTest
              ->andReturnUsing(function ($a, $b, $c, $d, &$e) {
                  $e = true;
 
-                 return "250 ok";
+                 return '250 ok';
              });
         $ext2->shouldReceive('getHandledKeyword')
              ->zeroOrMoreTimes()

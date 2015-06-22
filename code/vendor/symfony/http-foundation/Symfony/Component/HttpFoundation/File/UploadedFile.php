@@ -153,12 +153,12 @@ class UploadedFile extends File
      *
      * @api
      */
-	public function getClientMimeType()
-	{
-		return $this->mimeType;
-	}
+    public function getClientMimeType()
+    {
+        return $this->mimeType;
+    }
 
-	/**
+    /**
      * Returns the file size.
      *
      * It is extracted from the request from which the file has been uploaded.
@@ -229,39 +229,37 @@ class UploadedFile extends File
      *
      * @api
      */
-	public function isValid()
-	{
-		$isOk = $this->error === UPLOAD_ERR_OK;
+    public function isValid()
+    {
+        $isOk = $this->error === UPLOAD_ERR_OK;
 
-		return $this->test ? $isOk : $isOk && is_uploaded_file($this->getPathname());
-	}
+        return $this->test ? $isOk : $isOk && is_uploaded_file($this->getPathname());
+    }
 
-	/**
-	 * Returns an informative upload error message.
-	 *
-	 * @return string The error message regarding the specified error code
-	 */
-	public function getErrorMessage()
-	{
-		static $errors
-		= array(
-			UPLOAD_ERR_INI_SIZE   => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d KiB).',
-			UPLOAD_ERR_FORM_SIZE  => 'The file "%s" exceeds the upload limit defined in your form.',
-			UPLOAD_ERR_PARTIAL    => 'The file "%s" was only partially uploaded.',
-			UPLOAD_ERR_NO_FILE    => 'No file was uploaded.',
-			UPLOAD_ERR_CANT_WRITE => 'The file "%s" could not be written on disk.',
-			UPLOAD_ERR_NO_TMP_DIR => 'File could not be uploaded: missing temporary directory.',
-			UPLOAD_ERR_EXTENSION  => 'File upload was stopped by a PHP extension.',
-		);
+    /**
+     * Returns an informative upload error message.
+     *
+     * @return string The error message regarding the specified error code
+     */
+    public function getErrorMessage()
+    {
+        static $errors
+        = array(UPLOAD_ERR_INI_SIZE   => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d KiB).',
+                UPLOAD_ERR_FORM_SIZE  => 'The file "%s" exceeds the upload limit defined in your form.',
+                UPLOAD_ERR_PARTIAL    => 'The file "%s" was only partially uploaded.',
+                UPLOAD_ERR_NO_FILE    => 'No file was uploaded.',
+                UPLOAD_ERR_CANT_WRITE => 'The file "%s" could not be written on disk.',
+                UPLOAD_ERR_NO_TMP_DIR => 'File could not be uploaded: missing temporary directory.',
+                UPLOAD_ERR_EXTENSION  => 'File upload was stopped by a PHP extension.',);
 
-		$errorCode   = $this->error;
-		$maxFilesize = $errorCode === UPLOAD_ERR_INI_SIZE ? self::getMaxFilesize() / 1024 : 0;
-		$message     = isset($errors[$errorCode]) ? $errors[$errorCode] : 'The file "%s" was not uploaded due to an unknown error.';
+        $errorCode   = $this->error;
+        $maxFilesize = $errorCode === UPLOAD_ERR_INI_SIZE ? self::getMaxFilesize() / 1024 : 0;
+        $message     = isset($errors[$errorCode]) ? $errors[$errorCode] : 'The file "%s" was not uploaded due to an unknown error.';
 
-		return sprintf($message, $this->getClientOriginalName(), $maxFilesize);
-	}
+        return sprintf($message, $this->getClientOriginalName(), $maxFilesize);
+    }
 
-	/**
+    /**
      * Returns the maximum size of an uploaded file as configured in php.ini.
      *
      * @return int The maximum size of an uploaded file in bytes
@@ -303,8 +301,8 @@ class UploadedFile extends File
      *
      * @api
      */
-	public function getClientOriginalName()
+    public function getClientOriginalName()
     {
-	    return $this->originalName;
+        return $this->originalName;
     }
 }

@@ -3,6 +3,7 @@
 -----------------------------------------------------------------*/	
 //Cool ios7 switch - Beta version
 //Done using pure Javascript
+/*
 if(!$('html').hasClass('lte9')) {
     var Switch = require('ios7-switch')
         , checkbox = document.querySelector('.ios')
@@ -22,6 +23,7 @@ var Switch2 = require('ios7-switch')
         mySwitch2.toggle();
     }, false);
 }
+ */
 $(document).ready(function(){
 	  //Dropdown menu - select2 plug-in
 	  $("#source").select2();
@@ -65,15 +67,15 @@ $(document).ready(function(){
 	$('.auto').autoNumeric('init');
 	
 	//HTML5 editor
-	$('#text-editor').wysihtml5();
+    //$('#text-editor').wysihtml5();
 	
 	//Drag n Drop up-loader
 	$("div#myId").dropzone({ url: "/file/post" });
 	
 	//Single instance of tag inputs  -  can be initiated with simply using data-role="tagsinput" attribute in any input field
-	$('#source-tags').tagsinput({
-		typeahead: {
-			source: ['Amsterdam', 'Washington', 'Sydney', 'Beijing', 'Cairo']
-		}	
-	});
+    //$('#source-tags').tagsinput({
+    //	typeahead: {
+    //		source: ['Amsterdam', 'Washington', 'Sydney', 'Beijing', 'Cairo']
+    //	}
+    //});
 });

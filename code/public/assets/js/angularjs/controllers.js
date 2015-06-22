@@ -19,38 +19,43 @@ ameis
             dia = "0".concat(dia);
         }
 
+        $scope.modifiCoti = false;
+        $scope.modifiDet = false;
+        $scope.disableCoti = false;
+        $scope.disableCli = false;
         $scope.countServ = 1;
         $scope.proyecto = {
-            nombre: '',
+            nombre: null,
             vigencia: 0,
-            fechaVencimiento: anio + "-" + mes + "-" + dia
+            fechaVencimiento: anio + '-' + mes + '-' + dia
         };
         $scope.cotizacion = {
-            numero: ''
+            numero: null
         };
         $scope.clientes = [];
         $scope.cliente = {
-            rut: '',
-            nombre: '',
-            direccion: '',
-            comuna: '',
-            ciudad: ''
+            rut: null,
+            nombre: null,
+            direccion: null,
+            comuna: null,
+            ciudad: null
         };
         $scope.servicio = {
             Nro_Linea: $scope.countServ,
-            Id_Servicio: '',
-            Id_TipoServicio: '',
-            Nombre_TipoServicio: '',
-            nombreTipoServicio: '',
-            servicio: '',
+            Id_Servicio: null,
+            Id_TipoServicio: null,
+            Nombre_TipoServicio: null,
+            nombreTipoServicio: null,
+            servicio: null,
             Precio: 0,
-            Cantidad: '',
-            UnidadMedida: '',
+            Cantidad: null,
+            UnidadMedida: null,
             Total: 0,
-            Observaciones: '',
-            Descripcion_Servicio: ''
+            Observaciones: null,
+            Descripcion_Servicio: null
         };
         $scope.servicios = [];
+        $scope.unidades = [];
         $scope.detalle = [];
         $scope.detalleTotal = {
             subtotal: 0,
@@ -69,32 +74,32 @@ ameis
         };
         $scope.errors = {
             cliente: {
-                rut: '',
-                nombre: '',
-                direccion: '',
-                comuna: '',
-                ciudad: ''
+                rut: null,
+                nombre: null,
+                direccion: null,
+                comuna: null,
+                ciudad: null
             }
         };
 
-        // CLEAN BUTTONS
+        // CLEAN BUTTONS --------------------------------------------------------------------------------------
         // // SERVICES
         $scope.clean = function (option) {
             switch (angular.lowercase(option)) {
                 case 'all':
                     $scope.countServ = 0;
                     $scope.proyecto = {
-                        nombre: '',
+                        nombre: null,
                         vigencia: 0,
                         fechaVencimiento: anio + "-" + mes + "-" + dia
                     };
                     $scope.cotizacion = {};
                     $scope.cliente = {
-                        rut: '',
-                        nombre: '',
-                        direccion: '',
-                        comuna: '',
-                        ciudad: ''
+                        rut: null,
+                        nombre: null,
+                        direccion: null,
+                        comuna: null,
+                        ciudad: null
                     };
                     $scope.servicios = [];
                     $scope.detalle = [];
@@ -103,23 +108,29 @@ ameis
                         iva: 0,
                         total: 0
                     };
-                    $scope.cleanServicio();
+                    $scope.clean('service');
+                    $scope.modifiCoti = false;
+                    $scope.modifiDet = false;
+                    $scope.disableCoti = false;
+                    $scope.disableCli = false;
                     break;
                 case 'client':
                     $scope.cliente = {
-                        rut: '',
-                        nombre: '',
-                        direccion: '',
-                        comuna: '',
-                        ciudad: ''
+                        rut: null,
+                        nombre: null,
+                        direccion: null,
+                        comuna: null,
+                        ciudad: null
                     };
+                    $scope.disableCoti = false;
+                    $scope.disableCli = false;
                     break;
                 case 'cotization':
                     $scope.cotizacion = {};
                     break;
                 case 'proyect':
                     $scope.proyecto = {
-                        nombre: '',
+                        nombre: null,
                         vigencia: 0,
                         fechaVencimiento: anio + "-" + mes + "-" + dia
                     };
@@ -127,18 +138,19 @@ ameis
                 case 'service':
                     $scope.servicio = {
                         Nro_Linea: $scope.countServ,
-                        Id_Servicio: '',
-                        Id_TipoServicio: '',
-                        Nombre_TipoServicio: '',
-                        nombreTipoServicio: '',
-                        servicio: '',
+                        Id_Servicio: null,
+                        Id_TipoServicio: null,
+                        Nombre_TipoServicio: null,
+                        nombreTipoServicio: null,
+                        servicio: null,
                         Precio: 0,
-                        Cantidad: '',
-                        UnidadMedida: '',
+                        Cantidad: null,
+                        UnidadMedida: null,
                         Total: 0,
-                        Observaciones: '',
-                        Descripcion_Servicio: ''
+                        Observaciones: null,
+                        Descripcion_Servicio: null
                     };
+                    $scope.modifiDet = false;
                     break;
                 case 'detail':
                     $scope.detalle = [];
@@ -149,22 +161,22 @@ ameis
                     };
                     break;
             }
-        }
+        };
 
         $scope.cleanServicio = function () {
             $scope.servicio = {
                 Nro_Linea: $scope.countServ,
-                Id_Servicio: '',
-                Id_TipoServicio: '',
-                Nombre_TipoServicio: '',
-                nombreTipoServicio: '',
-                servicio: '',
+                Id_Servicio: null,
+                Id_TipoServicio: null,
+                Nombre_TipoServicio: null,
+                nombreTipoServicio: null,
+                servicio: null,
                 Precio: 0,
-                Cantidad: '',
-                UnidadMedida: '',
+                Cantidad: null,
+                UnidadMedida: null,
                 Total: 0,
-                Observaciones: '',
-                Descripcion_Servicio: ''
+                Observaciones: null,
+                Descripcion_Servicio: null
             };
         };
 
@@ -172,17 +184,17 @@ ameis
         $scope.cleanVars = function () {
             $scope.countServ = 0;
             $scope.proyecto = {
-                nombre: '',
+                nombre: null,
                 vigencia: 0,
                 fechaVencimiento: anio + "-" + mes + "-" + dia
             };
             $scope.cotizacion = {};
             $scope.cliente = {
-                rut: '',
-                nombre: '',
-                direccion: '',
-                comuna: '',
-                ciudad: ''
+                rut: null,
+                nombre: null,
+                direccion: null,
+                comuna: null,
+                ciudad: null
             };
             $scope.servicios = [];
             $scope.detalle = [];
@@ -194,48 +206,25 @@ ameis
             $scope.cleanServicio();
         };
 
-        // PROYECT
+        // PROYECT --------------------------------------------------------------------------------------
         $scope.$watch('proyecto.vigencia', function () {
             var date = $('#formVencimiento').attr('now');
-            date = apiFactory.sumaFecha($scope.proyecto.vigencia, date);
-            $scope.proyecto.fechaVencimiento = date;
+            var out = apiFactory.sumaFecha($scope.proyecto.vigencia, date);
+            $scope.proyecto.fechaVencimiento = out;
         });
 
-        // CLIENT
+        // CLIENT --------------------------------------------------------------------------------------
         $scope.changeCiudades = function () {
             $http.post('/returnComunas', {Id_Ciudad: $scope.cliente.ciudad})
                 .then(function (response) {
-                    //console.log(response)
                     if (response.status == 200) {
                         response = response.data;
                         //$timeout(function() {
-                        $scope.cliente.comuna = '';
+                        $scope.cliente.comuna = null;
                         $scope.comunas = response;
                         //}, 1000);
                     }
                 });
-        };
-
-        $scope.searchCliente = function () {
-            if ($scope.cliente.rut != '' && !$scope.cliente.rut.length > 0 && $scope.cliente.rut != undefined) {
-                $http.post('/returnClient', {rut: $scope.cliente.rut})
-                    .then(function (response) {
-                        //console.log(response)
-                        if (response.status == 200) {
-                            response = response.data;
-                            var c = response[0];
-                            var d = response[1];
-                            $scope.cliente = {
-                                Id_Cliente: c.Id_Cliente,
-                                rut: c.Rut_Cliente + '-' + c.Dv_Cliente,
-                                nombre: c.Nombres + ' ' + c.ApellidoPat,
-                                direccion: d.Direcion,
-                                comuna: d.Id_Comuna,
-                                ciudad: d.Id_Ciudad
-                            };
-                        }
-                    });
-            }
         };
 
         $scope.returnClient = function (rut, nombre) {
@@ -243,7 +232,6 @@ ameis
                 .then(function (response) {
                     if (response.status == 200) {
                         response = response.data;
-
                         if (response.length >= 2) {
                             var c = response[0];
                             var d = response[1];
@@ -252,79 +240,52 @@ ameis
                                 .then(function (response) {
                                     if (response.status == 200) {
                                         response = response.data;
-                                        $timeout(function () {
-                                            $scope.cliente.comuna = '';
-                                            $scope.comunas = response;
-                                            $scope.cliente = {
-                                                Id_Cliente: c.Id_Cliente,
-                                                rut: c.Rut_Cliente + '-' + c.Dv_Cliente,
-                                                nombre: c.Nombres + ' ' + c.ApellidoPat,
-                                                direccion: d.Direcion,
-                                                comuna: d.Id_Comuna,
-                                                ciudad: d.Id_Ciudad
-                                            };
-                                        }, 1000);
-
+                                        //$timeout(function () {
+                                        $scope.cliente.comuna = null;
+                                        $scope.comunas = response;
+                                        $scope.cliente = {
+                                            Id_Cliente: c.Id_Cliente,
+                                            rut: c.Rut_Cliente + '-' + c.Dv_Cliente,
+                                            nombre: c.Nombres + ' ' + c.ApellidoPat,
+                                            direccion: d.Direcion,
+                                            comuna: d.Id_Comuna,
+                                            ciudad: d.Id_Ciudad
+                                        };
+                                        //}, 1000);
 
                                         swalService.success('Correcto', 'Cliente Cargado con Exito!');
 
                                         $scope.errors = {
                                             cliente: {
-                                                rut: '',
-                                                nombre: '',
-                                                direccion: '',
-                                                comuna: '',
-                                                ciudad: ''
+                                                rut: null,
+                                                nombre: null,
+                                                direccion: null,
+                                                comuna: null,
+                                                ciudad: null
                                             }
                                         };
                                     }
                                 })
                                 .catch(function (response) {
-                                    console.error('Gists error', response.status, response.data);
+                                    console.error('ERROR: ', response.status, response.data);
                                 });
                         }
                         if (response.length == 1) {
                             if (rut != null && rut != undefined) {
-                                $scope.errors.cliente.nombre = '';
+                                $scope.errors.cliente.nombre = null;
                                 $scope.errors.cliente.rut = response[0].Mensaje;
                             } else {
                                 $scope.errors.cliente.nombre = response[0].Mensaje;
-                                $scope.errors.cliente.rut = '';
+                                $scope.errors.cliente.rut = null;
                             }
                         }
                     }
                 })
                 .catch(function (response) {
-                    console.error('Gists error', response.status, response.data);
+                    console.error('ERROR: ', response.status, response.data);
                 })
                 .finally(function () {
                     console.log("finally finished gists");
-                });
-
-        };
-
-        $scope.returnClientNombre = function (nombre) {
-            return $http.post('/returnClient', {rut: null, nombre: nombre})
-                .then(function (response) {
-                    if (response.status == 200) {
-                        response = response.data;
-
-                        if (response.length >= 2) {
-                            angular.forEach(response, function (val, key) {
-                                if (key != parseInt(response.length - 1)) {
-                                    console.info(val)
-                                    $scope.clientes.push(val);
-                                }
-                            });
-                        }
-                        if (response.length == 1) {
-                        }
-                    }
-                })
-                .catch(function (response) {
-                    console.error('Gists error', response.status, response.data);
-                })
-                .finally(function () {
                 });
 
         };
@@ -347,65 +308,17 @@ ameis
                     $scope.clienteSelect = undefined;
                 })
                 .catch(function (response) {
-                    console.error('Gists error', response.status, response.data);
+                    console.error('ERROR: ', response.status, response.data);
                 })
                 .finally(function () {
-                    $scope.loads.cliente.nombre = false;
+                    $scope.loads.cliente.rut = false;
                     $('#modalCliente').modal('hide');
+                    $scope.disableCoti = true;
+                    $scope.disableCli = false;
                 });
         };
 
-        $scope.searchClienteRut = function () {
-            //console.log($scope.cliente.rut)
-            var rut = $scope.cliente.rut;
-            if (!rut.$error) {
-                //console.log(rut != "" || rut.length > 0 && rut != undefined)
-                if ($scope.cliente.rut != "" || $scope.cliente.rut.length > 0 && $scope.cliente.rut != undefined
-                ) {
-                    $scope.loads.cliente.rut = true;
-                    $scope.returnClient($scope.cliente.rut, null)
-                        .then(function () {
-                            $scope.loads.cliente.rut = false;
-                        })
-                        .catch(function (response) {
-                            console.error('Gists error', response.status, response.data);
-                        });
-                }
-            }
-        };
-
-        $scope.modalClienteRut = function () {
-            swalService.custom({
-                title: "Buscar Cliente",
-                text: "Ingrese el RUT del Cliente a buscar...",
-                type: "input",
-                showCancelButton: true,
-                closeOnConfirm: false,
-                animation: "slide-from-top",
-                inputPlaceholder: "RUT"
-            }, function (inputValue) {
-                if (inputValue === false) return false;
-                if (inputValue === "") {
-                    swal.showInputError("Debes ingresar algún valor!");
-                    return false
-                }
-                if (inputValue != "" || inputValue > 0 && inputValue != undefined) {
-                    $scope.loads.cliente.rut = true;
-                    $scope.returnClient(inputValue, null)
-                        .then(function () {
-                            $scope.loads.cliente.rut = false;
-                        })
-                        .catch(function (response) {
-                            console.error('Gists error', response.status, response.data);
-                        });
-
-
-                }
-            });
-        };
-
         $scope.searchClienteNombre = function () {
-            //console.log($scope.cliente.rut)
             var nombre = $scope.cliente.nombre;
             if (!nombre.$error) {
                 $scope.clientes = [];
@@ -417,23 +330,83 @@ ameis
                             $('#modalCliente').modal('show');
                         })
                         .catch(function (response) {
-                            console.error('Gists error', response.status, response.data);
+                            console.error('ERROR: ', response.status, response.data);
                         });
                 }
             }
         };
 
-        // SERVICES
+        $scope.searchClient = function () {
+            $scope.clientes = [];
+
+            if ($scope.cliente.sName != '' && $scope.cliente.sName != null && $scope.cliente.sName.length > 0) {
+                $http.post('/returnClient', {rut: null, nombre: $scope.cliente.sName})
+                    .then(function (response) {
+                        if (response.status == 200) {
+                            response = response.data;
+
+                            if (response.length >= 2) {
+                                angular.forEach(response, function (val, key) {
+                                    if (key != parseInt(response.length - 1)) {
+                                        $scope.clientes.push(val);
+                                    }
+                                });
+                            }
+                            if (response.length == 1) {
+                            }
+                        }
+                    })
+                    .catch(function (response) {
+                        console.error('ERROR: ', response.status, response.data);
+                    })
+                    .finally(function () {
+                    });
+            }
+
+            if ($scope.cliente.sRut != '' && $scope.cliente.sRut != null && $scope.cliente.sRut.length > 0) {
+                $http.post('/returnClient', {rut: $scope.cliente.sRut, nombre: null})
+                    .then(function (response) {
+                        if (response.status == 200) {
+                            response = response.data;
+
+                            if (response.length == 3) {
+                                $scope.clientes.push(response[0]);
+                            }
+                            if (response.length > 3) {
+                                angular.forEach(response, function (val, key) {
+                                    if (key != parseInt(response.length - 1)) {
+                                        $scope.clientes.push(val);
+                                    }
+                                });
+                            }
+                            if (response.length < 3) {
+                            }
+                        }
+                    })
+                    .catch(function (response) {
+                        console.error('ERROR: ', response.status, response.data);
+                    })
+                    .finally(function () {
+                    });
+            }
+        };
+
+        $scope.modalCliente = function () {
+            $scope.loads.cliente.rut = true;
+            $('#modalCliente').modal('show');
+        };
+
+        // SERVICES --------------------------------------------------------------------------------------
         $scope.changeServicio = function () {
             $scope.servicios = [];
 
-            if ($scope.servicio.Id_TipoServicio != '') {
-                $scope.servicio.Descripcion_Servicio = '';
+            if ($scope.servicio.Id_TipoServicio != null) {
+                $scope.servicio.Descripcion_Servicio = null;
                 $scope.servicio.Precio = 0;
-                $scope.servicio.UnidadMedida = '';
-                $scope.servicio.Cantidad = '';
+                $scope.servicio.UnidadMedida = null;
+                $scope.servicio.Cantidad = null;
                 $scope.servicio.Total = 0;
-                $scope.servicio.Observaciones = '';
+                $scope.servicio.Observaciones = null;
                 $scope.searchServicio();
             } else {
                 $scope.cleanServicio();
@@ -452,7 +425,7 @@ ameis
                     })
                 })
                 .catch(function (response) {
-                    console.error('Gists error', response.status, response.data);
+                    console.error('ERROR: ', response.status, response.data);
                 });
         };
 
@@ -462,48 +435,137 @@ ameis
 
         $scope.selectServicio = function () {
             var select = $scope.servicioSelect;
-            //console.log(select, $scope.servicios);
             if (select != undefined) {
-                $scope.servicio.Id_TipoServicio = $scope.servicios[select].Id_TipoServicio;
-                $scope.servicio.Id_Servicio = $scope.servicios[select].Id_Servicio;
-                $scope.servicio.Nombre_TipoServicio = $scope.servicios[select].Nombre_TipoServicio;
-                $scope.servicio.UnidadMedida = $scope.servicios[select].UnidadMedida;
-                $scope.servicio.Precio = parseInt($scope.servicios[select].Precio);
-                $scope.servicio.Descripcion_Servicio = $scope.servicios[select].Descripcion_Servicio;
+                $http.post('/returnServUM', {Id_Servicio: $scope.servicios[select].Id_Servicio})
+                    .then(function (response) {
+                        if (response.status == 200) {
+                            $scope.unidades = [];
+
+                            response = response.data;
+                            var length = response.length;
+
+                            var max = parseInt(length - 1);
+
+                            for (var i = 0; i < max; i++) {
+                                $scope.unidades.push(response[i]);
+                            }
+
+                            $scope.servicio.Id_TipoServicio = $scope.servicios[select].Id_TipoServicio;
+                            $scope.servicio.Id_Servicio = $scope.servicios[select].Id_Servicio;
+                            $scope.servicio.Nombre_TipoServicio = $scope.servicios[select].Nombre_TipoServicio;
+                            //$scope.servicio.UnidadMedida = $scope.servicios[select].UnidadMedida;
+                            $scope.servicio.Precio = parseInt($scope.servicios[select].Precio);
+                            $scope.servicio.Descripcion_Servicio = $scope.servicios[select].Descripcion_Servicio;
+                        }
+                    })
+                    .catch(function (response) {
+                        console.error('ERROR: ', response.status, response.data);
+                    })
+                    .finally(function () {
+                    });
             }
             else {
-                $scope.servicio.Descripcion_Servicio = '';
+                $scope.servicio.Descripcion_Servicio = null;
             }
             $scope.servicioSelect = undefined;
             $('#modalServicio').modal('hide');
 
         };
 
-        // DETAIL
+        // DETAIL --------------------------------------------------------------------------------------
         $scope.addService = function () {
-            if ($scope.servicio.Total != '') {
-                $scope.countServ = $scope.countServ++;
-                $scope.detalle.push($scope.servicio);
-                var total = 0;
-                angular.forEach($scope.detalle, function (value, key) {
-                    total = parseInt(total + value.Total);
-                });
-                $scope.detalleTotal = apiFactory.caculateTotal(total);
-                $scope.cleanServicio();
-                $scope.servicios = [];
+            if ($scope.servicio.UnidadMedida != null && $scope.servicio.Total != null) {
+                var index = null;
+                index = $scope.detalle.indexOf($scope.servicio);
+                if (index > -1) {
+                    $scope.updateDetalleItem(index);
+                } else {
+                    $scope.countServ = $scope.countServ++;
+                    $scope.detalle.push($scope.servicio);
+                    var total = 0;
+                    angular.forEach($scope.detalle, function (value, key) {
+                        total = parseInt(total + value.Total);
+                    });
+                    $scope.detalleTotal = apiFactory.caculateTotal(total);
+                    $scope.cleanServicio();
+                    $scope.servicios = [];
+                }
             }
         };
 
-        $scope.removeItem = function (index) {
-            $scope.detalle.splice(index, 1);
+        $scope.editDetalleItem = function (d) {
+            swalService.custom({
+                    title: "Está seguro?",
+                    text: "Deseas modificar este item?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sí, modificar",
+                    cancelButtonText: "No, cancelar!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $('html, body').animate({
+                            scrollTop: $("#services-grid").offset().top - 80
+                        }, 1000);
+                        $timeout(function () {
+                            var index = $scope.detalle.indexOf(d);
+                            $scope.servicio = $scope.detalle[index];
+                            $scope.modifiDet = true;
+                            swalService.info("Cargado", "Item cargado para ser modificado.");
+                        }, 1000);
+                    } else {
+                        swalService.error("Cancelado", "No se ha eliminado este item :)");
+                    }
+                });
+
+        };
+
+        $scope.updateDetalleItem = function (index) {
+            $scope.detalle[index] = $scope.servicio;
             var total = 0;
             angular.forEach($scope.detalle, function (value, key) {
                 total = parseInt(total + value.Total);
             });
             $scope.detalleTotal = apiFactory.caculateTotal(total);
+            $scope.cleanServicio();
+            $scope.servicios = [];
+            $scope.modifiDet = false;
         };
 
-        // TOTAL
+        $scope.removeDetalleItem = function (d) {
+            swalService.custom({
+                    title: "Está seguro?",
+                    text: "Deseas eliminar este item?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sí, eliminar",
+                    cancelButtonText: "No, cancelar!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $timeout(function () {
+                            var index = $scope.detalle.indexOf(d);
+                            $scope.detalle.splice(index, 1);
+                            var total = 0;
+                            angular.forEach($scope.detalle, function (value, key) {
+                                total = parseInt(total + value.Total);
+                            });
+                            $scope.detalleTotal = apiFactory.caculateTotal(total);
+                            swalService.success("Eliminado!", "El registro eliminado.");
+                        }, 1000);
+                    } else {
+                        swalService.error("Cancelado", "No se ha eliminado este item :)");
+                    }
+                });
+        }
+
+// TOTAL --------------------------------------------------------------------------------------
         $scope.closeModal = function (id) {
             switch (id) {
                 case 'modalServicio':
@@ -524,7 +586,6 @@ ameis
             var $total = 0, $iva = 0, $subtotal = 0, $descuento = 0;
 
             angular.forEach($scope.detalle, function (value, key) {
-                //console.log(key + ': ' + value);
                 $detalle.push({
                     Nro_Linea: value.Nro_Linea,
                     Cod_Producto: value.Id_Servicio,
@@ -572,12 +633,12 @@ ameis
                 .then(function (response) {
                     if (response.status == 200) {
                         response = response.data;
-                        console.log(response);
-
 
                         var length = response.length;
-                        if (length >= 2) {
-                            $scope.toggle = !$scope.toggle;
+                        var max = parseInt(length - 1);
+
+                        if (length >= 4) {
+                            $scope.modifiCoti = true;
                             // Proyect
                             var data1 = response[0];
                             // Client
@@ -586,27 +647,35 @@ ameis
                             var data3 = response[2];
                             var data4 = response[3];
                             // Message
-                            var max = parseInt(length - 1);
                             var data5 = response[max];
 
-                            //$timeout(function () {
-                            $scope.cleanVars();
+                            $scope.clean('all');
 
-                            $scope.cotizacion = {
-                                numero: data1.Nro_Cot
-                            };
-
-                            $scope.proyecto = {
-                                nombre: data1.Nombre_Proyecto,
-                                vigencia: parseInt(data1.Validez)
-                            };
+                            try {
+                                try {
+                                    $scope.cotizacion = {
+                                        numero: data1.Nro_Cot
+                                    };
+                                    $scope.proyecto = {
+                                        nombre: data1.Nombre_Proyecto,
+                                        vigencia: parseInt(data1.Validez)
+                                    };
+                                } catch (e) {
+                                    console.error('ERROR: ', e);
+                                    throw e;
+                                }
+                            } catch (e) {
+                                console.error("Error!", e);
+                                throw e;
+                            } finally {
+                            }
 
                             $http.post('/returnComunas', {Id_Ciudad: data2.Id_Ciudad})
                                 .then(function (response) {
                                     if (response.status == 200) {
                                         response = response.data;
                                         $timeout(function () {
-                                            $scope.cliente.comuna = '';
+                                            $scope.cliente.comuna = null;
                                             $scope.comunas = response;
                                             $scope.cliente = {
                                                 Id_Cliente: data2.Id_Cliente,
@@ -620,7 +689,7 @@ ameis
                                     }
                                 })
                                 .catch(function (response) {
-                                    console.error('Gists error', response.status, response.data);
+                                    console.error('ERROR: ', response.status, response.data);
                                 });
 
                             try {
@@ -628,20 +697,29 @@ ameis
                                     $scope.servicio = {
                                         Id_TipoServicio: data4.Id_TipoServicio
                                     };
-
                                 } catch (e) {
-                                    console.log("Got an error!", e);
-                                    throw e; // rethrow to not marked as handled
+                                    console.error('ERROR: ', e);
+                                    throw e;
                                 }
-                                // do more stuff with res
                             } catch (e) {
-                                // handle errors in processing or in error.
-                                console.log("Error!", e);
+                                console.error('ERROR: ', e);
                                 throw e;
                             } finally {
                                 $scope.searchServicio();
-
                             }
+
+                            $http.post('/returnServUM', {Id_Servicio: data3.Id_Servicio})
+                                .then(function (response) {
+                                    if (response.status == 200) {
+                                        response = response.data;
+                                        $scope.unidades = response;
+                                    }
+                                })
+                                .catch(function (response) {
+                                    console.error('ERROR: ', response.status, response.data);
+                                })
+                                .finally(function () {
+                                });
 
                             try {
                                 try {
@@ -658,30 +736,32 @@ ameis
                                         Observaciones: data3.Observaciones
                                     };
                                 } catch (e) {
-                                    console.log("Got an error!", e);
-                                    throw e; // rethrow to not marked as handled
+                                    console.error('ERROR: ', e);
+                                    throw e;
                                 }
-                                // do more stuff with res
                             } catch (e) {
-                                // handle errors in processing or in error.
-                                console.log("Error!", e);
+                                console.error('ERROR: ', e);
                                 throw e;
                             } finally {
                                 $scope.addService();
                             }
 
-                            //}, 1250);
                             swalService.success(data5.Mensaje, 'Cotización Cargada');
-                            $scope.toggle = !$scope.toggle;
-
+                            $scope.disableCoti = false;
+                            $scope.disableCli = true;
                         } else {
-                            swalService.error('Error', response[0].Mensaje);
-                            $scope.cleanVars();
+                            if (response[max].hasOwnProperty('Mensaje')) {
+                                swalService.error('Error', response[max].Mensaje);
+                            }
+                            $scope.clean('all');
+                            $scope.modifiCoti = false;
+                            $scope.disableCoti = false;
+                            $scope.disableCli = false;
                         }
                     }
                 })
                 .catch(function (response) {
-                    console.error('Gists error', response.status, response.data);
+                    console.error('ERROR: ', response.status, response.data);
                 })
                 .finally(function () {
                     $scope.loads.cotizacion.numero = false;
@@ -701,7 +781,6 @@ ameis
                     closeOnConfirm: false
                 }, function () {
                     var $xml = $scope.generateXML();
-                    //console.log($xml)
                     $http.post('/saveCotizacion', {xml: $xml})
                         .then(function (response) {
                             if (response.status == 200) {
@@ -714,23 +793,54 @@ ameis
                                         swalService.error("Error", "Error al guardar la cotización.");
                                     } else {
                                         $scope.cleanVars();
+                                        $scope.disableCoti = false;
+                                        $scope.disableCli = false;
                                         swalService.success("Guardado!", "Cotización generada correctamente.");
                                     }
                                 }
                             }
                         })
                         .catch(function (response) {
-                            console.error('Gists error', response.status, response.data);
+                            console.error('ERROR: ', response.status, response.data);
                         });
                 });
             }
         };
 
-        // TOOLS
-        $scope.toggle = true;
-        $scope.$watch('toggle', function () {
-            var a = ['fa-check', 'Guardar', 'btn-danger'];
-            var b = ['fa-pencil-square-o', 'Modificar', 'btn-info'];
-            $scope.btnSave = $scope.toggle ? a : b;
+// TOOLS --------------------------------------------------------------------------------------
+        $scope.$watch('modifiCoti', function () {
+            var a = ['fa-pencil-square-o', 'Modificar', 'btn-info'];
+            var b = ['fa-check', 'Guardar', 'btn-danger'];
+            $scope.btnSave = $scope.modifiCoti ? a : b;
         });
-    }]);
+
+        $scope.$watch('modifiDet', function () {
+            var a = ['fa-pencil', 'Modificar', 'btn-info'];
+            var b = ['fa-plus', 'Agregar', 'btn-success'];
+            $scope.btnAdd = $scope.modifiDet ? a : b;
+        });
+
+        $scope.isNew = function () {
+            if ($scope.cotizacion.numero != null && ($scope.cliente.rut != null || $scope.cliente.nombre != null)) {
+                $scope.disableCoti = false;
+                $scope.disableCli = true;
+            }
+            else if ($scope.cotizacion.numero == null && ($scope.cliente.rut != null || $scope.cliente.nombre != null)) {
+                $scope.disableCoti = true;
+                $scope.disableCli = false;
+            }
+            else if ($scope.cotizacion.numero != null && ($scope.cliente.rut == null || $scope.cliente.nombre == null)) {
+                $scope.disableCoti = false;
+                $scope.disableCli = true;
+            }
+            else if ($scope.cotizacion.numero == null && ($scope.cliente.rut == null || $scope.cliente.nombre == null)) {
+                $scope.disableCoti = false;
+                $scope.disableCli = false;
+            }
+            else {
+                $scope.disableCoti = false;
+                $scope.disableCli = false;
+            }
+        };
+    }])
+;

@@ -48,101 +48,92 @@ namespace Symfony\Component\ClassLoader;
  */
 class WinCacheClassLoader
 {
-	/**
-	 * A class loader object that implements the findFile() method.
-	 *
-	 * @var object
-	 */
-	protected $decorated;
-	private   $prefix;
+    /**
+     * A class loader object that implements the findFile() method.
+     *
+     * @var object
+     */
+    protected $decorated;
+    private   $prefix;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param string $prefix    The WinCache namespace prefix to use.
-	 * @param object $decorated A class loader object that implements the findFile() method.
-	 *
-	 * @throws \RuntimeException
-	 * @throws \InvalidArgumentException
-	 */
-	public function __construct($prefix, $decorated)
-	{
-		if (!extension_loaded('wincache')) {
-			throw new \RuntimeException('Unable to use WinCacheClassLoader as WinCache is not enabled.');
-		}
+    /**
+     * Constructor.
+     *
+     * @param string $prefix    The WinCache namespace prefix to use.
+     * @param object $decorated A class loader object that implements the findFile() method.
+     *
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
+     */
+    public function __construct($prefix, $decorated)
+    {
+        if (!extension_loaded('wincache')) {
+            throw new \RuntimeException('Unable to use WinCacheClassLoader as WinCache is not enabled.');
+        }
 
-		if (!method_exists($decorated, 'findFile')) {
-			throw new \InvalidArgumentException('The class finder must implement a "findFile" method.');
-		}
+        if (!method_exists($decorated, 'findFile')) {
+            throw new \InvalidArgumentException('The class finder must implement a "findFile" method.');
+        }
 
-		$this->prefix    = $prefix;
-		$this->decorated = $decorated;
-	}
+        $this->prefix    = $prefix;
+        $this->decorated = $decorated;
+    }
 
-	/**
-	 * Registers this instance as an autoloader.
-	 *
-	 * @param bool $prepend Whether to prepend the autoloader or not
-	 */
-	public function register($prepend = false)
-	{
-		spl_autoload_register(array(
-			                      $this,
-			                      'loadClass'
-		                      ), true, $prepend);
-	}
+    /**
+     * Registers this instance as an autoloader.
+     *
+     * @param bool $prepend Whether to prepend the autoloader or not
+     */
+    public function register($prepend = false)
+    {
+        spl_autoload_register(array($this, 'loadClass'), true, $prepend);
+    }
 
-	/**
-	 * Unregisters this instance as an autoloader.
-	 */
-	public function unregister()
-	{
-		spl_autoload_unregister(array(
-			                        $this,
-			                        'loadClass'
-		                        ));
-	}
+    /**
+     * Unregisters this instance as an autoloader.
+     */
+    public function unregister()
+    {
+        spl_autoload_unregister(array($this, 'loadClass'));
+    }
 
-	/**
-	 * Loads the given class or interface.
-	 *
-	 * @param string $class The name of the class
-	 *
-	 * @return bool|null True, if loaded
-	 */
-	public function loadClass($class)
-	{
-		if ($file = $this->findFile($class)) {
-			require $file;
+    /**
+     * Loads the given class or interface.
+     *
+     * @param string $class The name of the class
+     *
+     * @return bool|null True, if loaded
+     */
+    public function loadClass($class)
+    {
+        if ($file = $this->findFile($class)) {
+            require $file;
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 
-	/**
-	 * Finds a file by class name while caching lookups to WinCache.
-	 *
-	 * @param string $class A class name to resolve to file
-	 *
-	 * @return string|null
-	 */
-	public function findFile($class)
-	{
-		if (false === $file = wincache_ucache_get($this->prefix . $class)) {
-			wincache_ucache_set($this->prefix . $class, $file = $this->decorated->findFile($class), 0);
-		}
+    /**
+     * Finds a file by class name while caching lookups to WinCache.
+     *
+     * @param string $class A class name to resolve to file
+     *
+     * @return string|null
+     */
+    public function findFile($class)
+    {
+        if (false === $file = wincache_ucache_get($this->prefix . $class)) {
+            wincache_ucache_set($this->prefix . $class, $file = $this->decorated->findFile($class), 0);
+        }
 
-		return $file;
-	}
+        return $file;
+    }
 
-	/**
-	 * Passes through all unknown calls onto the decorated object.
-	 */
-	public function __call($method, $args)
-	{
-		return call_user_func_array(array(
-			                            $this->decorated,
-			                            $method
-		                            ), $args);
-	}
+    /**
+     * Passes through all unknown calls onto the decorated object.
+     */
+    public function __call($method, $args)
+    {
+        return call_user_func_array(array($this->decorated, $method), $args);
+    }
 }

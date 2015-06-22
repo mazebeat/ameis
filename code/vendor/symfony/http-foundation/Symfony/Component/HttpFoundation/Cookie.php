@@ -155,9 +155,9 @@ class Cookie
      *
      * @api
      */
-	public function getDomain()
+    public function getDomain()
     {
-	    return $this->domain;
+        return $this->domain;
     }
 
     /**
@@ -184,16 +184,16 @@ class Cookie
         return $this->httpOnly;
     }
 
-	/**
-	 * Gets the path on the server in which the cookie will be available on.
-	 *
-	 * @return string
-	 *
-	 * @api
-	 */
-	public function getPath()
-	{
-		return $this->path;
+    /**
+     * Gets the path on the server in which the cookie will be available on.
+     *
+     * @return string
+     *
+     * @api
+     */
+    public function getPath()
+    {
+        return $this->path;
     }
 
     /**

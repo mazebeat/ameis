@@ -115,25 +115,25 @@ class GenericEventTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('name' => 'Event'), $data);
     }
 
-	/**
-	 * Prepares the environment before running a test.
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+    /**
+     * Prepares the environment before running a test.
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-		$this->subject = new \stdClass();
-		$this->event   = new GenericEvent($this->subject, array('name' => 'Event'));
-	}
+        $this->subject = new \stdClass();
+        $this->event   = new GenericEvent($this->subject, array('name' => 'Event'));
+    }
 
-	/**
-	 * Cleans up the environment after running a test.
-	 */
-	protected function tearDown()
-	{
-		$this->subject = null;
-		$this->event   = null;
+    /**
+     * Cleans up the environment after running a test.
+     */
+    protected function tearDown()
+    {
+        $this->subject = null;
+        $this->event   = null;
 
-		parent::tearDown();
+        parent::tearDown();
     }
 }

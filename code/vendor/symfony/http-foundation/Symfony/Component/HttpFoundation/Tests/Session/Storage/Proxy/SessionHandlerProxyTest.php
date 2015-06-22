@@ -113,15 +113,15 @@ class SessionHandlerProxyTest extends \PHPUnit_Framework_TestCase
         $this->proxy->gc(86400);
     }
 
-	protected function setUp()
-	{
-		$this->mock  = $this->getMock('SessionHandlerInterface');
-		$this->proxy = new SessionHandlerProxy($this->mock);
-	}
+    protected function setUp()
+    {
+        $this->mock  = $this->getMock('SessionHandlerInterface');
+        $this->proxy = new SessionHandlerProxy($this->mock);
+    }
 
-	protected function tearDown()
-	{
-		$this->mock  = null;
-		$this->proxy = null;
+    protected function tearDown()
+    {
+        $this->mock  = null;
+        $this->proxy = null;
     }
 }

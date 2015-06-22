@@ -19,6 +19,11 @@ class Swift_Transport_Esmtp_Auth_CramMd5AuthenticatorTest extends \SwiftMailerTe
         $this->assertEquals('CRAM-MD5', $cram->getAuthKeyword());
     }
 
+    private function _getAuthenticator()
+    {
+        return new Swift_Transport_Esmtp_Auth_CramMd5Authenticator();
+    }
+
     public function testSuccessfulAuthentication()
     {
         $cram = $this->_getAuthenticator();
@@ -36,6 +41,8 @@ class Swift_Transport_Esmtp_Auth_CramMd5AuthenticatorTest extends \SwiftMailerTe
             );
     }
 
+    // -- Private helpers
+
     public function testAuthenticationFailureSendRsetAndReturnFalse()
     {
         $cram = $this->_getAuthenticator();
@@ -46,8 +53,7 @@ class Swift_Transport_Esmtp_Auth_CramMd5AuthenticatorTest extends \SwiftMailerTe
              ->andReturn('334 '.base64_encode('<foo@bar>')."\r\n");
         $this->_agent->shouldReceive('executeCommand')
              ->once()
-             ->with(\Mockery::any(), array(235))
-             ->andThrow(new Swift_TransportException(""));
+             ->with(\Mockery::any(), array(235))->andThrow(new Swift_TransportException(''));
         $this->_agent->shouldReceive('executeCommand')
              ->once()
              ->with("RSET\r\n", array(250));
@@ -55,12 +61,5 @@ class Swift_Transport_Esmtp_Auth_CramMd5AuthenticatorTest extends \SwiftMailerTe
         $this->assertFalse($cram->authenticate($this->_agent, 'jack', 'pass'),
             '%s: Authentication fails, so RSET should be sent'
             );
-    }
-
-    // -- Private helpers
-
-    private function _getAuthenticator()
-    {
-        return new Swift_Transport_Esmtp_Auth_CramMd5Authenticator();
     }
 }

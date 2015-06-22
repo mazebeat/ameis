@@ -11,10 +11,17 @@
 /**
  * Handles Base 64 Encoding in Swift Mailer.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Encoder_Base64Encoder implements Swift_Encoder
 {
+    /**
+     * Does nothing.
+     */
+    public function charsetChanged($charset)
+    {
+    }
+
     /**
      * Takes an unencoded string and produces a Base64 encoded string from it.
      *
@@ -22,9 +29,9 @@ class Swift_Encoder_Base64Encoder implements Swift_Encoder
      * If the first line needs to be shorter, indicate the difference with
      * $firstLineOffset.
      *
-     * @param string  $string          to encode
-     * @param int     $firstLineOffset
-     * @param int     $maxLineLength   optional, 0 indicates the default of 76 bytes
+     * @param string $string        to encode
+     * @param int    $firstLineOffset
+     * @param int    $maxLineLength optional, 0 indicates the default of 76 bytes
      *
      * @return string
      */
@@ -47,12 +54,5 @@ class Swift_Encoder_Base64Encoder implements Swift_Encoder
         }
 
         return $firstLine.trim(chunk_split($encodedString, $maxLineLength, "\r\n"));
-    }
-
-    /**
-     * Does nothing.
-     */
-    public function charsetChanged($charset)
-    {
     }
 }

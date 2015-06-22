@@ -39,7 +39,6 @@ use PhpConsole\Helper;
  */
 class PHPConsoleHandler extends AbstractProcessingHandler
 {
-
     private $options = array(
         'enabled' => true, // bool Is PHP Console server enabled
         'classesPartialsTraceIgnore' => array('Monolog\\'), // array Hide calls of classes started with...
@@ -158,13 +157,13 @@ class PHPConsoleHandler extends AbstractProcessingHandler
         return $this->options;
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function getDefaultFormatter()
-	{
-		return new LineFormatter('%message%');
-	}
+    /**
+     * {@inheritDoc}
+     */
+    protected function getDefaultFormatter()
+    {
+        return new LineFormatter('%message%');
+    }
 
     public function handle(array $record)
     {
@@ -223,15 +222,16 @@ class PHPConsoleHandler extends AbstractProcessingHandler
         return $tags ?: strtolower($record['level_name']);
     }
 
-	private function handleExceptionRecord(array $record)
+    private function handleExceptionRecord(array $record)
     {
-	    $this->connector->getErrorsDispatcher()->dispatchException($record['context']['exception']);
+        $this->connector->getErrorsDispatcher()->dispatchException($record['context']['exception']);
     }
 
-	private function handleErrorRecord(array $record)
-	{
-		$context = $record['context'];
-		$this->connector->getErrorsDispatcher()->dispatchError($context['code'], $context['message'], $context['file'], $context['line'], $this->options['classesPartialsTraceIgnore']);
+    private function handleErrorRecord(array $record)
+    {
+        $context = $record['context'];
+
+        $this->connector->getErrorsDispatcher()->dispatchError(isset($context['code']) ? $context['code'] : null, isset($context['message']) ? $context['message'] : $record['message'], isset($context['file']) ? $context['file'] : null, isset($context['line']) ? $context['line'] : null, $this->options['classesPartialsTraceIgnore']);
     }
 }
 

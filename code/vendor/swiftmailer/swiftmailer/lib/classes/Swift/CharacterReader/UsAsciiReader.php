@@ -11,17 +11,17 @@
 /**
  * Analyzes US-ASCII characters.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_CharacterReader_UsAsciiReader implements Swift_CharacterReader
 {
     /**
      * Returns the complete character map.
      *
-     * @param string  $string
-     * @param int     $startOffset
-     * @param array   $currentMap
-     * @param string  $ignoredChars
+     * @param string $string
+     * @param int    $startOffset
+     * @param array  $currentMap
+     * @param string $ignoredChars
      *
      * @return int
      */
@@ -30,9 +30,9 @@ class Swift_CharacterReader_UsAsciiReader implements Swift_CharacterReader
         $strlen = strlen($string);
         $ignoredChars = '';
         for ($i = 0; $i < $strlen; ++$i) {
-            if ($string[$i]>"\x07F") {
+            if ($string[$i] > "\x07F") {
                 // Invalid char
-                $currentMap[$i+$startOffset] = $string[$i];
+                $currentMap[$i + $startOffset] = $string[$i];
             }
         }
 
@@ -40,9 +40,19 @@ class Swift_CharacterReader_UsAsciiReader implements Swift_CharacterReader
     }
 
     /**
-     * Returns mapType
+     * Returns the number of bytes which should be read to start each character.
      *
-     * @return int     mapType
+     * @return int
+     */
+    public function getInitialByteSize()
+    {
+        return 1;
+    }
+
+    /**
+     * Returns mapType.
+     *
+     * @return int mapType
      */
     public function getMapType()
     {
@@ -57,8 +67,8 @@ class Swift_CharacterReader_UsAsciiReader implements Swift_CharacterReader
      * A value of zero means this is already a valid character.
      * A value of -1 means this cannot possibly be a valid character.
      *
-     * @param string  $bytes
-     * @param int     $size
+     * @param string $bytes
+     * @param int    $size
      *
      * @return int
      */
@@ -70,15 +80,5 @@ class Swift_CharacterReader_UsAsciiReader implements Swift_CharacterReader
         } else {
             return -1;
         }
-    }
-
-    /**
-     * Returns the number of bytes which should be read to start each character.
-     *
-     * @return int
-     */
-    public function getInitialByteSize()
-    {
-        return 1;
     }
 }

@@ -38,15 +38,7 @@ class ImmutableEventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-	public function addListener($eventName, $listener, $priority = 0)
-    {
-	    throw new \BadMethodCallException('Unmodifiable event dispatchers must not be modified.');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-	public function addSubscriber(EventSubscriberInterface $subscriber)
+    public function addListener($eventName, $listener, $priority = 0)
     {
         throw new \BadMethodCallException('Unmodifiable event dispatchers must not be modified.');
     }
@@ -54,40 +46,48 @@ class ImmutableEventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-	public function dispatch($eventName, Event $event = null)
+    public function addSubscriber(EventSubscriberInterface $subscriber)
     {
-	    return $this->dispatcher->dispatch($eventName, $event);
+        throw new \BadMethodCallException('Unmodifiable event dispatchers must not be modified.');
     }
 
     /**
      * {@inheritdoc}
      */
-	public function getListeners($eventName = null)
+    public function dispatch($eventName, Event $event = null)
     {
-	    return $this->dispatcher->getListeners($eventName);
+        return $this->dispatcher->dispatch($eventName, $event);
     }
 
     /**
      * {@inheritdoc}
      */
-	public function hasListeners($eventName = null)
+    public function getListeners($eventName = null)
     {
-	    return $this->dispatcher->hasListeners($eventName);
+        return $this->dispatcher->getListeners($eventName);
     }
 
     /**
      * {@inheritdoc}
      */
-	public function removeListener($eventName, $listener)
+    public function hasListeners($eventName = null)
     {
-	    throw new \BadMethodCallException('Unmodifiable event dispatchers must not be modified.');
+        return $this->dispatcher->hasListeners($eventName);
     }
 
     /**
      * {@inheritdoc}
      */
-	public function removeSubscriber(EventSubscriberInterface $subscriber)
+    public function removeListener($eventName, $listener)
     {
-	    throw new \BadMethodCallException('Unmodifiable event dispatchers must not be modified.');
+        throw new \BadMethodCallException('Unmodifiable event dispatchers must not be modified.');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeSubscriber(EventSubscriberInterface $subscriber)
+    {
+        throw new \BadMethodCallException('Unmodifiable event dispatchers must not be modified.');
     }
 }

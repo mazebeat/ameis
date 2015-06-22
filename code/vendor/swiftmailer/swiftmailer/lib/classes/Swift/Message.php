@@ -11,7 +11,7 @@
 /**
  * The Message class for building emails.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Message extends Swift_Mime_SimpleMessage
 {
@@ -95,6 +95,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
      * Attach a new signature handler to the message.
      *
      * @param Swift_Signer $signer
+     *
      * @return Swift_Message
      */
     public function attachSigner(Swift_Signer $signer)
@@ -112,6 +113,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
      * Attach a new signature handler to the message.
      *
      * @param Swift_Signer $signer
+     *
      * @return Swift_Message
      */
     public function detachSigner(Swift_Signer $signer)
@@ -137,26 +139,26 @@ class Swift_Message extends Swift_Mime_SimpleMessage
         return $this;
     }
 
-    /**
-     * Get this message as a complete string.
-     *
-     * @return string
-     */
-    public function toString()
+    public function __wakeup()
     {
-        if (empty($this->headerSigners) && empty($this->bodySigners)) {
-            return parent::toString();
+        Swift_DependencyContainer::getInstance()->createDependenciesFor('mime.message');
+    }
+
+    /**
+     * Clone Message Signers.
+     *
+     * @see Swift_Mime_SimpleMimeEntity::__clone()
+     */
+    public function __clone()
+    {
+        parent::__clone();
+        foreach ($this->bodySigners as $key => $bodySigner) {
+            $this->bodySigners[$key] = clone($bodySigner);
         }
 
-        $this->saveMessage();
-
-        $this->doSign();
-
-        $string = parent::toString();
-
-        $this->restoreMessage();
-
-        return $string;
+        foreach ($this->headerSigners as $key => $headerSigner) {
+            $this->headerSigners[$key] = clone($headerSigner);
+        }
     }
 
     /**
@@ -181,13 +183,44 @@ class Swift_Message extends Swift_Mime_SimpleMessage
         $this->restoreMessage();
     }
 
-    public function __wakeup()
+    /**
+     * Get this message as a complete string.
+     *
+     * @return string
+     */
+    public function toString()
     {
-        Swift_DependencyContainer::getInstance()->createDependenciesFor('mime.message');
+        if (empty($this->headerSigners) && empty($this->bodySigners)) {
+            return parent::toString();
+        }
+
+        $this->saveMessage();
+
+        $this->doSign();
+
+        $string = parent::toString();
+
+        $this->restoreMessage();
+
+        return $string;
     }
 
     /**
-     * loops through signers and apply the signatures
+     * save the message before any signature is applied.
+     */
+    protected function saveMessage()
+    {
+        $this->savedMessage             = array('headers' => array());
+        $this->savedMessage['body']     = $this->getBody();
+        $this->savedMessage['children'] = $this->getChildren();
+        if (count($this->savedMessage['children']) > 0 && $this->getBody() != '') {
+            $this->setChildren(array_merge(array($this->_becomeMimePart()), $this->savedMessage['children']));
+            $this->setBody('');
+        }
+    }
+
+    /**
+     * loops through signers and apply the signatures.
      */
     protected function doSign()
     {
@@ -213,21 +246,8 @@ class Swift_Message extends Swift_Mime_SimpleMessage
     }
 
     /**
-     * save the message before any signature is applied
-     */
-    protected function saveMessage()
-    {
-        $this->savedMessage = array('headers' => array());
-        $this->savedMessage['body'] = $this->getBody();
-        $this->savedMessage['children'] = $this->getChildren();
-        if (count($this->savedMessage['children']) > 0 && $this->getBody() != '') {
-            $this->setChildren(array_merge(array($this->_becomeMimePart()), $this->savedMessage['children']));
-            $this->setBody('');
-        }
-    }
-
-    /**
-     * save the original headers
+     * save the original headers.
+     *
      * @param array $altered
      */
     protected function saveHeaders(array $altered)
@@ -242,23 +262,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
     }
 
     /**
-     * Remove or restore altered headers
-     */
-    protected function restoreHeaders()
-    {
-        foreach ($this->savedMessage['headers'] as $name => $savedValue) {
-            $headers = $this->getHeaders()->getAll($name);
-
-            foreach ($headers as $key => $value) {
-                if (!isset($savedValue[$key])) {
-                    $this->getHeaders()->remove($name, $key);
-                }
-            }
-        }
-    }
-
-    /**
-     * Restore message body
+     * Restore message body.
      */
     protected function restoreMessage()
     {
@@ -270,18 +274,18 @@ class Swift_Message extends Swift_Mime_SimpleMessage
     }
 
     /**
-     * Clone Message Signers
-     * @see Swift_Mime_SimpleMimeEntity::__clone()
+     * Remove or restore altered headers.
      */
-    public function __clone()
+    protected function restoreHeaders()
     {
-        parent::__clone();
-        foreach ($this->bodySigners as $key => $bodySigner) {
-            $this->bodySigners[$key] = clone($bodySigner);
-        }
+        foreach ($this->savedMessage['headers'] as $name => $savedValue) {
+            $headers = $this->getHeaders()->getAll($name);
 
-        foreach ($this->headerSigners as $key => $headerSigner) {
-            $this->headerSigners[$key] = clone($headerSigner);
+            foreach ($headers as $key => $value) {
+                if (!isset($savedValue[$key])) {
+                    $this->getHeaders()->remove($name, $key);
+                }
+            }
         }
     }
 }

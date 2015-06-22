@@ -11,7 +11,7 @@
 /**
  * A generic IoBuffer implementation supporting remote sockets and local processes.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableInputStream implements Swift_Transport_IoBuffer
 {
@@ -65,6 +65,61 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
     }
 
     /**
+     * Reads $length bytes from the stream into a string and moves the pointer
+     * through the stream by $length.
+     *
+     * If less bytes exist than are requested the remaining bytes are given instead.
+     * If no bytes are remaining at all, boolean false is returned.
+     *
+     * @param int $length
+     *
+     * @throws Swift_IoException
+     *
+     * @return string|bool
+     */
+    public function read($length)
+    {
+        if (isset($this->_out) && !feof($this->_out)) {
+            $ret = fread($this->_out, $length);
+            if (strlen($ret) == 0) {
+                $metas = stream_get_meta_data($this->_out);
+                if ($metas['timed_out']) {
+                    throw new Swift_IoException('Connection to ' . $this->_getReadConnectionDescription() . ' Timed Out');
+                }
+            }
+
+            return $ret;
+        }
+    }
+
+    /**
+     * Get a line of output (including any CRLF).
+     *
+     * The $sequence number comes from any writes and may or may not be used
+     * depending upon the implementation.
+     *
+     * @param int $sequence of last write to scan from
+     *
+     * @throws Swift_IoException
+     *
+     * @return string
+     */
+    public function readLine($sequence)
+    {
+        if (isset($this->_out) && !feof($this->_out)) {
+            $line = fgets($this->_out);
+            if (strlen($line) == 0) {
+                $metas = stream_get_meta_data($this->_out);
+                if ($metas['timed_out']) {
+                    throw new Swift_IoException('Connection to ' . $this->_getReadConnectionDescription() . ' Timed Out');
+                }
+            }
+
+            return $line;
+        }
+    }
+
+    /**
      * Set an individual param on the buffer (e.g. switching to SSL).
      *
      * @param string $param
@@ -90,32 +145,9 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
         $this->_params[$param] = $value;
     }
 
-    public function startTLS()
+    /** Not implemented */
+    public function setReadPointer($byteOffset)
     {
-        return stream_socket_enable_crypto($this->_stream, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-    }
-
-    /**
-     * Perform any shutdown logic needed.
-     */
-    public function terminate()
-    {
-        if (isset($this->_stream)) {
-            switch ($this->_params['type']) {
-                case self::TYPE_PROCESS:
-                    fclose($this->_in);
-                    fclose($this->_out);
-                    proc_close($this->_stream);
-                    break;
-                case self::TYPE_SOCKET:
-                default:
-                    fclose($this->_stream);
-                    break;
-            }
-        }
-        $this->_stream = null;
-        $this->_out = null;
-        $this->_in = null;
     }
 
     /**
@@ -146,101 +178,44 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
     }
 
     /**
-     * Get a line of output (including any CRLF).
-     *
-     * The $sequence number comes from any writes and may or may not be used
-     * depending upon the implementation.
-     *
-     * @param int     $sequence of last write to scan from
-     *
-     * @return string
-     *
-     * @throws Swift_IoException
+     * Perform any shutdown logic needed.
      */
-    public function readLine($sequence)
+    public function terminate()
     {
-        if (isset($this->_out) && !feof($this->_out)) {
-            $line = fgets($this->_out);
-            if (strlen($line) == 0) {
-                $metas = stream_get_meta_data($this->_out);
-                if ($metas['timed_out']) {
-                    throw new Swift_IoException(
-                        'Connection to '.
-                            $this->_getReadConnectionDescription().
-                        ' Timed Out'
-                    );
-                }
+        if (isset($this->_stream)) {
+            switch ($this->_params['type']) {
+                case self::TYPE_PROCESS:
+                    fclose($this->_in);
+                    fclose($this->_out);
+                    proc_close($this->_stream);
+                    break;
+                case self::TYPE_SOCKET:
+                default:
+                    fclose($this->_stream);
+                    break;
             }
-
-            return $line;
         }
+        $this->_stream = null;
+        $this->_out    = null;
+        $this->_in     = null;
     }
 
     /**
-     * Reads $length bytes from the stream into a string and moves the pointer
-     * through the stream by $length.
-     *
-     * If less bytes exist than are requested the remaining bytes are given instead.
-     * If no bytes are remaining at all, boolean false is returned.
-     *
-     * @param int     $length
-     *
-     * @return string|bool
-     *
-     * @throws Swift_IoException
+     * Opens a process for input/output.
      */
-    public function read($length)
+    private function _establishProcessConnection()
     {
-        if (isset($this->_out) && !feof($this->_out)) {
-            $ret = fread($this->_out, $length);
-            if (strlen($ret) == 0) {
-                $metas = stream_get_meta_data($this->_out);
-                if ($metas['timed_out']) {
-                    throw new Swift_IoException(
-                        'Connection to '.
-                            $this->_getReadConnectionDescription().
-                        ' Timed Out'
-                    );
-                }
-            }
-
-            return $ret;
+        $command        = $this->_params['command'];
+        $descriptorSpec = array(0 => array('pipe', 'r'),
+                                1 => array('pipe', 'w'),
+                                2 => array('pipe', 'w'),);
+        $this->_stream  = proc_open($command, $descriptorSpec, $pipes);
+        stream_set_blocking($pipes[2], 0);
+        if ($err = stream_get_contents($pipes[2])) {
+            throw new Swift_TransportException('Process could not be started [' . $err . ']');
         }
-    }
-
-    /** Not implemented */
-    public function setReadPointer($byteOffset)
-    {
-    }
-
-    /** Flush the stream contents */
-    protected function _flush()
-    {
-        if (isset($this->_in)) {
-            fflush($this->_in);
-        }
-    }
-
-    /** Write this bytes to the stream */
-    protected function _commit($bytes)
-    {
-        if (isset($this->_in)) {
-            $bytesToWrite = strlen($bytes);
-            $totalBytesWritten = 0;
-
-            while ($totalBytesWritten < $bytesToWrite) {
-                $bytesWritten = fwrite($this->_in, substr($bytes, $totalBytesWritten));
-                if (false === $bytesWritten || 0 === $bytesWritten) {
-                    break;
-                }
-
-                $totalBytesWritten += $bytesWritten;
-            }
-
-            if ($totalBytesWritten > 0) {
-                return ++$this->_sequence;
-            }
-        }
+        $this->_in  = &$pipes[0];
+        $this->_out = &$pipes[1];
     }
 
     /**
@@ -273,30 +248,8 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
             stream_set_blocking($this->_stream, 0);
         }
         stream_set_timeout($this->_stream, $timeout);
-        $this->_in = & $this->_stream;
-        $this->_out = & $this->_stream;
-    }
-
-    /**
-     * Opens a process for input/output.
-     */
-    private function _establishProcessConnection()
-    {
-        $command = $this->_params['command'];
-        $descriptorSpec = array(
-            0 => array('pipe', 'r'),
-            1 => array('pipe', 'w'),
-            2 => array('pipe', 'w'),
-            );
-        $this->_stream = proc_open($command, $descriptorSpec, $pipes);
-        stream_set_blocking($pipes[2], 0);
-        if ($err = stream_get_contents($pipes[2])) {
-            throw new Swift_TransportException(
-                'Process could not be started ['.$err.']'
-                );
-        }
-        $this->_in = & $pipes[0];
-        $this->_out = & $pipes[1];
+        $this->_in  = &$this->_stream;
+        $this->_out = &$this->_stream;
     }
 
     private function _getReadConnectionDescription()
@@ -316,6 +269,41 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
 
                 return $host;
                 break;
+        }
+    }
+
+    public function startTLS()
+    {
+        return stream_socket_enable_crypto($this->_stream, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+    }
+
+    /** Write this bytes to the stream */
+    protected function _commit($bytes)
+    {
+        if (isset($this->_in)) {
+            $bytesToWrite      = strlen($bytes);
+            $totalBytesWritten = 0;
+
+            while ($totalBytesWritten < $bytesToWrite) {
+                $bytesWritten = fwrite($this->_in, substr($bytes, $totalBytesWritten));
+                if (false === $bytesWritten || 0 === $bytesWritten) {
+                    break;
+                }
+
+                $totalBytesWritten += $bytesWritten;
+            }
+
+            if ($totalBytesWritten > 0) {
+                return ++$this->_sequence;
+            }
+        }
+    }
+
+    /** Flush the stream contents */
+    protected function _flush()
+    {
+        if (isset($this->_in)) {
+            fflush($this->_in);
         }
     }
 }

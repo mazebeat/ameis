@@ -337,68 +337,69 @@ pre.prettyprint, code.prettyprint {
 }
 
 .help button {
-    cursor: help;
-    height: 28px;
-    float: right;
-    margin-left: 10px;
+  cursor: help;
+  height: 28px;
+  float: right;
+  margin-left: 10px;
 }
 
 .help button:hover + #help-overlay {
-    display: block;
+  display: block;
 }
 
 #help-overlay {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(54, 54, 54, 0.5);
+  pointer-events: none;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(54, 54, 54, 0.5);
 }
 
 #help-overlay div {
-    width: 200px;
-    padding: 5px;
-    color: #463c54;
-    background-color: white;
-    border-radius: 10px;
+  width: 200px;
+  padding: 5px;
+  color: #463c54;
+  background-color: white;
+  border-radius: 10px;
 }
 
 #help-clipboard {
-    position: absolute;
-    right: 30px;
-    top: 90px;
+  position: absolute;
+  right: 30px;
+  top: 90px;
 }
 
 #help-framestack {
-    position: absolute;
-    left: 200px;
-    top: 50px;
+  position: absolute;
+  left: 200px;
+  top: 50px;
 }
 
 #help-exc-message {
-    position: absolute;
-    left: 65%;
-    top: 10px;
+  position: absolute;
+  left: 65%;
+  top: 10px;
 }
 
 #help-code {
-    position: absolute;
-    right: 30px;
-    top: 250px;
+  position: absolute;
+  right: 30px;
+  top: 250px;
 }
 
 #help-request {
-    position: absolute;
-    right: 30px;
-    top: 480px;
+  position: absolute;
+  right: 30px;
+  top: 480px;
 }
 
 #help-appinfo {
-    position: absolute;
-    right: 30px;
-    top: 550px;
+  position: absolute;
+  right: 30px;
+  top: 550px;
 }
 
 /* inspired by githubs kbd styles */

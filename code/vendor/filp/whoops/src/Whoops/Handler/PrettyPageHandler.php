@@ -8,6 +8,7 @@ namespace Whoops\Handler;
 
 use InvalidArgumentException;
 use RuntimeException;
+use UnexpectedValueException;
 use Whoops\Exception\Formatter;
 use Whoops\Util\Misc;
 use Whoops\Util\TemplateHelper;
@@ -331,6 +332,73 @@ class PrettyPageHandler extends Handler
     }
 
     /**
+     * Given a string file path, and an integer file line,
+     * executes the editor resolver and returns, if available,
+     * a string that may be used as the href property for that
+     * file reference.
+     *
+     * @throws InvalidArgumentException If editor resolver does not return a string
+     * @param  string $filePath
+     * @param  int    $line
+     * @return string|bool
+     */
+    public function getEditorHref($filePath, $line)
+    {
+        $editor = $this->getEditor($filePath, $line);
+
+        if (!$editor) {
+            return false;
+        }
+
+        // Check that the editor is a string, and replace the
+        // %line and %file placeholders:
+        if (!isset($editor['url']) || !is_string($editor['url'])) {
+            throw new UnexpectedValueException(__METHOD__ . " should always resolve to a string or a valid editor array; got something else instead.");
+        }
+
+        $editor['url'] = str_replace("%line", rawurlencode($line), $editor['url']);
+        $editor['url'] = str_replace("%file", rawurlencode($filePath), $editor['url']);
+
+        return $editor['url'];
+    }
+
+    /**
+     * Given a boolean if the editor link should
+     * act as an Ajax request. The editor must be a
+     * valid callable function/closure
+     *
+     * @throws UnexpectedValueException  If editor resolver does not return a boolean
+     *
+     * @param  string $filePath
+     * @param  int    $line
+     *
+     * @return mixed
+     */
+    protected function getEditor($filePath, $line)
+    {
+        if ($this->editor === null && !is_string($this->editor) && !is_callable($this->editor)) {
+            return false;
+        }
+        else if (is_string($this->editor) && isset($this->editors[$this->editor]) && !is_callable($this->editors[$this->editor])) {
+            return array('ajax' => false,
+                         'url'  => $this->editors[$this->editor],);
+        }
+        else if (is_callable($this->editor) || (isset($this->editors[$this->editor]) && is_callable($this->editors[$this->editor]))) {
+            if (is_callable($this->editor)) {
+                $callback = call_user_func($this->editor, $filePath, $line);
+            }
+            else {
+                $callback = call_user_func($this->editors[$this->editor], $filePath, $line);
+            }
+
+            return array('ajax' => isset($callback['ajax']) ? $callback['ajax'] : false,
+                         'url'  => (is_array($callback) ? $callback['url'] : $callback),);
+        }
+
+        return false;
+    }
+
+    /**
      * Set the editor to use to open referenced files, by a string
      * identifier, or a callable that will be executed for every
      * file reference, with a $file and $line argument, and should
@@ -357,43 +425,28 @@ class PrettyPageHandler extends Handler
     }
 
     /**
-     * Given a string file path, and an integer file line,
-     * executes the editor resolver and returns, if available,
-     * a string that may be used as the href property for that
-     * file reference.
+     * Given a boolean if the editor link should
+     * act as an Ajax request. The editor must be a
+     * valid callable function/closure
      *
-     * @throws InvalidArgumentException If editor resolver does not return a string
-     * @param  string                   $filePath
-     * @param  int                      $line
-     * @return false|string
+     * @throws UnexpectedValueException  If editor resolver does not return a boolean
+     *
+*@param  string                   $filePath
+     * @param  int $line
+     *
+     * @return bool
      */
-    public function getEditorHref($filePath, $line)
+    public function getEditorAjax($filePath, $line)
     {
-        if ($this->editor === null) {
-            return false;
-        }
+        $editor = $this->getEditor($filePath, $line);
 
-        $editor = $this->editor;
-        if (is_string($editor)) {
-            $editor = $this->editors[$editor];
-        }
-
-        if (is_callable($editor)) {
-            $editor = call_user_func($editor, $filePath, $line);
-        }
-
-        // Check that the editor is a string, and replace the
-        // %line and %file placeholders:
-        if (!is_string($editor)) {
-            throw new InvalidArgumentException(
-                __METHOD__ . " should always resolve to a string; got something else instead"
+        // Check that the ajax is a bool
+        if (!isset($editor['ajax']) || !is_bool($editor['ajax'])) {
+            throw new UnexpectedValueException(__METHOD__ . " should always resolve to a bool; got something else instead."
             );
         }
 
-        $editor = str_replace("%line", rawurlencode($line), $editor);
-        $editor = str_replace("%file", rawurlencode($filePath), $editor);
-
-        return $editor;
+        return $editor['ajax'];
     }
 
     /**

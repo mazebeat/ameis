@@ -110,9 +110,9 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-	public function getListeners($eventName = null)
+    public function getListeners($eventName = null)
     {
-	    return $this->dispatcher->getListeners($eventName);
+        return $this->dispatcher->getListeners($eventName);
     }
 
     /**

@@ -11,7 +11,7 @@
 /**
  * A KeyCache which streams to and from disk.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
 {
@@ -70,71 +70,69 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
     }
 
     /**
-     * Set a string into the cache under $itemKey for the namespace $nsKey.
-     *
-     * @see MODE_WRITE, MODE_APPEND
-     *
-     * @param string  $nsKey
-     * @param string  $itemKey
-     * @param string  $string
-     * @param int     $mode
-     *
-     * @throws Swift_IoException
+     * Destructor.
      */
-    public function setString($nsKey, $itemKey, $string, $mode)
+    public function __destruct()
     {
-        $this->_prepareCache($nsKey);
-        switch ($mode) {
-            case self::MODE_WRITE:
-                $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_START);
-                break;
-            case self::MODE_APPEND:
-                $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_END);
-                break;
-            default:
-                throw new Swift_SwiftException(
-                    'Invalid mode ['.$mode.'] used to set nsKey='.
-                    $nsKey.', itemKey='.$itemKey
-                    );
-                break;
+        foreach ($this->_keys as $nsKey => $null) {
+            $this->clearAll($nsKey);
         }
-        fwrite($fp, $string);
-        $this->_freeHandle($nsKey, $itemKey);
     }
 
     /**
-     * Set a ByteStream into the cache under $itemKey for the namespace $nsKey.
+     * Clear all data in the namespace $nsKey if it exists.
      *
-     * @see MODE_WRITE, MODE_APPEND
-     *
-     * @param string                 $nsKey
-     * @param string                 $itemKey
-     * @param Swift_OutputByteStream $os
-     * @param int                    $mode
-     *
-     * @throws Swift_IoException
+     * @param string $nsKey
      */
-    public function importFromByteStream($nsKey, $itemKey, Swift_OutputByteStream $os, $mode)
+    public function clearAll($nsKey)
     {
-        $this->_prepareCache($nsKey);
-        switch ($mode) {
-            case self::MODE_WRITE:
-                $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_START);
-                break;
-            case self::MODE_APPEND:
-                $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_END);
-                break;
-            default:
-                throw new Swift_SwiftException(
-                    'Invalid mode ['.$mode.'] used to set nsKey='.
-                    $nsKey.', itemKey='.$itemKey
-                    );
-                break;
+        if (array_key_exists($nsKey, $this->_keys)) {
+            foreach ($this->_keys[$nsKey] as $itemKey => $null) {
+                $this->clearKey($nsKey, $itemKey);
+            }
+            if (is_dir($this->_path . '/' . $nsKey)) {
+                rmdir($this->_path . '/' . $nsKey);
+            }
+            unset($this->_keys[$nsKey]);
         }
-        while (false !== $bytes = $os->read(8192)) {
-            fwrite($fp, $bytes);
+    }
+
+    /**
+     * Clear data for $itemKey in the namespace $nsKey if it exists.
+     *
+     * @param string $nsKey
+     * @param string $itemKey
+     */
+    public function clearKey($nsKey, $itemKey)
+    {
+        if ($this->hasKey($nsKey, $itemKey)) {
+            $this->_freeHandle($nsKey, $itemKey);
+            unlink($this->_path . '/' . $nsKey . '/' . $itemKey);
         }
-        $this->_freeHandle($nsKey, $itemKey);
+    }
+
+    /**
+     * Get data back out of the cache as a ByteStream.
+     *
+     * @param string                $nsKey
+     * @param string                $itemKey
+     * @param Swift_InputByteStream $is to write the data to
+     */
+    public function exportToByteStream($nsKey, $itemKey, Swift_InputByteStream $is)
+    {
+        if ($this->hasKey($nsKey, $itemKey)) {
+            $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_START);
+            if ($this->_quotes) {
+                ini_set('magic_quotes_runtime', 0);
+            }
+            while (!feof($fp) && false !== $bytes = fread($fp, 8192)) {
+                $is->write($bytes);
+            }
+            if ($this->_quotes) {
+                ini_set('magic_quotes_runtime', 1);
+            }
+            $this->_freeHandle($nsKey, $itemKey);
+        }
     }
 
     /**
@@ -167,9 +165,9 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
      * @param string $nsKey
      * @param string $itemKey
      *
-     * @return string
-     *
      * @throws Swift_IoException
+     *
+     * @return string
      */
     public function getString($nsKey, $itemKey)
     {
@@ -193,30 +191,6 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
     }
 
     /**
-     * Get data back out of the cache as a ByteStream.
-     *
-     * @param string                $nsKey
-     * @param string                $itemKey
-     * @param Swift_InputByteStream $is      to write the data to
-     */
-    public function exportToByteStream($nsKey, $itemKey, Swift_InputByteStream $is)
-    {
-        if ($this->hasKey($nsKey, $itemKey)) {
-            $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_START);
-            if ($this->_quotes) {
-                ini_set('magic_quotes_runtime', 0);
-            }
-            while (!feof($fp) && false !== $bytes = fread($fp, 8192)) {
-                $is->write($bytes);
-            }
-            if ($this->_quotes) {
-                ini_set('magic_quotes_runtime', 1);
-            }
-            $this->_freeHandle($nsKey, $itemKey);
-        }
-    }
-
-    /**
      * Check if the given $itemKey exists in the namespace $nsKey.
      *
      * @param string $nsKey
@@ -230,35 +204,65 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
     }
 
     /**
-     * Clear data for $itemKey in the namespace $nsKey if it exists.
+     * Set a ByteStream into the cache under $itemKey for the namespace $nsKey.
      *
-     * @param string $nsKey
-     * @param string $itemKey
+     * @see MODE_WRITE, MODE_APPEND
+     *
+     * @param string                 $nsKey
+     * @param string                 $itemKey
+     * @param Swift_OutputByteStream $os
+     * @param int                    $mode
+     *
+     * @throws Swift_IoException
      */
-    public function clearKey($nsKey, $itemKey)
+    public function importFromByteStream($nsKey, $itemKey, Swift_OutputByteStream $os, $mode)
     {
-        if ($this->hasKey($nsKey, $itemKey)) {
-            $this->_freeHandle($nsKey, $itemKey);
-            unlink($this->_path.'/'.$nsKey.'/'.$itemKey);
+        $this->_prepareCache($nsKey);
+        switch ($mode) {
+            case self::MODE_WRITE:
+                $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_START);
+                break;
+            case self::MODE_APPEND:
+                $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_END);
+                break;
+            default:
+                throw new Swift_SwiftException('Invalid mode [' . $mode . '] used to set nsKey=' . $nsKey . ', itemKey=' . $itemKey);
+                break;
         }
+        while (false !== $bytes = $os->read(8192)) {
+            fwrite($fp, $bytes);
+        }
+        $this->_freeHandle($nsKey, $itemKey);
     }
 
     /**
-     * Clear all data in the namespace $nsKey if it exists.
+     * Set a string into the cache under $itemKey for the namespace $nsKey.
+     *
+     * @see MODE_WRITE, MODE_APPEND
      *
      * @param string $nsKey
+     * @param string $itemKey
+     * @param string $string
+     * @param int    $mode
+     *
+     * @throws Swift_IoException
      */
-    public function clearAll($nsKey)
+    public function setString($nsKey, $itemKey, $string, $mode)
     {
-        if (array_key_exists($nsKey, $this->_keys)) {
-            foreach ($this->_keys[$nsKey] as $itemKey => $null) {
-                $this->clearKey($nsKey, $itemKey);
-            }
-            if (is_dir($this->_path.'/'.$nsKey)) {
-                rmdir($this->_path.'/'.$nsKey);
-            }
-            unset($this->_keys[$nsKey]);
+        $this->_prepareCache($nsKey);
+        switch ($mode) {
+            case self::MODE_WRITE:
+                $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_START);
+                break;
+            case self::MODE_APPEND:
+                $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_END);
+                break;
+            default:
+                throw new Swift_SwiftException('Invalid mode [' . $mode . '] used to set nsKey=' . $nsKey . ', itemKey=' . $itemKey);
+                break;
         }
+        fwrite($fp, $string);
+        $this->_freeHandle($nsKey, $itemKey);
     }
 
     /**
@@ -280,9 +284,9 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
     /**
      * Get a file handle on the cache item.
      *
-     * @param string  $nsKey
-     * @param string  $itemKey
-     * @param int     $position
+     * @param string $nsKey
+     * @param string $itemKey
+     * @param int    $position
      *
      * @return resource
      */
@@ -310,15 +314,5 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
         $fp = $this->_getHandle($nsKey, $itemKey, self::POSITION_CURRENT);
         fclose($fp);
         $this->_keys[$nsKey][$itemKey] = null;
-    }
-
-    /**
-     * Destructor.
-     */
-    public function __destruct()
-    {
-        foreach ($this->_keys as $nsKey => $null) {
-            $this->clearAll($nsKey);
-        }
     }
 }

@@ -11,7 +11,7 @@
 /**
  * Redirects all email to a single recipient.
  *
- * @author     Fabien Potencier
+ * @author Fabien Potencier
  */
 class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
 {
@@ -23,7 +23,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     private $_recipient;
 
     /**
-     * List of regular expression for recipient whitelisting
+     * List of regular expression for recipient whitelisting.
      *
      * @var array
      */
@@ -33,22 +33,12 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
      * Create a new RedirectingPlugin.
      *
      * @param mixed $recipient
-     * @param array  $whitelist
+     * @param array $whitelist
      */
     public function __construct($recipient, array $whitelist = array())
     {
         $this->_recipient = $recipient;
         $this->_whitelist = $whitelist;
-    }
-
-    /**
-     * Set the recipient of all messages.
-     *
-     * @param mixed $recipient
-     */
-    public function setRecipient($recipient)
-    {
-        $this->_recipient = $recipient;
     }
 
     /**
@@ -62,23 +52,33 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     }
 
     /**
-     * Set a list of regular expressions to whitelist certain recipients
+     * Set the recipient of all messages.
      *
-     * @param array $whitelist
+     * @param mixed $recipient
      */
-    public function setWhitelist(array $whitelist)
+    public function setRecipient($recipient)
     {
-        $this->_whitelist = $whitelist;
+        $this->_recipient = $recipient;
     }
 
     /**
-     * Get the whitelist
+     * Get the whitelist.
      *
      * @return array
      */
     public function getWhitelist()
     {
         return $this->_whitelist;
+    }
+
+    /**
+     * Set a list of regular expressions to whitelist certain recipients.
+     *
+     * @param array $whitelist
+     */
+    public function setWhitelist(array $whitelist)
+    {
+        $this->_whitelist = $whitelist;
     }
 
     /**
@@ -116,7 +116,7 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
             $to = array();
         }
 
-        foreach ( (array) $this->_recipient as $recipient) {
+        foreach ((array)$this->_recipient as $recipient) {
             if (!array_key_exists($recipient, $to)) {
                 $message->addTo($recipient);
             }
@@ -124,10 +124,20 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     }
 
     /**
-     * Filter header set against a whitelist of regular expressions
+     * Invoked immediately after the Message is sent.
+     *
+     * @param Swift_Events_SendEvent $evt
+     */
+    public function sendPerformed(Swift_Events_SendEvent $evt)
+    {
+        $this->_restoreMessage($evt->getMessage());
+    }
+
+    /**
+     * Filter header set against a whitelist of regular expressions.
      *
      * @param Swift_Mime_HeaderSet $headerSet
-     * @param string $type
+     * @param string               $type
      */
     private function _filterHeaderSet(Swift_Mime_HeaderSet $headerSet, $type)
     {
@@ -137,9 +147,10 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     }
 
     /**
-     * Filtered list of addresses => name pairs
+     * Filtered list of addresses => name pairs.
      *
      * @param array $recipients
+     *
      * @return array
      */
     private function _filterNameAddresses(array $recipients)
@@ -156,9 +167,10 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
     }
 
     /**
-     * Matches address against whitelist of regular expressions
+     * Matches address against whitelist of regular expressions.
      *
      * @param $recipient
+     *
      * @return bool
      */
     protected function _isWhitelisted($recipient)
@@ -174,16 +186,6 @@ class Swift_Plugins_RedirectingPlugin implements Swift_Events_SendListener
         }
 
         return false;
-    }
-
-    /**
-     * Invoked immediately after the Message is sent.
-     *
-     * @param Swift_Events_SendEvent $evt
-     */
-    public function sendPerformed(Swift_Events_SendEvent $evt)
-    {
-        $this->_restoreMessage($evt->getMessage());
     }
 
     private function _restoreMessage(Swift_Mime_Message $message)

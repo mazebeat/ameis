@@ -24,11 +24,13 @@ class MenuController extends BaseController
 
 	public function getProyectos()
 	{
-		$comunas    = Comuna::lists('Descripcion', 'Id_Comuna');
-		$unidades   = UnidadMedida::lists('Descripcion', 'Id_UnidadMedida');
-		$pendientes = Proyecto::pendiente()->get();
+		$comunas       = Comuna::lists('Descripcion', 'Id_Comuna');
+		$ciudades      = Ciudad::lists('Descripcion', 'Id_Ciudad');
+		$tipoServicios = TipoServicio::lists('Nombre_TipoServicio', 'Id_TipoServicio');
+		$unidades      = UnidadMedida::lists('Descripcion', 'Descripcion');
+		$pendientes    = Proyecto::pendiente();
 
-		return View::make('proyectos')->withComunas($comunas)->withUnidades($unidades)->withPendientes($pendientes);
+		return View::make('proyectos')->withComunas($comunas)->withCiudades($ciudades)->withTservicios($tipoServicios)->withUnidades($unidades)->withPendientes($pendientes);
 	}
 
 	public function getKardex()

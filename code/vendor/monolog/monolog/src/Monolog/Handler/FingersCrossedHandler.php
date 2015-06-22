@@ -11,8 +11,8 @@
 
 namespace Monolog\Handler;
 
-use Monolog\Handler\FingersCrossed\ErrorLevelActivationStrategy;
 use Monolog\Handler\FingersCrossed\ActivationStrategyInterface;
+use Monolog\Handler\FingersCrossed\ErrorLevelActivationStrategy;
 use Monolog\Logger;
 
 /**
@@ -61,7 +61,10 @@ class FingersCrossedHandler extends AbstractHandler
         $this->bufferSize = $bufferSize;
         $this->bubble = $bubble;
         $this->stopBuffering = $stopBuffering;
-        $this->passthruLevel = $passthruLevel;
+
+        if ($passthruLevel !== null) {
+            $this->passthruLevel = Logger::toMonologLevel($passthruLevel);
+        }
 
         if (!$this->handler instanceof HandlerInterface && !is_callable($this->handler)) {
             throw new \RuntimeException("The given handler (".json_encode($this->handler).") is not a callable nor a Monolog\Handler\HandlerInterface object");
@@ -71,9 +74,18 @@ class FingersCrossedHandler extends AbstractHandler
     /**
      * {@inheritdoc}
      */
-    public function isHandling(array $record)
+    public function close()
     {
-        return true;
+        if (null !== $this->passthruLevel) {
+            $level        = $this->passthruLevel;
+            $this->buffer = array_filter($this->buffer, function ($record) use ($level) {
+                return $record['level'] >= $level;
+            });
+            if (count($this->buffer) > 0) {
+                $this->handler->handleBatch($this->buffer);
+                $this->buffer = array();
+            }
+        }
     }
 
     /**
@@ -115,26 +127,9 @@ class FingersCrossedHandler extends AbstractHandler
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function isHandling(array $record)
     {
-        if (null !== $this->passthruLevel) {
-            $level = $this->passthruLevel;
-            $this->buffer = array_filter($this->buffer, function ($record) use ($level) {
-                return $record['level'] >= $level;
-            });
-            if (count($this->buffer) > 0) {
-                $this->handler->handleBatch($this->buffer);
-                $this->buffer = array();
-            }
-        }
-    }
-
-    /**
-     * Resets the state of the handler. Stops forwarding records to the wrapped handler.
-     */
-    public function reset()
-    {
-        $this->buffering = true;
+        return true;
     }
 
     /**
@@ -146,5 +141,13 @@ class FingersCrossedHandler extends AbstractHandler
     {
         $this->buffer = array();
         $this->reset();
+    }
+
+    /**
+     * Resets the state of the handler. Stops forwarding records to the wrapped handler.
+     */
+    public function reset()
+    {
+        $this->buffering = true;
     }
 }

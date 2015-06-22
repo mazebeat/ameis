@@ -63,12 +63,12 @@ class ConsoleOutput extends StreamOutput implements ConsoleOutputInterface
      *
      * @return bool
      */
-	protected function hasStdoutSupport()
-	{
-		return ('OS400' != php_uname('s'));
-	}
+    protected function hasStdoutSupport()
+    {
+        return ('OS400' != php_uname('s'));
+    }
 
-	/**
+    /**
      * {@inheritdoc}
      */
     public function setDecorated($decorated)

@@ -23,8 +23,8 @@ class AutoExpireFlashBagTest extends \PHPUnit_Framework_TestCase
     /**
      * @var array
      */
-	protected $array = array();
-	/**
+    protected $array = array();
+    /**
      * @var \Symfony\Component\HttpFoundation\Session\Flash\AutoExpireFlashBag
      */
     private $bag;
@@ -144,11 +144,11 @@ class AutoExpireFlashBagTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('notice' => array('A previous flash message')), $this->bag->clear());
     }
 
-	protected function setUp()
-	{
-		parent::setUp();
-		$this->bag   = new FlashBag();
-		$this->array = array('new' => array('notice' => array('A previous flash message')));
-		$this->bag->initialize($this->array);
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->bag   = new FlashBag();
+        $this->array = array('new' => array('notice' => array('A previous flash message')));
+        $this->bag->initialize($this->array);
     }
 }

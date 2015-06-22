@@ -60,9 +60,9 @@ abstract class FormField
     /**
      * Initializes the form field.
      */
-	abstract protected function initialize();
+    abstract protected function initialize();
 
-	/**
+    /**
      * Returns the name of the field.
      *
      * @return string The name of the field

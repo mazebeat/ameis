@@ -11,7 +11,7 @@
 /**
  * Pretends messages have been sent, but just ignores them.
  *
- * @author  Fabien Potencier
+ * @author Fabien Potencier
  */
 class Swift_Transport_NullTransport implements Swift_Transport
 {
@@ -37,17 +37,13 @@ class Swift_Transport_NullTransport implements Swift_Transport
     }
 
     /**
-     * Starts this Transport mechanism.
+     * Register a plugin.
+     *
+     * @param Swift_Events_EventListener $plugin
      */
-    public function start()
+    public function registerPlugin(Swift_Events_EventListener $plugin)
     {
-    }
-
-    /**
-     * Stops this Transport mechanism.
-     */
-    public function stop()
-    {
+        $this->_eventDispatcher->bindEventListener($plugin);
     }
 
     /**
@@ -56,7 +52,7 @@ class Swift_Transport_NullTransport implements Swift_Transport
      * @param Swift_Mime_Message $message
      * @param string[]           $failedRecipients An array of failures by-reference
      *
-     * @return int     The number of sent emails
+     * @return int The number of sent emails
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
@@ -82,12 +78,16 @@ class Swift_Transport_NullTransport implements Swift_Transport
     }
 
     /**
-     * Register a plugin.
-     *
-     * @param Swift_Events_EventListener $plugin
+     * Starts this Transport mechanism.
      */
-    public function registerPlugin(Swift_Events_EventListener $plugin)
+    public function start()
     {
-        $this->_eventDispatcher->bindEventListener($plugin);
+    }
+
+    /**
+     * Stops this Transport mechanism.
+     */
+    public function stop()
+    {
     }
 }

@@ -233,4 +233,16 @@ class ApiController extends \BaseController
 			return Response::json($data);
 		}
 	}
+
+	public function returnServUM()
+	{
+		$idServicio = Input::get('Id_Servicio');
+		if (isset($idServicio) && $idServicio != '') {
+			$query   = "EXEC dbo.AMEIS_RetornaServUM '" . $idServicio . "', 0, 'OK'";
+			$resulta = ApiController::exec_sp($query);
+			$data    = $resulta['data'];
+
+			return Response::json($data);
+		}
+	}
 }

@@ -54,30 +54,30 @@ class FileFormField extends FormField
      *
      * @param string $path The path to the file
      */
-	public function setFilePath($path)
-	{
-		parent::setValue($path);
-	}
+    public function setFilePath($path)
+    {
+        parent::setValue($path);
+    }
 
-	/**
-	 * Initializes the form field.
-	 *
-	 * @throws \LogicException When node type is incorrect
-	 */
-	protected function initialize()
-	{
-		if ('input' !== $this->node->nodeName) {
-			throw new \LogicException(sprintf('A FileFormField can only be created from an input tag (%s given).', $this->node->nodeName));
-		}
+    /**
+     * Initializes the form field.
+     *
+     * @throws \LogicException When node type is incorrect
+     */
+    protected function initialize()
+    {
+        if ('input' !== $this->node->nodeName) {
+            throw new \LogicException(sprintf('A FileFormField can only be created from an input tag (%s given).', $this->node->nodeName));
+        }
 
-		if ('file' !== strtolower($this->node->getAttribute('type'))) {
-			throw new \LogicException(sprintf('A FileFormField can only be created from an input tag with a type of file (given type is %s).', $this->node->getAttribute('type')));
-		}
+        if ('file' !== strtolower($this->node->getAttribute('type'))) {
+            throw new \LogicException(sprintf('A FileFormField can only be created from an input tag with a type of file (given type is %s).', $this->node->getAttribute('type')));
+        }
 
-		$this->setValue(null);
-	}
+        $this->setValue(null);
+    }
 
-	/**
+    /**
      * Sets the value of the field.
      *
      * @param string $value The value of the field

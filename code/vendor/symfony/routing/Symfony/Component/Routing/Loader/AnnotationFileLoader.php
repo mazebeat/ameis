@@ -111,11 +111,11 @@ class AnnotationFileLoader extends FileLoader
         return false;
     }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function supports($resource, $type = null)
-	{
-		return is_string($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION) && (!$type || 'annotation' === $type);
+    /**
+     * {@inheritdoc}
+     */
+    public function supports($resource, $type = null)
+    {
+        return is_string($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION) && (!$type || 'annotation' === $type);
     }
 }

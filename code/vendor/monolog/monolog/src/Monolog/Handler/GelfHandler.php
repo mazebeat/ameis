@@ -12,10 +12,11 @@
 namespace Monolog\Handler;
 
 use Gelf\IMessagePublisher;
+use Gelf\Publisher;
 use Gelf\PublisherInterface;
 use InvalidArgumentException;
-use Monolog\Logger;
 use Monolog\Formatter\GelfMessageFormatter;
+use Monolog\Logger;
 
 /**
  * Handler to send messages to a Graylog2 (http://www.graylog2.org) server
@@ -31,16 +32,16 @@ class GelfHandler extends AbstractProcessingHandler
     protected $publisher;
 
     /**
-     * @param PublisherInterface|IMessagePublisher $publisher a publisher object
-     * @param integer                              $level     The minimum logging level at which this handler will be triggered
-     * @param boolean                              $bubble    Whether the messages that are handled can bubble up the stack or not
+     * @param PublisherInterface|IMessagePublisher|Publisher $publisher a publisher object
+     * @param integer                                        $level     The minimum logging level at which this handler will be triggered
+     * @param boolean                                        $bubble    Whether the messages that are handled can bubble up the stack or not
      */
     public function __construct($publisher, $level = Logger::DEBUG, $bubble = true)
     {
         parent::__construct($level, $bubble);
 
-        if (!$publisher instanceof IMessagePublisher && !$publisher instanceof PublisherInterface) {
-            throw new InvalidArgumentException("Invalid publisher, expected a Gelf\IMessagePublisher or Gelf\PublisherInterface instance");
+        if (!$publisher instanceof Publisher && !$publisher instanceof IMessagePublisher && !$publisher instanceof PublisherInterface) {
+            throw new InvalidArgumentException("Invalid publisher, expected a Gelf\Publisher, Gelf\IMessagePublisher or Gelf\PublisherInterface instance");
         }
 
         $this->publisher = $publisher;
@@ -55,18 +56,18 @@ class GelfHandler extends AbstractProcessingHandler
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function write(array $record)
-    {
-        $this->publisher->publish($record['formatted']);
-    }
-
-    /**
      * {@inheritDoc}
      */
     protected function getDefaultFormatter()
     {
         return new GelfMessageFormatter();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function write(array $record)
+    {
+        $this->publisher->publish($record['formatted']);
     }
 }

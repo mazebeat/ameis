@@ -11,10 +11,16 @@
 /**
  * Redundantly and rotationally uses several Transports when sending.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Transport_LoadBalancedTransport implements Swift_Transport
 {
+    /**
+     * The Transports which are used in rotation.
+     *
+     * @var Swift_Transport[]
+     */
+    protected $_transports = array();
     /**
      * Transports which are deemed useless.
      *
@@ -23,28 +29,10 @@ class Swift_Transport_LoadBalancedTransport implements Swift_Transport
     private $_deadTransports = array();
 
     /**
-     * The Transports which are used in rotation.
-     *
-     * @var Swift_Transport[]
-     */
-    protected $_transports = array();
-
-    /**
      * Creates a new LoadBalancedTransport.
      */
     public function __construct()
     {
-    }
-
-    /**
-     * Set $transports to delegate to.
-     *
-     * @param Swift_Transport[] $transports
-     */
-    public function setTransports(array $transports)
-    {
-        $this->_transports = $transports;
-        $this->_deadTransports = array();
     }
 
     /**
@@ -58,6 +46,17 @@ class Swift_Transport_LoadBalancedTransport implements Swift_Transport
     }
 
     /**
+     * Set $transports to delegate to.
+     *
+     * @param Swift_Transport[] $transports
+     */
+    public function setTransports(array $transports)
+    {
+        $this->_transports     = $transports;
+        $this->_deadTransports = array();
+    }
+
+    /**
      * Test if this Transport mechanism has started.
      *
      * @return bool
@@ -68,20 +67,14 @@ class Swift_Transport_LoadBalancedTransport implements Swift_Transport
     }
 
     /**
-     * Start this Transport mechanism.
+     * Register a plugin.
+     *
+     * @param Swift_Events_EventListener $plugin
      */
-    public function start()
-    {
-        $this->_transports = array_merge($this->_transports, $this->_deadTransports);
-    }
-
-    /**
-     * Stop this Transport mechanism.
-     */
-    public function stop()
+    public function registerPlugin(Swift_Events_EventListener $plugin)
     {
         foreach ($this->_transports as $transport) {
-            $transport->stop();
+            $transport->registerPlugin($plugin);
         }
     }
 
@@ -125,14 +118,20 @@ class Swift_Transport_LoadBalancedTransport implements Swift_Transport
     }
 
     /**
-     * Register a plugin.
-     *
-     * @param Swift_Events_EventListener $plugin
+     * Start this Transport mechanism.
      */
-    public function registerPlugin(Swift_Events_EventListener $plugin)
+    public function start()
+    {
+        $this->_transports = array_merge($this->_transports, $this->_deadTransports);
+    }
+
+    /**
+     * Stop this Transport mechanism.
+     */
+    public function stop()
     {
         foreach ($this->_transports as $transport) {
-            $transport->registerPlugin($plugin);
+            $transport->stop();
         }
     }
 

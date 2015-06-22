@@ -11,7 +11,7 @@
 /**
  * A base Event which all Event classes inherit from.
  *
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Events_EventObject implements Swift_Events_Event
 {
@@ -32,26 +32,6 @@ class Swift_Events_EventObject implements Swift_Events_Event
     }
 
     /**
-     * Get the source object of this event.
-     *
-     * @return object
-     */
-    public function getSource()
-    {
-        return $this->_source;
-    }
-
-    /**
-     * Prevent this Event from bubbling any further up the stack.
-     *
-     * @param bool    $cancel, optional
-     */
-    public function cancelBubble($cancel = true)
-    {
-        $this->_bubbleCancelled = $cancel;
-    }
-
-    /**
      * Returns true if this Event will not bubble any further up the stack.
      *
      * @return bool
@@ -59,5 +39,25 @@ class Swift_Events_EventObject implements Swift_Events_Event
     public function bubbleCancelled()
     {
         return $this->_bubbleCancelled;
+    }
+
+    /**
+     * Prevent this Event from bubbling any further up the stack.
+     *
+     * @param bool $cancel , optional
+     */
+    public function cancelBubble($cancel = true)
+    {
+        $this->_bubbleCancelled = $cancel;
+    }
+
+    /**
+     * Get the source object of this event.
+     *
+     * @return object
+     */
+    public function getSource()
+    {
+        return $this->_source;
     }
 }

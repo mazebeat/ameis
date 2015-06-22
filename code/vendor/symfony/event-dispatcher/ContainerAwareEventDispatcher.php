@@ -111,68 +111,64 @@ class ContainerAwareEventDispatcher extends EventDispatcher
         return parent::dispatch($eventName, $event);
     }
 
-	/**
-	 * @see EventDispatcherInterface::getListeners()
-	 */
-	public function getListeners($eventName = null)
+    /**
+     * @see EventDispatcherInterface::getListeners()
+     */
+    public function getListeners($eventName = null)
     {
-	    if (null === $eventName) {
-		    foreach ($this->listenerIds as $serviceEventName => $args) {
-			    $this->lazyLoad($serviceEventName);
-		    }
-	    }
-	    else {
-		    $this->lazyLoad($eventName);
-	    }
+        if (null === $eventName) {
+            foreach ($this->listenerIds as $serviceEventName => $args) {
+                $this->lazyLoad($serviceEventName);
+            }
+        }
+        else {
+            $this->lazyLoad($eventName);
+        }
 
-	    return parent::getListeners($eventName);
+        return parent::getListeners($eventName);
     }
 
     /**
      * @see EventDispatcherInterface::hasListeners()
      */
-	public function hasListeners($eventName = null)
-	{
-		if (null === $eventName) {
-			return (bool)count($this->listenerIds) || (bool)count($this->listeners);
-		}
+    public function hasListeners($eventName = null)
+    {
+        if (null === $eventName) {
+            return (bool)count($this->listenerIds) || (bool)count($this->listeners);
+        }
 
-		if (isset($this->listenerIds[$eventName])) {
-			return true;
-		}
+        if (isset($this->listenerIds[$eventName])) {
+            return true;
+        }
 
-		return parent::hasListeners($eventName);
-	}
+        return parent::hasListeners($eventName);
+    }
 
-	public function removeListener($eventName, $listener)
-	{
-		$this->lazyLoad($eventName);
+    public function removeListener($eventName, $listener)
+    {
+        $this->lazyLoad($eventName);
 
-		if (isset($this->listenerIds[$eventName])) {
-			foreach ($this->listenerIds[$eventName] as $i => $args) {
-				list($serviceId, $method, $priority) = $args;
-				$key = $serviceId . '.' . $method;
-				if (isset($this->listeners[$eventName][$key]) && $listener === array(
-						$this->listeners[$eventName][$key],
-						$method
-					)
-				) {
-					unset($this->listeners[$eventName][$key]);
-					if (empty($this->listeners[$eventName])) {
-						unset($this->listeners[$eventName]);
-					}
-					unset($this->listenerIds[$eventName][$i]);
-					if (empty($this->listenerIds[$eventName])) {
-						unset($this->listenerIds[$eventName]);
-					}
-				}
-			}
-		}
+        if (isset($this->listenerIds[$eventName])) {
+            foreach ($this->listenerIds[$eventName] as $i => $args) {
+                list($serviceId, $method, $priority) = $args;
+                $key = $serviceId . '.' . $method;
+                if (isset($this->listeners[$eventName][$key]) && $listener === array($this->listeners[$eventName][$key], $method)) {
+                    unset($this->listeners[$eventName][$key]);
+                    if (empty($this->listeners[$eventName])) {
+                        unset($this->listeners[$eventName]);
+                    }
+                    unset($this->listenerIds[$eventName][$i]);
+                    if (empty($this->listenerIds[$eventName])) {
+                        unset($this->listenerIds[$eventName]);
+                    }
+                }
+            }
+        }
 
-		parent::removeListener($eventName, $listener);
-	}
+        parent::removeListener($eventName, $listener);
+    }
 
-	/**
+    /**
      * Lazily loads listeners for this event from the dependency injection
      * container.
      *
@@ -200,8 +196,8 @@ class ContainerAwareEventDispatcher extends EventDispatcher
         }
     }
 
-	public function getContainer()
-	{
-		return $this->container;
+    public function getContainer()
+    {
+        return $this->container;
     }
 }

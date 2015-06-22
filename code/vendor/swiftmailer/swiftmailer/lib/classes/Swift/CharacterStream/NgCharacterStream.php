@@ -11,9 +11,8 @@
 /**
  * A CharacterStream implementation which stores characters in an internal array.
  *
- * @author     Xavier De Cock <xdecock@gmail.com>
+ * @author Xavier De Cock <xdecock@gmail.com>
  */
-
 class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
 {
     /**
@@ -45,7 +44,7 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
     private $_datas = '';
 
     /**
-     * Number of bytes in the stream
+     * Number of bytes in the stream.
      *
      * @var int
      */
@@ -94,28 +93,6 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
     /* -- Changing parameters of the stream -- */
 
     /**
-     * Set the character set used in this CharacterStream.
-     *
-     * @param string $charset
-     */
-    public function setCharacterSet($charset)
-    {
-        $this->_charset = $charset;
-        $this->_charReader = null;
-        $this->_mapType = 0;
-    }
-
-    /**
-     * Set the CharacterReaderFactory for multi charset support.
-     *
-     * @param Swift_CharacterReaderFactory $factory
-     */
-    public function setCharacterReaderFactory(Swift_CharacterReaderFactory $factory)
-    {
-        $this->_charReaderFactory = $factory;
-    }
-
-    /**
      * @see Swift_CharacterStream::flushContents()
      */
     public function flushContents()
@@ -156,7 +133,7 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
     /**
      * @see Swift_CharacterStream::read()
      *
-     * @param int     $length
+     * @param int $length
      *
      * @return string
      */
@@ -166,12 +143,12 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
             return false;
         }
         $ret = false;
-        $length = ($this->_currentPos+$length > $this->_charCount)
+        $length = ($this->_currentPos + $length > $this->_charCount)
           ? $this->_charCount - $this->_currentPos
           : $length;
         switch ($this->_mapType) {
             case Swift_CharacterReader::MAP_TYPE_FIXED_LEN:
-                $len = $length*$this->_map;
+                $len = $length * $this->_map;
                 $ret = substr($this->_datas,
                         $this->_currentPos * $this->_map,
                         $len);
@@ -185,7 +162,7 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
                     : $end;
                 $ret = '';
                 for (; $this->_currentPos < $length; ++$this->_currentPos) {
-                    if (isset ($this->_map[$this->_currentPos])) {
+                    if (isset($this->_map[$this->_currentPos])) {
                         $ret .= '?';
                     } else {
                         $ret .= $this->_datas[$this->_currentPos];
@@ -200,8 +177,8 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
                     : $end;
                 $ret = '';
                 $start = 0;
-                if ($this->_currentPos>0) {
-                    $start = $this->_map['p'][$this->_currentPos-1];
+                if ($this->_currentPos > 0) {
+                    $start = $this->_map['p'][$this->_currentPos - 1];
                 }
                 $to = $start;
                 for (; $this->_currentPos < $end; ++$this->_currentPos) {
@@ -222,7 +199,7 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
     /**
      * @see Swift_CharacterStream::readBytes()
      *
-     * @param int     $length
+     * @param int $length
      *
      * @return integer[]
      */
@@ -239,13 +216,35 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
     }
 
     /**
+     * Set the CharacterReaderFactory for multi charset support.
+     *
+     * @param Swift_CharacterReaderFactory $factory
+     */
+    public function setCharacterReaderFactory(Swift_CharacterReaderFactory $factory)
+    {
+        $this->_charReaderFactory = $factory;
+    }
+
+    /**
+     * Set the character set used in this CharacterStream.
+     *
+     * @param string $charset
+     */
+    public function setCharacterSet($charset)
+    {
+        $this->_charset    = $charset;
+        $this->_charReader = null;
+        $this->_mapType    = 0;
+    }
+
+    /**
      * @see Swift_CharacterStream::setPointer()
      *
-     * @param int     $charOffset
+     * @param int $charOffset
      */
     public function setPointer($charOffset)
     {
-        if ($this->_charCount<$charOffset) {
+        if ($this->_charCount < $charOffset) {
             $charOffset = $this->_charCount;
         }
         $this->_currentPos = $charOffset;
@@ -268,7 +267,7 @@ class Swift_CharacterStream_NgCharacterStream implements Swift_CharacterStream
         $this->_datas .= $chars;
         $this->_charCount += $this->_charReader->getCharPositions(substr($this->_datas, $this->_datasSize), $this->_datasSize, $this->_map, $ignored);
         if ($ignored !== false) {
-            $this->_datasSize = strlen($this->_datas)-strlen($ignored);
+            $this->_datasSize = strlen($this->_datas) - strlen($ignored);
         } else {
             $this->_datasSize = strlen($this->_datas);
         }

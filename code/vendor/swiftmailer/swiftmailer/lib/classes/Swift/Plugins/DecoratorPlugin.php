@@ -11,8 +11,8 @@
 /**
  * Allows customization of Messages on-the-fly.
  *
- * @author     Chris Corbyn
- * @author     Fabien Potencier
+ * @author Chris Corbyn
+ * @author Fabien Potencier
  */
 class Swift_Plugins_DecoratorPlugin implements Swift_Events_SendListener, Swift_Plugins_Decorator_Replacements
 {
@@ -123,7 +123,7 @@ class Swift_Plugins_DecoratorPlugin implements Swift_Events_SendListener, Swift_
 
             $children = (array) $message->getChildren();
             foreach ($children as $child) {
-                list($type, ) = sscanf($child->getContentType(), '%[^/]/%s');
+                list($type) = sscanf($child->getContentType(), '%[^/]/%s');
                 if ('text' == $type) {
                     $body = $child->getBody();
                     $bodyReplaced = str_replace(
@@ -136,32 +136,6 @@ class Swift_Plugins_DecoratorPlugin implements Swift_Events_SendListener, Swift_
                 }
             }
             $this->_lastMessage = $message;
-        }
-    }
-
-    /**
-     * Find a map of replacements for the address.
-     *
-     * If this plugin was provided with a delegate instance of
-     * {@link Swift_Plugins_Decorator_Replacements} then the call will be
-     * delegated to it.  Otherwise, it will attempt to find the replacements
-     * from the array provided in the constructor.
-     *
-     * If no replacements can be found, an empty value (NULL) is returned.
-     *
-     * @param string $address
-     *
-     * @return array
-     */
-    public function getReplacementsFor($address)
-    {
-        if ($this->_replacements instanceof Swift_Plugins_Decorator_Replacements) {
-            return $this->_replacements->getReplacementsFor($address);
-        } else {
-            return isset($this->_replacements[$address])
-                ? $this->_replacements[$address]
-                : null
-                ;
         }
     }
 
@@ -202,6 +176,30 @@ class Swift_Plugins_DecoratorPlugin implements Swift_Events_SendListener, Swift_
                 $this->_originalChildBodies = array();
             }
             $this->_lastMessage = null;
+        }
+    }
+
+    /**
+     * Find a map of replacements for the address.
+     *
+     * If this plugin was provided with a delegate instance of
+     * {@link Swift_Plugins_Decorator_Replacements} then the call will be
+     * delegated to it.  Otherwise, it will attempt to find the replacements
+     * from the array provided in the constructor.
+     *
+     * If no replacements can be found, an empty value (NULL) is returned.
+     *
+     * @param string $address
+     *
+     * @return array
+     */
+    public function getReplacementsFor($address)
+    {
+        if ($this->_replacements instanceof Swift_Plugins_Decorator_Replacements) {
+            return $this->_replacements->getReplacementsFor($address);
+        }
+        else {
+            return isset($this->_replacements[$address]) ? $this->_replacements[$address] : null;
         }
     }
 }

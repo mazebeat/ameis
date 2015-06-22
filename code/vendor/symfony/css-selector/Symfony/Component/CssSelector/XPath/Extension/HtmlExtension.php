@@ -42,27 +42,22 @@ class HtmlExtension extends AbstractExtension
     /**
      * {@inheritdoc}
      */
-	public function getFunctionTranslators()
-	{
-		return array(
-			'lang' => array(
-				$this,
-				'translateLang'
-			),
-		);
-	}
+    public function getFunctionTranslators()
+    {
+        return array('lang' => array($this, 'translateLang'),);
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getName()
-	{
-		return 'html';
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'html';
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
+    /**
+     * {@inheritdoc}
+     */
     public function getPseudoClassTranslators()
     {
         return array(

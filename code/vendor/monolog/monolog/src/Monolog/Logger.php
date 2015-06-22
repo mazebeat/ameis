@@ -145,36 +145,32 @@ class Logger implements LoggerInterface
      *
      * @return array Assoc array with human-readable level names => level codes.
      */
-	public static function getLevels()
+    public static function getLevels()
     {
-	    return array_flip(static::$levels);
+        return array_flip(static::$levels);
     }
 
     /**
-     * Converts PSR-3 levels to Monolog ones if necessary
+     * Set the timezone to be used for the timestamp of log records.
      *
-     * @param string|int Level number (monolog) or name (PSR-3)
+     * This is stored globally for all Logger instances
      *
-     * @return int
+     * @param \DateTimeZone $tz Timezone object
      */
-	public static function toMonologLevel($level)
-	{
-		if (is_string($level) && defined(__CLASS__ . '::' . strtoupper($level))) {
-			return constant(__CLASS__ . '::' . strtoupper($level));
-		}
-
-		return $level;
+    public static function setTimezone(\DateTimeZone $tz)
+    {
+        self::$timezone = $tz;
     }
 
     /**
      * @return string
      */
-	public function getName()
-	{
-		return $this->name;
-	}
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
+    /**
      * Pops a handler from the stack
      *
      * @return HandlerInterface
@@ -200,6 +196,8 @@ class Logger implements LoggerInterface
      * Adds a processor on to the stack.
      *
      * @param callable $callback
+     *
+     * @return $this
      */
     public function pushProcessor($callback)
     {
@@ -207,6 +205,8 @@ class Logger implements LoggerInterface
             throw new \InvalidArgumentException('Processors must be valid callables (callback or object with an __invoke method), '.var_export($callback, true).' given');
         }
         array_unshift($this->processors, $callback);
+
+        return $this;
     }
 
     /**
@@ -236,14 +236,15 @@ class Logger implements LoggerInterface
      *
      * @param  string $message The log message
      * @param  array  $context The log context
-     * @return Boolean Whether the record has been processed
+     *
+*@return Boolean Whether the record has been processed
      */
-	public function addDebug($message, array $context = array())
-	{
-		return $this->addRecord(static::DEBUG, $message, $context);
-	}
+    public function addDebug($message, array $context = array())
+    {
+        return $this->addRecord(static::DEBUG, $message, $context);
+    }
 
-	/**
+    /**
      * Adds a log record.
      *
      * @param  integer $level   The logging level
@@ -301,10 +302,14 @@ class Logger implements LoggerInterface
      * Pushes a handler on to the stack.
      *
      * @param HandlerInterface $handler
+     *
+     * @return $this
      */
-	public function pushHandler(HandlerInterface $handler)
-	{
-		array_unshift($this->handlers, $handler);
+    public function pushHandler(HandlerInterface $handler)
+    {
+        array_unshift($this->handlers, $handler);
+
+        return $this;
     }
 
     /**
@@ -313,16 +318,16 @@ class Logger implements LoggerInterface
      * @param  integer $level
      * @return string
      */
-	public static function getLevelName($level)
-	{
-		if (!isset(static::$levels[$level])) {
-			throw new InvalidArgumentException('Level "' . $level . '" is not defined, use one of: ' . implode(', ', array_keys(static::$levels)));
-		}
+    public static function getLevelName($level)
+    {
+        if (!isset(static::$levels[$level])) {
+            throw new InvalidArgumentException('Level "' . $level . '" is not defined, use one of: ' . implode(', ', array_keys(static::$levels)));
+        }
 
-		return static::$levels[$level];
-	}
+        return static::$levels[$level];
+    }
 
-	/**
+    /**
      * Adds a log record at the INFO level.
      *
      * @param  string  $message The log message
@@ -435,96 +440,95 @@ class Logger implements LoggerInterface
      * @param  string  $message The log message
      * @param  array   $context The log context
      *
-*@return Boolean Whether the record has been processed
+     * @return Boolean Whether the record has been processed
      */
-	public function warn($message, array $context = array())
-	{
-		return $this->addRecord(static::WARNING, $message, $context);
+    public function warn($message, array $context = array())
+    {
+        return $this->addRecord(static::WARNING, $message, $context);
     }
 
-	/**
-	 * Adds a log record at the ERROR level.
-     *
-     * This method allows for compatibility with common interfaces.
-     *
-     * @param  string  $message The log message
-     * @param  array   $context The log context
-     *
-*@return Boolean Whether the record has been processed
-	 */
-	public function err($message, array $context = array())
-	{
-		return $this->addRecord(static::ERROR, $message, $context);
-    }
-
-	/**
-	 * Adds a log record at the CRITICAL level.
+    /**
+     * Adds a log record at the ERROR level.
      *
      * This method allows for compatibility with common interfaces.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
-	 */
-	public function crit($message, array $context = array())
-	{
-		return $this->addRecord(static::CRITICAL, $message, $context);
+     */
+    public function err($message, array $context = array())
+    {
+        return $this->addRecord(static::ERROR, $message, $context);
     }
 
-	/**
-	 * Adds a log record at the ALERT level.
+    /**
+     * Adds a log record at the CRITICAL level.
      *
      * This method allows for compatibility with common interfaces.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
-	 */
-	public function alert($message, array $context = array())
-	{
-		return $this->addRecord(static::ALERT, $message, $context);
+     */
+    public function crit($message, array $context = array())
+    {
+        return $this->addRecord(static::CRITICAL, $message, $context);
     }
 
-	/**
-	 * Adds a log record at the CRITICAL level.
+    /**
+     * Adds a log record at the ALERT level.
      *
      * This method allows for compatibility with common interfaces.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
-	 */
-	public function critical($message, array $context = array())
-	{
-		return $this->addRecord(static::CRITICAL, $message, $context);
+     */
+    public function alert($message, array $context = array())
+    {
+        return $this->addRecord(static::ALERT, $message, $context);
     }
 
-	/**
-	 * Adds a log record at the DEBUG level.
+    /**
+     * Adds a log record at the CRITICAL level.
      *
      * This method allows for compatibility with common interfaces.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
-	 */
-	public function debug($message, array $context = array())
-	{
-		return $this->addRecord(static::DEBUG, $message, $context);
+     */
+    public function critical($message, array $context = array())
+    {
+        return $this->addRecord(static::CRITICAL, $message, $context);
     }
 
-	/**
-	 * Adds a log record at the EMERGENCY level.
+    /**
+     * Adds a log record at the DEBUG level.
      *
      * This method allows for compatibility with common interfaces.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
-	 */
-	public function emergency($message, array $context = array())
-	{
-		return $this->addRecord(static::EMERGENCY, $message, $context);
+     */
+    public function debug($message, array $context = array())
+    {
+        return $this->addRecord(static::DEBUG, $message, $context);
+    }
+
+    /**
+     * Adds a log record at the EMERGENCY level.
+     *
+     * This method allows for compatibility with common interfaces.
+     *
+     * @param  string  $message The log message
+     * @param  array   $context The log context
+     * @return Boolean Whether the record has been processed
+     */
+    public function emergency($message, array $context = array())
+    {
+        return $this->addRecord(static::EMERGENCY, $message, $context);
     }
 
     /**
@@ -541,66 +545,80 @@ class Logger implements LoggerInterface
         return $this->addRecord(static::ERROR, $message, $context);
     }
 
-	/**
-	 * Adds a log record at the INFO level.
+    /**
+     * Adds a log record at the INFO level.
      *
      * This method allows for compatibility with common interfaces.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
-	 */
-	public function info($message, array $context = array())
-	{
-		return $this->addRecord(static::INFO, $message, $context);
+     */
+    public function info($message, array $context = array())
+    {
+        return $this->addRecord(static::INFO, $message, $context);
     }
 
-	/**
-	 * Adds a log record at an arbitrary level.
+    /**
+     * Adds a log record at an arbitrary level.
      *
      * This method allows for compatibility with common interfaces.
-	 *
-	 * @param  mixed $level The log level
+     *
+     * @param  mixed   $level   The log level
      * @param  string  $message The log message
      * @param  array   $context The log context
      *
-*@return Boolean Whether the record has been processed
-	 */
-	public function log($level, $message, array $context = array())
-	{
-		if (is_string($level) && defined(__CLASS__ . '::' . strtoupper($level))) {
-			$level = constant(__CLASS__ . '::' . strtoupper($level));
-		}
+     * @return Boolean Whether the record has been processed
+     */
+    public function log($level, $message, array $context = array())
+    {
+        $level = static::toMonologLevel($level);
 
-		return $this->addRecord($level, $message, $context);
+        return $this->addRecord($level, $message, $context);
     }
 
-	/**
-	 * Adds a log record at the NOTICE level.
+    /**
+     * Adds a log record at the NOTICE level.
      *
      * This method allows for compatibility with common interfaces.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
-	 */
-	public function notice($message, array $context = array())
-	{
-		return $this->addRecord(static::NOTICE, $message, $context);
+     */
+    public function notice($message, array $context = array())
+    {
+        return $this->addRecord(static::NOTICE, $message, $context);
     }
 
-	/**
-	 * Adds a log record at the WARNING level.
+    /**
+     * Adds a log record at the WARNING level.
      *
      * This method allows for compatibility with common interfaces.
      *
      * @param  string  $message The log message
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
-	 */
-	public function warning($message, array $context = array())
-	{
-		return $this->addRecord(static::WARNING, $message, $context);
+     */
+    public function warning($message, array $context = array())
+    {
+        return $this->addRecord(static::WARNING, $message, $context);
+    }
+
+    /**
+     * Converts PSR-3 levels to Monolog ones if necessary
+     *
+     * @param string|int Level number (monolog) or name (PSR-3)
+     *
+     * @return int
+     */
+    public static function toMonologLevel($level)
+    {
+        if (is_string($level) && defined(__CLASS__ . '::' . strtoupper($level))) {
+            return constant(__CLASS__ . '::' . strtoupper($level));
+        }
+
+        return $level;
     }
 
     /**
@@ -612,7 +630,7 @@ class Logger implements LoggerInterface
      * @param  array   $context The log context
      * @return Boolean Whether the record has been processed
      */
-	public function emerg($message, array $context = array())
+    public function emerg($message, array $context = array())
     {
         return $this->addRecord(static::EMERGENCY, $message, $context);
     }

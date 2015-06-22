@@ -28,13 +28,13 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $strategy->render('/', Request::create('/'))->getContent());
     }
 
-	private function getKernel($returnValue)
-	{
-		$kernel = $this->getMock('Symfony\Component\HttpKernel\HttpKernelInterface');
-		$kernel->expects($this->any())->method('handle')->will($returnValue);
+    private function getKernel($returnValue)
+    {
+        $kernel = $this->getMock('Symfony\Component\HttpKernel\HttpKernelInterface');
+        $kernel->expects($this->any())->method('handle')->will($returnValue);
 
-		return $kernel;
-	}
+        return $kernel;
+    }
 
     public function testRenderWithControllerReference()
     {
@@ -57,17 +57,17 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
         $strategy->render(new ControllerReference('main_controller', array('object' => $object), array()), Request::create('/'));
     }
 
-	/**
-	 * Creates a Kernel expecting a request equals to $request
-	 * Allows delta in comparison in case REQUEST_TIME changed by 1 second.
-	 */
-	private function getKernelExpectingRequest(Request $request)
-	{
-		$kernel = $this->getMock('Symfony\Component\HttpKernel\HttpKernelInterface');
-		$kernel->expects($this->any())->method('handle')->with($this->equalTo($request, 1));
+    /**
+     * Creates a Kernel expecting a request equals to $request
+     * Allows delta in comparison in case REQUEST_TIME changed by 1 second.
+     */
+    private function getKernelExpectingRequest(Request $request)
+    {
+        $kernel = $this->getMock('Symfony\Component\HttpKernel\HttpKernelInterface');
+        $kernel->expects($this->any())->method('handle')->with($this->equalTo($request, 1));
 
-		return $kernel;
-	}
+        return $kernel;
+    }
 
     public function testRenderWithObjectsAsAttributesPassedAsObjectsInTheController()
     {
@@ -163,15 +163,15 @@ class InlineFragmentRendererTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Foo', ob_get_clean());
     }
 
-	public function testESIHeaderIsKeptInSubrequestWithTrustedHeaderDisabled()
-	{
-		$trustedHeaderName = Request::getTrustedHeaderName(Request::HEADER_CLIENT_IP);
-		Request::setTrustedHeaderName(Request::HEADER_CLIENT_IP, '');
+    public function testESIHeaderIsKeptInSubrequestWithTrustedHeaderDisabled()
+    {
+        $trustedHeaderName = Request::getTrustedHeaderName(Request::HEADER_CLIENT_IP);
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_IP, '');
 
-		$this->testESIHeaderIsKeptInSubrequest();
+        $this->testESIHeaderIsKeptInSubrequest();
 
-		Request::setTrustedHeaderName(Request::HEADER_CLIENT_IP, $trustedHeaderName);
-	}
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_IP, $trustedHeaderName);
+    }
 
     public function testESIHeaderIsKeptInSubrequest()
     {

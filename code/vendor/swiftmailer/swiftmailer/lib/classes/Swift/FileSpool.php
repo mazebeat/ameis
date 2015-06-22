@@ -11,8 +11,8 @@
 /**
  * Stores Messages on the filesystem.
  *
- * @author  Fabien Potencier
- * @author  Xavier De Cock <xdecock@gmail.com>
+ * @author Fabien Potencier
+ * @author Xavier De Cock <xdecock@gmail.com>
  */
 class Swift_FileSpool extends Swift_ConfigurableSpool
 {
@@ -20,7 +20,7 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
     private $_path;
 
     /**
-     * File WriteRetry Limit
+     * File WriteRetry Limit.
      *
      * @var int
      */
@@ -45,35 +45,11 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
     }
 
     /**
-     * Tests if this Spool mechanism has started.
-     *
-     * @return bool
-     */
-    public function isStarted()
-    {
-        return true;
-    }
-
-    /**
-     * Starts this Spool mechanism.
-     */
-    public function start()
-    {
-    }
-
-    /**
-     * Stops this Spool mechanism.
-     */
-    public function stop()
-    {
-    }
-
-    /**
      * Allow to manage the enqueuing retry limit.
      *
      * Default, is ten and allows over 64^20 different fileNames
      *
-     * @param int     $limit
+     * @param int $limit
      */
     public function setRetryLimit($limit)
     {
@@ -81,50 +57,19 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
     }
 
     /**
-     * Queues a message.
-     *
-     * @param Swift_Mime_Message $message The message to store
-     *
-     * @return bool
-     *
-     * @throws Swift_IoException
-     */
-    public function queueMessage(Swift_Mime_Message $message)
-    {
-        $ser = serialize($message);
-        $fileName = $this->_path.'/'.$this->getRandomString(10);
-        for ($i = 0; $i < $this->_retryLimit; ++$i) {
-            /* We try an exclusive creation of the file. This is an atomic operation, it avoid locking mechanism */
-            $fp = @fopen($fileName.'.message', 'x');
-            if (false !== $fp) {
-                if (false === fwrite($fp, $ser)) {
-                    return false;
-                }
-
-                return fclose($fp);
-            } else {
-                /* The file already exists, we try a longer fileName */
-                $fileName .= $this->getRandomString(1);
-            }
-        }
-
-        throw new Swift_IoException('Unable to create a file for enqueuing Message');
-    }
-
-    /**
      * Execute a recovery if for any reason a process is sending for too long.
      *
-     * @param int     $timeout in second Defaults is for very slow smtp responses
+     * @param int $timeout in second Defaults is for very slow smtp responses
      */
     public function recover($timeout = 900)
     {
         foreach (new DirectoryIterator($this->_path) as $file) {
             $file = $file->getRealPath();
 
-            if (substr($file, - 16) == '.message.sending') {
+            if (substr($file, -16) == '.message.sending') {
                 $lockedtime = filectime($file);
                 if ((time() - $lockedtime) > $timeout) {
-                    rename($file, substr($file, 0, - 8));
+                    rename($file, substr($file, 0, -8));
                 }
             }
         }
@@ -136,7 +81,7 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
      * @param Swift_Transport $transport        A transport instance
      * @param string[]        $failedRecipients An array of failures by-reference
      *
-     * @return int     The number of sent e-mail's
+     * @return int The number of sent e-mail's
      */
     public function flushQueue(Swift_Transport $transport, &$failedRecipients = null)
     {
@@ -187,16 +132,72 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
     }
 
     /**
+     * Tests if this Spool mechanism has started.
+     *
+     * @return bool
+     */
+    public function isStarted()
+    {
+        return true;
+    }
+
+    /**
+     * Queues a message.
+     *
+     * @param Swift_Mime_Message $message The message to store
+     *
+     * @throws Swift_IoException
+     *
+     * @return bool
+     */
+    public function queueMessage(Swift_Mime_Message $message)
+    {
+        $ser      = serialize($message);
+        $fileName = $this->_path . '/' . $this->getRandomString(10);
+        for ($i = 0; $i < $this->_retryLimit; ++$i) {
+            /* We try an exclusive creation of the file. This is an atomic operation, it avoid locking mechanism */
+            $fp = @fopen($fileName . '.message', 'x');
+            if (false !== $fp) {
+                if (false === fwrite($fp, $ser)) {
+                    return false;
+                }
+
+                return fclose($fp);
+            }
+            else {
+                /* The file already exists, we try a longer fileName */
+                $fileName .= $this->getRandomString(1);
+            }
+        }
+
+        throw new Swift_IoException('Unable to create a file for enqueuing Message');
+    }
+
+    /**
+     * Starts this Spool mechanism.
+     */
+    public function start()
+    {
+    }
+
+    /**
+     * Stops this Spool mechanism.
+     */
+    public function stop()
+    {
+    }
+
+    /**
      * Returns a random string needed to generate a fileName for the queue.
      *
-     * @param int     $count
+     * @param int $count
      *
      * @return string
      */
     protected function getRandomString($count)
     {
         // This string MUST stay FS safe, avoid special chars
-        $base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-";
+        $base = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-';
         $ret = '';
         $strlen = strlen($base);
         for ($i = 0; $i < $count; ++$i) {

@@ -25,6 +25,7 @@ Route::group(array('before' => 'auth'), function () {
 	Route::post('returnClient', 'ApiController@returnClient');
 	Route::post('saveCotizacion', 'ApiController@saveCotizacion');
 	Route::post('returnCotizacion', 'ApiController@returnCotizacion');
+	Route::post('returnServUM', 'ApiController@returnServUM');
 });
 
 
